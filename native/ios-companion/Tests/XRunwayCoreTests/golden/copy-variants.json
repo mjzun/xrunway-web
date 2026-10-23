@@ -1,0 +1,32 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "copy-variants",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "coach-live:LIVE_CUE_TEXT.center-up",
+   "input": {"surface":"coach-live","key":"LIVE_CUE_TEXT.center-up"},
+   "expect": {"web":"Find the centerline.","solo":"Find your line."}
+  },
+  {
+   "name": "coach:METRIC_COACH.footPlacement",
+   "input": {"surface":"coach","key":"METRIC_COACH.footPlacement"},
+   "expect": {"web":"Hold your line - keep your head centered over the runway.","solo":"Track your line of travel - keep your body centered on it."}
+  },
+  {
+   "name": "coach:METRIC_EXPLAIN.footPlacement",
+   "input": {"surface":"coach","key":"METRIC_EXPLAIN.footPlacement"},
+   "expect": {"web":"How closely your head holds the runway centerline (a headset reads your head, not your feet).","solo":"How closely you hold your own line of travel."}
+  },
+  {
+   "name": "coach:footworkCue.drift-side",
+   "input": {"surface":"coach","key":"footworkCue.drift-side"},
+   "expect": {"web":"You drifted {cm} cm {side} of the centerline - pull it back to center.","solo":"You drifted {cm} cm {side} of your line of travel - pull it back to your line."}
+  },
+  {
+   "name": "coach:footworkCue.off-line",
+   "input": {"surface":"coach","key":"footworkCue.off-line"},
+   "expect": {"web":"You averaged {cm} cm off the centerline - tighten your line.","solo":"You averaged {cm} cm off your line of travel - tighten your line."}
+  }
+ ]
+}

@@ -1,0 +1,127 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "progress",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "qualifying-set-and-sort",
+   "input": {"rows":[{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3"},{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3"},{"startedAt":61000,"overall":90,"scoreScale":"s100-pb.v3","synthetic":true},{"startedAt":181000,"overall":null,"scoreScale":"s100-pb.v3"},{"startedAt":241000,"overall":{"$num":"nan"},"scoreScale":"s100-pb.v3"},{"startedAt":"junk","overall":66},{"startedAt":301000,"overall":84,"scoreScale":"s100-pb.v3"}],"queries":[{"fn":"realScoredRows"},{"fn":"personalBest"},{"fn":"overallSeries"},{"fn":"latestIsPersonalBest"}]},
+   "expect": {"results":[[{"startedAt":"junk","overall":66},{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3"},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3"},{"startedAt":301000,"overall":84,"scoreScale":"s100-pb.v3"}],{"overall":84,"startedAt":301000},[66,70,80,84],true]}
+  },
+  {
+   "name": "equal-startedat-keeps-input-order",
+   "input": {"rows":[{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":70,"modeId":"beginner","passThreshold":78},{"startedAt":1000,"overall":90,"modeId":"beginner","passThreshold":78}],"queries":[{"fn":"realScoredRows"},{"fn":"overallSeries"},{"fn":"modeStats"}]},
+   "expect": {"results":[[{"startedAt":1000,"overall":90,"modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":70,"modeId":"beginner","passThreshold":78}],[90,80,70],[{"modeId":"beginner","walks":3,"best":70,"last":70,"passed":2,"mastered":false}]]}
+  },
+  {
+   "name": "interleaved-buckets-keep-first-walked-order",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"challenge","passThreshold":82},{"startedAt":61000,"overall":76,"modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":84,"modeId":"challenge","passThreshold":82}],"queries":[{"fn":"modeStats"}]},
+   "expect": {"results":[[{"modeId":"challenge","walks":2,"best":84,"last":84,"passed":1,"mastered":false},{"modeId":"beginner","walks":1,"best":76,"last":76,"passed":0,"mastered":false}]]}
+  },
+  {
+   "name": "personal-best-tie-keeps-earliest",
+   "input": {"rows":[{"startedAt":1000,"overall":84,"scoreScale":"s100-pb.v3"},{"startedAt":61000,"overall":84,"scoreScale":"s100-pb.v3"}],"queries":[{"fn":"personalBest"},{"fn":"latestIsPersonalBest"}]},
+   "expect": {"results":[{"overall":84,"startedAt":1000},false]}
+  },
+  {
+   "name": "synthetic-highest-never-best",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3"},{"startedAt":61000,"overall":99,"scoreScale":"s100-pb.v3","synthetic":true}],"queries":[{"fn":"personalBest"},{"fn":"latestIsPersonalBest"}]},
+   "expect": {"results":[{"overall":70,"startedAt":1000},false]}
+  },
+  {
+   "name": "rolling-average-windows",
+   "input": {"rows":[],"queries":[{"fn":"rollingAverage","args":{"values":[1,1,1,70,72,74,76,78]}},{"fn":"rollingAverage","args":{"values":[70,80]}},{"fn":"rollingAverage","args":{"values":[81]}},{"fn":"rollingAverage","args":{"values":[]}}]},
+   "expect": {"results":[74,75,81,null]}
+  },
+  {
+   "name": "trend-delta-window-rule",
+   "input": {"rows":[],"queries":[{"fn":"trendDelta","args":{"values":[60,60,60,60,60,70,72,74,76,78]}},{"fn":"trendDelta","args":{"values":[60,62,70,72]}},{"fn":"trendDelta","args":{"values":[60,70,80]}},{"fn":"trendDelta","args":{"values":[60,70]}},{"fn":"trendDelta","args":{"values":[60]}},{"fn":"trendDelta","args":{"values":[1,2,3],"window":0}}]},
+   "expect": {"results":[14,10,10,10,null,null]}
+  },
+  {
+   "name": "series-cap-last-20",
+   "input": {"rows":[{"startedAt":1000,"overall":60,"scoreScale":"s100-pb.v3","finalScores":{"posture":60,"pace":60,"rhythm":60,"footPlacement":60,"presence":60,"confidence":60,"presentation":60}},{"startedAt":61000,"overall":61,"scoreScale":"s100-pb.v3","finalScores":{"posture":61,"pace":61,"rhythm":61,"footPlacement":61,"presence":61,"confidence":61,"presentation":61}},{"startedAt":121000,"overall":62,"scoreScale":"s100-pb.v3","finalScores":{"posture":62,"pace":62,"rhythm":62,"footPlacement":62,"presence":62,"confidence":62,"presentation":62}},{"startedAt":181000,"overall":63,"scoreScale":"s100-pb.v3","finalScores":{"posture":63,"pace":63,"rhythm":63,"footPlacement":63,"presence":63,"confidence":63,"presentation":63}},{"startedAt":241000,"overall":64,"scoreScale":"s100-pb.v3","finalScores":{"posture":64,"pace":64,"rhythm":64,"footPlacement":64,"presence":64,"confidence":64,"presentation":64}},{"startedAt":301000,"overall":65,"scoreScale":"s100-pb.v3","finalScores":{"posture":65,"pace":65,"rhythm":65,"footPlacement":65,"presence":65,"confidence":65,"presentation":65}},{"startedAt":361000,"overall":66,"scoreScale":"s100-pb.v3","finalScores":{"posture":66,"pace":66,"rhythm":66,"footPlacement":66,"presence":66,"confidence":66,"presentation":66}},{"startedAt":421000,"overall":67,"scoreScale":"s100-pb.v3","finalScores":{"posture":67,"pace":67,"rhythm":67,"footPlacement":67,"presence":67,"confidence":67,"presentation":67}},{"startedAt":481000,"overall":68,"scoreScale":"s100-pb.v3","finalScores":{"posture":68,"pace":68,"rhythm":68,"footPlacement":68,"presence":68,"confidence":68,"presentation":68}},{"startedAt":541000,"overall":69,"scoreScale":"s100-pb.v3","finalScores":{"posture":69,"pace":69,"rhythm":69,"footPlacement":69,"presence":69,"confidence":69,"presentation":69}},{"startedAt":601000,"overall":70,"scoreScale":"s100-pb.v3","finalScores":{"posture":70,"pace":70,"rhythm":70,"footPlacement":70,"presence":70,"confidence":70,"presentation":70}},{"startedAt":661000,"overall":71,"scoreScale":"s100-pb.v3","finalScores":{"posture":71,"pace":71,"rhythm":71,"footPlacement":71,"presence":71,"confidence":71,"presentation":71}},{"startedAt":721000,"overall":72,"scoreScale":"s100-pb.v3","finalScores":{"posture":72,"pace":72,"rhythm":72,"footPlacement":72,"presence":72,"confidence":72,"presentation":72}},{"startedAt":781000,"overall":73,"scoreScale":"s100-pb.v3","finalScores":{"posture":73,"pace":73,"rhythm":73,"footPlacement":73,"presence":73,"confidence":73,"presentation":73}},{"startedAt":841000,"overall":74,"scoreScale":"s100-pb.v3","finalScores":{"posture":74,"pace":74,"rhythm":74,"footPlacement":74,"presence":74,"confidence":74,"presentation":74}},{"startedAt":901000,"overall":75,"scoreScale":"s100-pb.v3","finalScores":{"posture":75,"pace":75,"rhythm":75,"footPlacement":75,"presence":75,"confidence":75,"presentation":75}},{"startedAt":961000,"overall":76,"scoreScale":"s100-pb.v3","finalScores":{"posture":76,"pace":76,"rhythm":76,"footPlacement":76,"presence":76,"confidence":76,"presentation":76}},{"startedAt":1021000,"overall":77,"scoreScale":"s100-pb.v3","finalScores":{"posture":77,"pace":77,"rhythm":77,"footPlacement":77,"presence":77,"confidence":77,"presentation":77}},{"startedAt":1081000,"overall":78,"scoreScale":"s100-pb.v3","finalScores":{"posture":78,"pace":78,"rhythm":78,"footPlacement":78,"presence":78,"confidence":78,"presentation":78}},{"startedAt":1141000,"overall":79,"scoreScale":"s100-pb.v3","finalScores":{"posture":79,"pace":79,"rhythm":79,"footPlacement":79,"presence":79,"confidence":79,"presentation":79}},{"startedAt":1201000,"overall":80,"scoreScale":"s100-pb.v3","finalScores":{"posture":80,"pace":80,"rhythm":80,"footPlacement":80,"presence":80,"confidence":80,"presentation":80}},{"startedAt":1261000,"overall":81,"scoreScale":"s100-pb.v3","finalScores":{"posture":81,"pace":81,"rhythm":81,"footPlacement":81,"presence":81,"confidence":81,"presentation":81}},{"startedAt":1321000,"overall":82,"scoreScale":"s100-pb.v3","finalScores":{"posture":82,"pace":82,"rhythm":82,"footPlacement":82,"presence":82,"confidence":82,"presentation":82}},{"startedAt":1381000,"overall":83,"scoreScale":"s100-pb.v3","finalScores":{"posture":83,"pace":83,"rhythm":83,"footPlacement":83,"presence":83,"confidence":83,"presentation":83}},{"startedAt":1441000,"overall":84,"scoreScale":"s100-pb.v3","finalScores":{"posture":84,"pace":84,"rhythm":84,"footPlacement":84,"presence":84,"confidence":84,"presentation":84}}],"queries":[{"fn":"overallSeries"},{"fn":"progressReport"}]},
+   "expect": {"results":[[65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84],{"walks":25,"series":[65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84],"best":{"overall":84,"startedAt":1441000},"rollingAvg":82,"overallTrend":5,"metricTrends":{"posture":5,"pace":5,"rhythm":5,"footPlacement":5,"presence":5,"confidence":5,"presentation":5},"newBest":true}]}
+  },
+  {
+   "name": "metric-trends-missing-scores-dont-vote",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3","finalScores":{"posture":70,"pace":70,"rhythm":70,"footPlacement":70,"presence":70,"confidence":70,"presentation":70}},{"startedAt":61000,"overall":75,"scoreScale":"s100-pb.v3"},{"startedAt":121000,"overall":76,"scoreScale":"s100-pb.v3","finalScores":{"posture":76,"pace":76,"rhythm":76,"footPlacement":76,"presence":76,"confidence":76,"presentation":76}},{"startedAt":181000,"overall":78,"scoreScale":"s100-pb.v3","finalScores":{"posture":78,"pace":78,"rhythm":78,"footPlacement":78,"presence":78,"confidence":78,"presentation":78}}],"queries":[{"fn":"metricTrends"}]},
+   "expect": {"results":[{"posture":2,"pace":2,"rhythm":2,"footPlacement":2,"presence":2,"confidence":2,"presentation":2}]}
+  },
+  {
+   "name": "latest-best-tie-is-not-new",
+   "input": {"rows":[{"startedAt":1000,"overall":84,"scoreScale":"s100-pb.v3"},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3"},{"startedAt":121000,"overall":84,"scoreScale":"s100-pb.v3"}],"queries":[{"fn":"latestIsPersonalBest"}]},
+   "expect": {"results":[false]}
+  },
+  {
+   "name": "newer-synthetic-row-blocks-announce",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3"},{"startedAt":61000,"overall":84,"scoreScale":"s100-pb.v3"},{"startedAt":121000,"overall":90,"scoreScale":"s100-pb.v3","synthetic":true}],"queries":[{"fn":"latestIsPersonalBest"}]},
+   "expect": {"results":[false]}
+  },
+  {
+   "name": "mode-stats-grouping",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":84,"scoreScale":"s100-pb.v3","modeId":"challenge","passThreshold":82},{"startedAt":121000,"overall":81,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"modeStats"}]},
+   "expect": {"results":[[{"modeId":"beginner","walks":3,"best":81,"last":76,"passed":1,"mastered":false},{"modeId":"challenge","walks":1,"best":84,"last":84,"passed":1,"mastered":false}]]}
+  },
+  {
+   "name": "mode-stats-own-bar-grading",
+   "input": {"rows":[{"startedAt":1000,"overall":79,"scoreScale":"s100-pb.v3","modeId":"challenge","passThreshold":82},{"startedAt":61000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"commercial","passThreshold":75},{"startedAt":121000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"commercial","passThreshold":null}],"queries":[{"fn":"modeStats"}]},
+   "expect": {"results":[[{"modeId":"challenge","walks":1,"best":79,"last":79,"passed":0,"mastered":false},{"modeId":"commercial","walks":2,"best":76,"last":76,"passed":2,"mastered":false}]]}
+  },
+  {
+   "name": "legacy-bucket-never-mastered",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":null,"passThreshold":null},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3","modeId":null,"passThreshold":null},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"","passThreshold":null},{"startedAt":181000,"overall":80,"scoreScale":"s100-pb.v3","modeId":null,"passThreshold":null},{"startedAt":241000,"overall":80,"scoreScale":"s100-pb.v3","modeId":null,"passThreshold":null}],"queries":[{"fn":"modeStats"},{"fn":"masteryJustEarned","args":{"modeId":"legacy"}}]},
+   "expect": {"results":[[{"modeId":"legacy","walks":5,"best":80,"last":80,"passed":5,"mastered":false}],false]}
+  },
+  {
+   "name": "mastery-recency-rule",
+   "input": {"rows":[{"startedAt":1000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":241000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"modeStats"}]},
+   "expect": {"results":[[{"modeId":"beginner","walks":5,"best":80,"last":80,"passed":3,"mastered":true}]]}
+  },
+  {
+   "name": "early-passes-buried-not-mastery",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":241000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"modeStats"}]},
+   "expect": {"results":[[{"modeId":"beginner","walks":5,"best":80,"last":60,"passed":2,"mastered":false}]]}
+  },
+  {
+   "name": "mastery-just-earned-on-newest-walk",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"masteryJustEarned","args":{"modeId":"beginner"}},{"fn":"masteryJustEarned","args":{"modeId":"challenge"}},{"fn":"modeStats"}]},
+   "expect": {"results":[true,false,[{"modeId":"beginner","walks":4,"best":80,"last":80,"passed":3,"mastered":true}]]}
+  },
+  {
+   "name": "already-mastered-never-reannounces",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"masteryJustEarned","args":{"modeId":"beginner"}}]},
+   "expect": {"results":[false]}
+  },
+  {
+   "name": "newer-preview-row-blocks-mastery-moment",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":241000,"overall":95,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78,"synthetic":true}],"queries":[{"fn":"masteryJustEarned","args":{"modeId":"beginner"}}]},
+   "expect": {"results":[false]}
+  },
+  {
+   "name": "mastery-lost-then-reearned-announces-again",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":121000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":181000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":241000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":301000,"overall":60,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":361000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":421000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":481000,"overall":80,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"masteryJustEarned","args":{"modeId":"beginner"}}]},
+   "expect": {"results":[true]}
+  },
+  {
+   "name": "fewer-than-pass-count-walks-never-mastery",
+   "input": {"rows":[{"startedAt":1000,"overall":90,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78},{"startedAt":61000,"overall":90,"scoreScale":"s100-pb.v3","modeId":"beginner","passThreshold":78}],"queries":[{"fn":"masteryJustEarned","args":{"modeId":"beginner"}},{"fn":"modeStats"}]},
+   "expect": {"results":[false,[{"modeId":"beginner","walks":2,"best":90,"last":90,"passed":2,"mastered":false}]]}
+  },
+  {
+   "name": "progress-report-composite",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"scoreScale":"s100-pb.v3","finalScores":{"posture":70,"pace":70,"rhythm":70,"footPlacement":70,"presence":70,"confidence":70,"presentation":70}},{"startedAt":61000,"overall":74,"scoreScale":"s100-pb.v3","finalScores":{"posture":74,"pace":74,"rhythm":74,"footPlacement":74,"presence":74,"confidence":74,"presentation":74}},{"startedAt":121000,"overall":90,"scoreScale":"s100-pb.v3","synthetic":true},{"startedAt":181000,"overall":78,"scoreScale":"s100-pb.v3","finalScores":{"posture":78,"pace":78,"rhythm":78,"footPlacement":78,"presence":78,"confidence":78,"presentation":78}},{"startedAt":241000,"overall":82,"scoreScale":"s100-pb.v3","finalScores":{"posture":82,"pace":82,"rhythm":82,"footPlacement":82,"presence":82,"confidence":82,"presentation":82}}],"queries":[{"fn":"progressReport"}]},
+   "expect": {"results":[{"walks":4,"series":[70,74,78,82],"best":{"overall":82,"startedAt":241000},"rollingAvg":76,"overallTrend":8,"metricTrends":{"posture":8,"pace":8,"rhythm":8,"footPlacement":8,"presence":8,"confidence":8,"presentation":8},"newBest":true}]}
+  },
+  {
+   "name": "grading-own-bar-and-legacy-fallback",
+   "input": {"rows":[{"startedAt":1000,"overall":79,"scoreScale":"s100-pb.v3","modeId":"challenge","passThreshold":82},{"startedAt":61000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"commercial","passThreshold":75},{"startedAt":121000,"overall":76,"scoreScale":"s100-pb.v3"},{"startedAt":181000,"overall":74,"scoreScale":"s100-pb.v3"},{"startedAt":241000,"overall":90,"scoreScale":"s100-pb.v3","synthetic":true},{"startedAt":301000,"overall":null,"scoreScale":"s100-pb.v3"}],"queries":[{"fn":"rowPassed","args":{"row":{"overall":79,"passThreshold":82}}},{"fn":"rowPassed","args":{"row":{"overall":76,"passThreshold":75}}},{"fn":"rowPassed","args":{"row":{"overall":76}}},{"fn":"rowPassed","args":{"row":{"overall":74}}},{"fn":"rowPassed","args":{"row":{"overall":75,"passThreshold":{"$num":"nan"}}}},{"fn":"rowPassed","args":{"row":{"overall":null}}},{"fn":"rowPassThreshold","args":{"row":{"overall":50}}},{"fn":"rowPassThreshold","args":{"row":{"overall":50,"passThreshold":82}}},{"fn":"isSyntheticRow","args":{"row":{"synthetic":true}}},{"fn":"isSyntheticRow","args":{"row":{}}},{"fn":"filterHistoryRows","args":{"filter":"all"}},{"fn":"filterHistoryRows","args":{"filter":"pass"}},{"fn":"filterHistoryRows","args":{"filter":"low"}}]},
+   "expect": {"results":[false,true,true,false,true,false,75,82,true,false,[{"startedAt":1000,"overall":79,"scoreScale":"s100-pb.v3","modeId":"challenge","passThreshold":82},{"startedAt":61000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"commercial","passThreshold":75},{"startedAt":121000,"overall":76,"scoreScale":"s100-pb.v3"},{"startedAt":181000,"overall":74,"scoreScale":"s100-pb.v3"},{"startedAt":241000,"overall":90,"scoreScale":"s100-pb.v3","synthetic":true},{"startedAt":301000,"overall":null,"scoreScale":"s100-pb.v3"}],[{"startedAt":61000,"overall":76,"scoreScale":"s100-pb.v3","modeId":"commercial","passThreshold":75},{"startedAt":121000,"overall":76,"scoreScale":"s100-pb.v3"}],[{"startedAt":1000,"overall":79,"scoreScale":"s100-pb.v3","modeId":"challenge","passThreshold":82},{"startedAt":181000,"overall":74,"scoreScale":"s100-pb.v3"},{"startedAt":301000,"overall":null,"scoreScale":"s100-pb.v3"}]]}
+  },
+  {
+   "name": "trainee-scoping-rules",
+   "input": {"rows":[],"queries":[{"fn":"rowMatchesTrainee","args":{"row":{"trainee":{"id":"a"}},"traineeId":null}},{"fn":"rowMatchesTrainee","args":{"row":{"trainee":{"id":"a"}},"traineeId":""}},{"fn":"rowMatchesTrainee","args":{"row":{"trainee":{"id":"a"}},"traineeId":"a"}},{"fn":"rowMatchesTrainee","args":{"row":{"trainee":{"id":"a"}},"traineeId":"b"}},{"fn":"rowMatchesTrainee","args":{"row":{},"traineeId":"b"}},{"fn":"rowMatchesTrainee","args":{"row":{"trainee":null},"traineeId":"b"}},{"fn":"rowMatchesTrainee","args":{"row":{"trainee":{"id":7}},"traineeId":"b"}}]},
+   "expect": {"results":[true,true,true,false,true,true,true]}
+  }
+ ]
+}

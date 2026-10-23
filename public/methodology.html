@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/brand-icon-512.png" />
+    <!-- ============================================================
+         (X)RUNWAY METHODOLOGY - the defensibility page (2026-07-09).
+         STATUS: SHIPPED - linked from the landing nav. The narrative
+         lines (former F.18 slots + F.13) were drafted under the
+         founder's complete-everything delegation (2026-07-09) and are
+         tagged in docs/COPY-WORKSHEET.md - veto/rewrite anytime.
+         Everything else: the founder's education copy VERBATIM, cited
+         verbatim industry quotes, factual research/engineering/privacy
+         statements.
+         ============================================================ -->
+    <title>(X)RUNWAY — Methodology</title>
+    <style>
+      :root {
+        --bg: #0a0c10;
+        --accent: #4b9cd3;
+        --accent-soft: #8ec4e8;
+        --white: #f2f5f8;
+        --silver: #8a8f96;
+        --border: #232a33;
+        --glass: #10151b;
+        --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: var(--bg);
+        color: var(--white);
+        font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.55;
+        padding: 48px 20px 96px;
+      }
+      main { max-width: 860px; margin: 0 auto; }
+      .kicker {
+        font-family: var(--font-mono);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: var(--silver);
+      }
+      /* (X)RUNWAY wordmark - one word, the icon's green, italicised Impact
+         (founder call 2026-07-13). */
+      .wordmark {
+        font-family: Impact, "Haettenschweiler", "Franklin Gothic Bold",
+          "Arial Narrow", sans-serif;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        font-size: 26px;
+        margin-bottom: 4px;
+        display: inline-block;
+        transform: skewX(-10deg);
+        background: linear-gradient(178deg, #a8dca8 0%, #6dbe71 48%, #3f8f4c 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: #6dbe71;
+      }
+      h1 { font-size: 26px; font-weight: 600; margin: 10px 0 6px; }
+      section {
+        margin-top: 44px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+      section > .kicker { color: var(--accent); margin-bottom: 14px; display: block; }
+      .def { margin: 18px 0; }
+      .def .name {
+        font-family: var(--font-mono);
+        letter-spacing: 0.22em;
+        font-size: 12px;
+        color: var(--accent-soft);
+        font-weight: 600;
+      }
+      .def .what { font-size: 15px; margin: 3px 0; }
+      .def .math {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--silver);
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 2px solid var(--accent);
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 5px;
+      }
+      .sensor {
+        font-family: var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 10.5px;
+        color: var(--accent-soft);
+        margin-top: 18px;
+      }
+      table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+      th {
+        font-family: var(--font-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 10.5px;
+        color: var(--silver);
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        vertical-align: top;
+      }
+      td.who { white-space: nowrap; color: var(--accent-soft); font-size: 13px; }
+      td.quote em { color: var(--white); font-style: italic; }
+      td.metric {
+        font-family: var(--font-mono);
+        letter-spacing: 0.16em;
+        font-size: 11px;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      .factlist { list-style: none; margin-top: 8px; }
+      .factlist li {
+        padding: 8px 0 8px 18px;
+        position: relative;
+        font-size: 14.5px;
+        color: var(--white);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .factlist li::before { content: "—"; position: absolute; left: 0; color: var(--accent); }
+      .cite { color: var(--silver); font-size: 12.5px; }
+      .note {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--silver);
+        margin-top: 14px;
+      }
+      a { color: var(--accent-soft); }
+      .src { font-size: 12.5px; color: var(--silver); word-break: break-all; padding: 3px 0; }
+      .fine { font-size: 12px; color: var(--silver); opacity: 0.85; margin-top: 14px; line-height: 1.55; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="wordmark">(X)RUNWAY</div>
+      <div class="kicker">Methodology</div>
+      <!-- F.18.1, drafted under the founder's delegation - veto anytime. -->
+      <h1>Every number can be traced.</h1>
+      <p style="color: var(--silver); font-size: 15px">
+        Each score in (X)RUNWAY traces to three things: what the industry
+        actually teaches, what has actually been measured, and the exact
+        formula printed on the card.
+      </p>
+
+      <section id="measure">
+        <span class="kicker">Understanding the score</span>
+        <!-- The founder's shipped education copy, VERBATIM from the landing
+             #scoring-block (drift-pinned there by test/scoring-copy.test.ts;
+             any ruling that changes the landing must be mirrored here). -->
+        <p>
+          Here are how the 3 main metrics are defined, tracked, and what it
+          means for you. Please note that the data for these metrics is
+          tracked by the headset only.
+        </p>
+        <div class="def">
+          <div class="name">PACE</div>
+          <div class="what">head speed vs the target head speed</div>
+          <div class="math">score = 100 within &plusmn;0.10 m/s of the target; slower costs 90 per m/s, faster costs 45 (40&ndash;100). In the band = 100.</div>
+        </div>
+        <div class="def">
+          <div class="name">CARRIAGE</div>
+          <div class="what">% of time the head stays level (downward glances negatively affect this score)</div>
+          <div class="math">score = 40 + 60 &times; the share of the walk your head stayed level (chin within 7&deg; of neutral) &amp; facing down the line. A head-drop (&gt;15&deg; down) counts against it.</div>
+        </div>
+        <div class="def">
+          <div class="name">LINE</div>
+          <div class="what">head alignment with the center line</div>
+          <div class="math">score = 100 &minus; (your average distance off the centerline, in meters) &times; 240 (40&ndash;100). Dead on the line = 100.</div>
+        </div>
+        <div class="sensor">
+          Computed on-device from Meta Quest 3 head tracking only &mdash; no
+          camera, no body scan; nothing is scored that the headset did not
+          measure.
+        </div>
+      </section>
+
+      <section id="taught">
+        <span class="kicker">What the industry teaches</span>
+        <!-- F.18.2, drafted under the founder's delegation - veto anytime. -->
+        <p>
+          These are working coaches' and casting directors' own instructions
+          — verified, quoted verbatim, and cited. Each row names the metric
+          that tracks its trace.
+        </p>
+        <table>
+          <tr><th>Who</th><th>Their instruction (verbatim)</th><th>Tracked as</th></tr>
+          <tr>
+            <td class="who">Natalie Joos, casting director (TIME)</td>
+            <td class="quote"><em>&ldquo;Posture is everything... imagine that you are on a puppet string.&rdquo;</em></td>
+            <td class="metric">CARRIAGE</td>
+          </tr>
+          <tr>
+            <td class="who">CM Models (agency)</td>
+            <td class="quote"><em>&ldquo;Keep your head straight and steady.&rdquo;</em></td>
+            <td class="metric">CARRIAGE</td>
+          </tr>
+          <tr>
+            <td class="who">Naomi Campbell (MasterClass)</td>
+            <td class="quote"><em>&ldquo;Find a focal point to hone in on.&rdquo;</em></td>
+            <td class="metric">CARRIAGE</td>
+          </tr>
+          <tr>
+            <td class="who">Backstage</td>
+            <td class="quote"><em>&ldquo;Place one foot in front of the other, almost as if you're walking along a thin, invisible line.&rdquo;</em></td>
+            <td class="metric">LINE</td>
+          </tr>
+          <tr>
+            <td class="who">Stacey McKenzie (coach)</td>
+            <td class="quote"><em>&ldquo;You gotta criss-cross your feet.&rdquo;</em></td>
+            <td class="metric">LINE</td>
+          </tr>
+          <tr>
+            <td class="who">Naomi Campbell (MasterClass)</td>
+            <td class="quote"><em>&ldquo;Long strides make you look like you're confident&rdquo;</em> &middot; <em>&ldquo;control your pace&rdquo;</em></td>
+            <td class="metric">PACE</td>
+          </tr>
+          <tr>
+            <td class="who">Naomi Campbell (MasterClass)</td>
+            <td class="quote"><em>&ldquo;I don't see the audience. I hear the music. I hear the rhythm. I hear the bass.&rdquo;</em></td>
+            <td class="metric">PACE</td>
+          </tr>
+        </table>
+        <div class="note">
+          NOT TRACKED BY (X)RUNWAY: HIPS &middot; FEET &middot; FACE &middot; ARMS &mdash;
+          HEAD TRACKING ONLY. INSTRUCTED BEHAVIORS OUTSIDE THE HEADSET'S VIEW
+          ARE NEVER SCORED.
+        </div>
+      </section>
+
+      <section id="pace">
+        <span class="kicker">The pace evidence</span>
+        <!-- F.18.3, drafted under the founder's delegation - veto anytime. -->
+        <p>The pace targets come from measurement, not marketing.</p>
+        <ul class="factlist">
+          <li>
+            Measured professional runway cadence: &asymp;125 steps per minute
+            (per-cluster medians 122.4&ndash;129.6), with no significant
+            difference across walk styles or eras.
+            <div class="cite">Kobayashi, Saito &amp; Murahori, <i>Sensors</i>, June 2024 (PMC11207723) — 69 models' first-look walks, Dolce &amp; Gabbana / Louis Vuitton / Valentino / Versace / Saint Laurent, 1995&ndash;2023.</div>
+          </li>
+          <li>
+            No credible source establishes an industry show-music BPM. Every
+            specific figure in circulation traced to vendor, blog, or forum
+            sources and failed adversarial verification.
+            <div class="cite">docs/RESEARCH-runway-pace-bpm.md — 25 claims verified, 7 refuted.</div>
+          </li>
+          <li>
+            The app's music tempos are derived from the measured cadence, not
+            a claimed industry BPM: 62 &middot; 100 &middot; 125 BPM.
+            <div class="cite">62 — half time of the emerging level speed &middot; 100 — everyday walking speed or leisure &middot; 125 — emerging level walking speed (industry standard)</div>
+          </li>
+          <li>
+            All published coaching is qualitative — long strides, feet in
+            line, pace to the beat. No source instructs a numeric tempo.
+            <div class="cite">docs/RESEARCH-runway-instruction.md — 11 findings, 3-vote adversarial verification per claim.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section id="replay">
+        <span class="kicker">The replay ghost</span>
+        <!-- Founder-directed 2026-07-23 ("document what is necessary in the
+             methodology tab") - drafted under the standing delegation, veto
+             anytime (F.37). Factual + cited; the honesty boundary here is
+             the load-bearing claim. -->
+        <p>
+          After a scored walk you can watch a translucent figure replay it.
+          The ghost is drawn from exactly what the headset measured &mdash;
+          nothing more.
+        </p>
+        <ul class="factlist">
+          <li><b>What the ghost shows is measured:</b> your head's recorded path along and across the runway, your speed, and your head pitch (the chin-level channel), sampled at 6 Hz during the walk. The figure moves and tilts its head from that data alone.</li>
+          <li><b>The figure itself is deliberately abstract.</b> It has no legs, arms, or gait, because the headset does not measure them. State-of-the-art research needs head <i>plus both hand</i> sensors to estimate a body and still calls the problem &ldquo;vastly underdetermined&rdquo; (AvatarPoser, ECCV 2022); Meta's own leadership has said leg tracking from a headset alone is &ldquo;basically not workable&hellip; from a physics standpoint&rdquo;. A walking mannequin here would be invented posture &mdash; so we don't draw one.</li>
+          <li><b>The floor rings mark scored moments.</b> Each ring is placed by the same thresholds the scoring engine itself used (the line gate, the pace band, the head-drop line) &mdash; never re-judged after the fact. A clean walk shows no rings.</li>
+          <li><b>The comparison mode replays two recorded walks</b> (this walk vs your best), started together on the same runway. Both figures are your own recorded data; the growing gap between them is the real pace difference between those two walks.</li>
+          <li><b>The replay changes nothing.</b> Watching, pausing, or comparing never alters a score or a stored record.</li>
+        </ul>
+      </section>
+
+      <section id="curriculum">
+        <span class="kicker">The curriculum</span>
+        <!-- Wave 4 (2026-07-28) - drafted under the standing delegation, veto
+             anytime (F.41). Publication follows CURRICULUM-DESIGN.md's own
+             laws: tiered sources, commercial names in fine print only under
+             the no-affiliation notice, method condensed to sourcing
+             standards. Full verification record: docs/RESEARCH-CURRICULUM.md
+             (29 confirmed findings; refuted claims recorded and never cited). -->
+        <p>
+          The training syllabus &mdash; levels, drills, and advancement &mdash;
+          is built the same way the scoring is: every element traces to a
+          verified source, or is labeled as our own design choice. Nothing on
+          the syllabus claims an &ldquo;industry standard&rdquo; that cannot
+          be shown.
+        </p>
+        <ul class="factlist">
+          <li><b>Three source tiers, in order of weight.</b> (1) Named coach and casting practice, quote-verified &mdash; the same record the lesson copy is written from (Rocha, Campbell, McKenzie, Joos, CM Models). (2) Peer-reviewed motor-learning research &mdash; how practice, feedback, and testing actually build a skill that keeps. (3) Commonly-taught conventions corroborated across commercial guides &mdash; used for structure only, named in the fine print below.</li>
+          <li><b>Advancement reads your cold record, not your best.</b> A level's Mastery Record comes from the first walks of a later session &mdash; at least a day apart (our convention), coaching off, the median of three. Published research on motor learning finds delayed, feedback-free performance a <i>better indicator</i> of what was learned than end-of-practice performance &mdash; so that is the number that advances you. Your in-session best is still shown; it just doesn't gate.</li>
+          <li><b>What can gate, and what never can.</b> Gates reference only channels the headset measures and you can see, with the threshold printed up front. No seat time, no composites, no unmeasured skill (feet, hips, arms, expression), and nothing worded as a career outcome &mdash; ever.</li>
+          <li><b>The unmeasured half of the craft is taught, labeled.</b> Foot placement, posture, arms, expression are coached in copy at every level and marked &ldquo;coached, never scored.&rdquo; A mirror, a video, and a human coach see what this headset cannot &mdash; the syllabus says so on its face.</li>
+          <li><b>Progress records, not credentials.</b> This product issues no certificates and implies no placement. Consumer-protection guidance on modeling schools names pay-for-credential and promised work as the warning signs &mdash; the syllabus is designed to be the opposite of that pattern.</li>
+          <li><b>Claims are dated and scoped.</b> Where the record rests on a survey, the copy says so &mdash; e.g. &ldquo;no runway-walking course in the catalogs we checked (FIT, LCF short courses, July 2026)&rdquo;, never &ldquo;no fashion college teaches walking.&rdquo;</li>
+          <li><b>Method, in one line:</b> every factual claim behind the syllabus was checked against its primary source before shipping; contested evidence is flagged as contested, and refuted claims are recorded in the research file and never cited.</li>
+        </ul>
+        <p class="fine">
+          Fine print &mdash; structural patterns referenced, with no
+          affiliation and no endorsement implied or claimed: the graded-exam
+          structure (stable criteria across levels, criterion-referenced
+          marking, outcome-only assessment) follows the pattern documented in
+          ABRSM's published exam guides; the tape-line home-drill structure
+          adapts a routine published by a commercial modeling school (John
+          Casablancas International &mdash; structure only; its coaching cues
+          are neither borrowed nor scored); competency-progression language
+          follows the Aurora Institute's published definition; the
+          consumer-protection markers are the FTC's published guidance on
+          modeling schools.
+        </p>
+      </section>
+
+      <section id="reproducible">
+        <span class="kicker">Reproducible scoring</span>
+        <!-- F.18.4, drafted under the founder's delegation - veto anytime. -->
+        <p>A score you can defend is a score that can be reproduced.</p>
+        <ul class="factlist">
+          <li>The scoring engine is pinned by 18 locked vector families: recorded walks replayed through the production code must reproduce their scores byte-for-byte.</li>
+          <li>The iOS companion replays the identical vectors — the same walk scores the same on both platforms.</li>
+          <li>Any change to scoring or coach copy regenerates the vectors in a reviewed, committed step. Scores cannot drift silently.</li>
+          <li>The exact formula behind every displayed score is printed beside it (the section above).</li>
+        </ul>
+      </section>
+
+      <section id="privacy">
+        <span class="kicker">Data &amp; privacy</span>
+        <!-- F.13, drafted under the founder's delegation - veto anytime. -->
+        <p>
+          Everything stays on your headset: no account, no server, no camera
+          images. Your walks are yours — stored locally, exported only when
+          you choose.
+        </p>
+        <ul class="factlist">
+          <li>Scoring input is the headset's head-tracking pose only (position + rotation).</li>
+          <li>The camera passthrough never reaches the app — WebXR exposes no camera pixels to it.</li>
+          <li>Walk history lives in the headset browser's local storage. No account, no server, no analytics.</li>
+          <li>Exports (CSV / Excel) are files the trainee downloads to their own device, on their own action.</li>
+        </ul>
+      </section>
+
+      <section id="sources">
+        <span class="kicker">Sources</span>
+        <div class="src">Kobayashi, Saito &amp; Murahori (2024). Sensors — https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11207723/</div>
+        <div class="src">Naomi Campbell Teaches Modeling — masterclass.com/classes/naomi-campbell-teaches-modeling-fundamentals</div>
+        <div class="src">Coco Rocha Model Camp starter guide — youtube.com/watch?v=33dkq_jsD1A</div>
+        <div class="src">Stacey McKenzie coaching footage — youtube.com/watch?v=227QNTBmK-I</div>
+        <div class="src">Natalie Joos, "How to Walk Like a Model" — style.time.com (2013)</div>
+        <div class="src">Backstage, "How to Walk Like a Model" — backstage.com/magazine/article/how-to-walk-like-a-model-76019/</div>
+        <div class="src">CM Models runway guidance — cmmodels.com</div>
+        <div class="src">Jiang et&nbsp;al. (2022). AvatarPoser: Articulated Full-Body Pose Tracking from Sparse Motion Sensing. ECCV — arxiv.org/abs/2207.13784</div>
+        <div class="src">Bosworth (Meta CTO) on headset leg tracking — cnn.com/2022/02/15/tech/vr-no-legs-explainer</div>
+        <div class="src">Kantak &amp; Winstein (2012). Learning&ndash;performance distinction and memory processes for motor skills. Behav Brain Res 228(1) &mdash; retention/transfer as the better indicator of learning</div>
+        <div class="src">Winstein &amp; Schmidt (1990). Reduced frequency of knowledge of results enhances motor skill learning. JEP:LMC 16(4)</div>
+        <div class="src">Sherwood (1988). Effect of bandwidth knowledge of results on movement consistency. Percept Mot Skills 66(2)</div>
+        <div class="src">Willy, Scholz &amp; Davis (2012). Mirror gait retraining for the treatment of patellofemoral pain. Clin Biomech 27(10) &mdash; the 8-session faded-feedback dosage precedent</div>
+        <div class="src">Donovan &amp; Radosevich (1999). A meta-analytic review of the distribution of practice effect. J Appl Psychol 84(5)</div>
+        <div class="src">Wulf &amp; Shea (2002). Principles derived from the study of simple skills do not generalize to complex skill learning. Psychon Bull Rev 9(2)</div>
+        <div class="src">Ammar et&nbsp;al. (2024). Contextual interference in motor learning. Educ Psychol Rev 36 &mdash; the contested high-CI evidence</div>
+        <div class="src">Chua et&nbsp;al. (2021) / McKay et&nbsp;al. (2024). External focus of attention meta-analyses, Psychol Bull &mdash; effect and its bias-corrected counter</div>
+        <div class="src">Wightman &amp; Lintern (1985). Part-task training for tracking and manual control. Human Factors 27(3)</div>
+        <div class="src">Etienne Russo / Villa Eugénie, PFW SS11 production diary &mdash; wallpaper.com (rehearsal structure and cues, across three shows)</div>
+        <div class="src">ABRSM, &ldquo;Your Guide to ABRSM Music Exams&rdquo; &mdash; the graded-syllabus assessment pattern (no affiliation)</div>
+        <div class="src">Aurora Institute (2019). What is competency-based education? (no affiliation)</div>
+        <div class="src">FTC consumer guidance on modeling agencies and schools &mdash; consumer.ftc.gov (no affiliation)</div>
+        <div class="src">Full verification records: docs/RESEARCH-runway-instruction.md &middot; docs/RESEARCH-runway-pace-bpm.md &middot; docs/RESEARCH-replay-ghost.md &middot; docs/RESEARCH-ghost-visual.md &middot; docs/RESEARCH-CURRICULUM.md</div>
+      </section>
+    </main>
+  </body>
+</html>

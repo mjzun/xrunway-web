@@ -1,0 +1,247 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "repeatability",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "cv-pin-three-walks",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.8,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.9,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.04999999999999999,"cvPct":5.88235294117647,"agreementPct":5.882352941176476},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 6% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 6%","detailLine":"PACE CV 6%"}]}
+  },
+  {
+   "name": "outlier-newest-slower-15pct",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.7225,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":5,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":5,"mean":0.8244999999999999,"sdSample":0.057456505288783426,"cvPct":6.968648306705085,"agreementPct":12.371134020618543},"cadence":null,"lateralSpreadM":null,"outlier":{"index":5,"count":5,"deltaPct":-14.999999999999995,"othersAgreementPct":1.1764705882352953},"verdictLine":"WALKS 1-4 AGREED WITHIN 2% ON PACE; WALK 5 WAS 15% SLOWER.","compactLine":"5 MATCHED WALKS: PACE SPREAD 13% - WALK 5 15% SLOW","detailLine":"PACE CV 7%"}]}
+  },
+  {
+   "name": "outlier-faster-direction",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.9775,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":4,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":4,"mean":0.881875,"sdSample":0.06375000000000003,"cvPct":7.228915662650606,"agreementPct":10.843373493975912},"cadence":null,"lateralSpreadM":null,"outlier":{"index":4,"count":4,"deltaPct":15.000000000000007,"othersAgreementPct":0},"verdictLine":"WALKS 1-3 AGREED WITHIN 1% ON PACE; WALK 4 WAS 15% FASTER.","compactLine":"4 MATCHED WALKS: PACE SPREAD 11% - WALK 4 15% FAST","detailLine":"PACE CV 7%"}]}
+  },
+  {
+   "name": "outlier-mid-window-named-exception",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.7225,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":4,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":4,"mean":0.818125,"sdSample":0.06374999999999997,"cvPct":7.7922077922077895,"agreementPct":11.688311688311684},"cadence":null,"lateralSpreadM":null,"outlier":{"index":2,"count":4,"deltaPct":-14.999999999999995,"othersAgreementPct":0},"verdictLine":"WALK 2 WAS 15% SLOWER ON PACE THAN THE OTHER 3, WHICH AGREED WITHIN 1%.","compactLine":"4 MATCHED WALKS: PACE SPREAD 12% - WALK 2 15% SLOW","detailLine":"PACE CV 8%"}]}
+  },
+  {
+   "name": "outlier-dominance-guard-uniform-spread",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.7,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":1,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.15000000000000002,"cvPct":17.647058823529413,"agreementPct":17.647058823529413},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 18% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 18%","detailLine":"PACE CV 18%"}]}
+  },
+  {
+   "name": "outlier-requires-full-pace-voting",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.7225,"cadenceSpm":100,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":5,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":4,"mean":0.818125,"sdSample":0.06374999999999997,"cvPct":7.7922077922077895,"agreementPct":11.688311688311684},"cadence":{"n":5,"mean":100,"sdSample":0,"cvPct":0,"agreementPct":0},"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 5 MATCHED WALKS AGREED WITHIN 12% ON PACE AND 1% ON CADENCE.","compactLine":"5 MATCHED WALKS: PACE SPREAD 12%, CADENCE 1%","detailLine":"PACE CV 8% - CADENCE CV UNDER 1%"}]}
+  },
+  {
+   "name": "empty-history-null",
+   "input": {"rows":[],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "below-min-walks-null",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "window-interleaved-groups",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":1,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":1,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"challenge","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":2,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.8,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.82,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":301000,"overall":80,"modeId":"challenge","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":2,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":361000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":421000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":481000,"overall":80,"modeId":"challenge","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":2,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":541000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.88,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":5,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":5,"mean":0.8400000000000001,"sdSample":0.031622776601683784,"cvPct":3.7646162621052124,"agreementPct":4.761904761904765},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 5 MATCHED WALKS AGREED WITHIN 5% ON PACE.","compactLine":"5 MATCHED WALKS: PACE SPREAD 5%","detailLine":"PACE CV 4%"}]}
+  },
+  {
+   "name": "window-input-order-invariance",
+   "input": {"rows":[{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.7225,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":5,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":5,"mean":0.8244999999999999,"sdSample":0.057456505288783426,"cvPct":6.968648306705085,"agreementPct":12.371134020618543},"cadence":null,"lateralSpreadM":null,"outlier":{"index":5,"count":5,"deltaPct":-14.999999999999995,"othersAgreementPct":1.1764705882352953},"verdictLine":"WALKS 1-4 AGREED WITHIN 2% ON PACE; WALK 5 WAS 15% SLOWER.","compactLine":"5 MATCHED WALKS: PACE SPREAD 13% - WALK 5 15% SLOW","detailLine":"PACE CV 7%"}]}
+  },
+  {
+   "name": "window-narrower-argument",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.5,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.5,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport","args":{"window":3}}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.010000000000000009,"cvPct":1.1764705882352953,"agreementPct":1.1764705882352953},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 2% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 2%","detailLine":"PACE CV 1%"}]}
+  },
+  {
+   "name": "ref-newest-mode-owns-window",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"challenge","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":1.05,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "ref-mixed-shape-never-aggregates",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"U","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "ref-sensor-is-a-different-ruler",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"iphone-arkit","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.8533333333333334,"sdSample":0.005773502691896263,"cvPct":0.6765823467065932,"agreementPct":0.781249999999992},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 1% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 1%","detailLine":"PACE CV UNDER 1%"}]}
+  },
+  {
+   "name": "ref-legacy-shapekind-null",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":null,"primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "ref-junk-modeid-null",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "ref-synthetic-newest-skipped",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.8,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.9,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"preview","synthetic":true,"stats":{"meanPaceMps":2,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.04999999999999999,"cvPct":5.88235294117647,"agreementPct":5.882352941176476},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 6% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 6%","detailLine":"PACE CV 6%"}]}
+  },
+  {
+   "name": "unscored-rows-never-qualify",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":null,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "norm-fit-row-splits-window",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","normalization":"fit.v1-123","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.010000000000000009,"cvPct":1.1764705882352953,"agreementPct":1.1764705882352953},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 2% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 2%","detailLine":"PACE CV 1%"}]}
+  },
+  {
+   "name": "norm-refit-starts-fresh-null",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","normalization":"fit.v1-123","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "norm-legacy-null-default-merge",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","normalization":null,"stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","normalization":"default.v1","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.010000000000000009,"cvPct":1.1764705882352953,"agreementPct":1.1764705882352953},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 2% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 2%","detailLine":"PACE CV 1%"}]}
+  },
+  {
+   "name": "row-normalization-tokens",
+   "input": {"rows":[],"queries":[{"fn":"rowNormalization","args":{"row":{}}},{"fn":"rowNormalization","args":{"row":{"normalization":null}}},{"fn":"rowNormalization","args":{"row":{"normalization":""}}},{"fn":"rowNormalization","args":{"row":{"normalization":42}}},{"fn":"rowNormalization","args":{"row":{"normalization":"fit.v1-123"}}}]},
+   "expect": {"results":["default.v1","default.v1","default.v1","default.v1","fit.v1-123"]}
+  },
+  {
+   "name": "channel-cadence-under-3-voters",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.84,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":102,"meanAbsLateralM":null}},{"startedAt":241000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.86,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":5,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":5,"mean":0.85,"sdSample":0.007071067811865481,"cvPct":0.8318903308077037,"agreementPct":1.1764705882352953},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 5 MATCHED WALKS AGREED WITHIN 2% ON PACE.","compactLine":"5 MATCHED WALKS: PACE SPREAD 2%","detailLine":"PACE CV UNDER 1%"}]}
+  },
+  {
+   "name": "channel-cadence-only-templates",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":96,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":104,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":null,"cadence":{"n":3,"mean":100,"sdSample":4,"cvPct":4,"agreementPct":4},"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 4% ON CADENCE.","compactLine":"3 MATCHED WALKS: CADENCE SPREAD 4%","detailLine":"CADENCE CV 4%"}]}
+  },
+  {
+   "name": "channel-both-dark-no-verdict",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":null,"meanAbsLateralM":0.02}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":null,"meanAbsLateralM":0.03}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":null,"cadenceSpm":null,"meanAbsLateralM":0.04}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "channel-nonfinite-never-votes",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":{"$num":"nan"},"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":0,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":-5,"meanAbsLateralM":null}},{"startedAt":181000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":4,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":4,"mean":0.85,"sdSample":0,"cvPct":0,"agreementPct":0},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 4 MATCHED WALKS AGREED WITHIN 1% ON PACE.","compactLine":"4 MATCHED WALKS: PACE SPREAD 1%","detailLine":"PACE CV UNDER 1%"}]}
+  },
+  {
+   "name": "detail-three-segments-head-path-suffix",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.8,"cadenceSpm":96,"meanAbsLateralM":0.02}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":0.024}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.9,"cadenceSpm":104,"meanAbsLateralM":0.028}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.04999999999999999,"cvPct":5.88235294117647,"agreementPct":5.882352941176476},"cadence":{"n":3,"mean":100,"sdSample":4,"cvPct":4,"agreementPct":4},"lateralSpreadM":0.004,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 6% ON PACE AND 4% ON CADENCE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 6%, CADENCE 4%","detailLine":"PACE CV 6% - CADENCE CV 4% - CENTER SD UNDER 1 CM (HEAD PATH)"}]}
+  },
+  {
+   "name": "detail-lateral-under-3-voters-drops-suffix",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.8,"cadenceSpm":96,"meanAbsLateralM":0.02}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":100,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.9,"cadenceSpm":104,"meanAbsLateralM":0.028}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0.04999999999999999,"cvPct":5.88235294117647,"agreementPct":5.882352941176476},"cadence":{"n":3,"mean":100,"sdSample":4,"cvPct":4,"agreementPct":4},"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 6% ON PACE AND 4% ON CADENCE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 6%, CADENCE 4%","detailLine":"PACE CV 6% - CADENCE CV 4%"}]}
+  },
+  {
+   "name": "detail-cm-scale-spread",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":0.01}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":0.05}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":0.09}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0,"cvPct":0,"agreementPct":0},"cadence":null,"lateralSpreadM":0.04,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 1% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 1%","detailLine":"PACE CV UNDER 1% - CENTER SD 4 CM (HEAD PATH)"}]}
+  },
+  {
+   "name": "identical-walks-floor-1pct",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","stats":{"meanPaceMps":0.85,"cadenceSpm":null,"meanAbsLateralM":null}}],"queries":[{"fn":"repeatabilityReport"}]},
+   "expect": {"results":[{"walks":3,"modeId":"beginner","shapeKind":"straight","source":"head","pace":{"n":3,"mean":0.85,"sdSample":0,"cvPct":0,"agreementPct":0},"cadence":null,"lateralSpreadM":null,"outlier":null,"verdictLine":"LAST 3 MATCHED WALKS AGREED WITHIN 1% ON PACE.","compactLine":"3 MATCHED WALKS: PACE SPREAD 1%","detailLine":"PACE CV UNDER 1%"}]}
+  },
+  {
+   "name": "within-pct-ceil-with-floor",
+   "input": {"rows":[],"queries":[{"fn":"withinPct","args":{"v":0}},{"fn":"withinPct","args":{"v":0.2}},{"fn":"withinPct","args":{"v":4.4}},{"fn":"withinPct","args":{"v":6}}]},
+   "expect": {"results":[1,1,5,6]}
+  },
+  {
+   "name": "benchmark-stamp-trust",
+   "input": {"rows":[],"queries":[{"fn":"isBenchmarkRow","args":{"row":{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head"}}},{"fn":"isBenchmarkRow","args":{"row":{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}}},{"fn":"isBenchmarkRow","args":{"row":{"startedAt":1000,"overall":80,"modeId":"challenge","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}}}]},
+   "expect": {"results":[false,true,true]}
+  },
+  {
+   "name": "benchmark-rows-newest-group",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":72,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"fit.v1-100"},{"startedAt":121000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkRows"},{"fn":"benchmarkSeries"}]},
+   "expect": {"results":[[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],[70,75,78]]}
+  },
+  {
+   "name": "benchmark-refit-fresh-series",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"fit.v1-200"}],"queries":[{"fn":"benchmarkRows"},{"fn":"benchmarkHeadline"},{"fn":"benchmarkLine"}]},
+   "expect": {"results":[[{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"fit.v1-200"}],null,null]}
+  },
+  {
+   "name": "benchmark-sensor-change-fresh-series",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"iphone-arkit","benchmark":true}],"queries":[{"fn":"benchmarkRows"}]},
+   "expect": {"results":[[{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"iphone-arkit","benchmark":true}]]}
+  },
+  {
+   "name": "benchmark-section-a-negative-control",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"fit.v1-123"},{"startedAt":61000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":null},{"startedAt":181000,"overall":85,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"default.v1"}],"queries":[{"fn":"benchmarkRows"}]},
+   "expect": {"results":[[{"startedAt":61000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":null},{"startedAt":181000,"overall":85,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true,"normalization":"default.v1"}]]}
+  },
+  {
+   "name": "benchmark-synthetic-and-unscored-drop",
+   "input": {"rows":[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":95,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"preview","benchmark":true,"synthetic":true},{"startedAt":121000,"overall":null,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkRows"}]},
+   "expect": {"results":[[{"startedAt":1000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}]]}
+  },
+  {
+   "name": "benchmark-series-cap",
+   "input": {"rows":[{"startedAt":1000,"overall":60,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":61,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":62,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":63,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":241000,"overall":64,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":301000,"overall":65,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":361000,"overall":66,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":421000,"overall":67,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":481000,"overall":68,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":541000,"overall":69,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":601000,"overall":70,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":661000,"overall":71,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":721000,"overall":72,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":781000,"overall":73,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":841000,"overall":74,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":901000,"overall":75,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":961000,"overall":76,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1021000,"overall":77,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1081000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1141000,"overall":79,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1201000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1261000,"overall":81,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1321000,"overall":82,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1381000,"overall":83,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":1441000,"overall":84,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkSeries"},{"fn":"benchmarkSeries","args":{"max":3}}]},
+   "expect": {"results":[[65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84],[82,83,84]]}
+  },
+  {
+   "name": "benchmark-headline-rounded-delta",
+   "input": {"rows":[{"startedAt":1000,"overall":71.4,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":79.2,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":83.6,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkHeadline"},{"fn":"benchmarkLine"}]},
+   "expect": {"results":[{"walks":3,"shown":[71,79,84],"delta":13,"firstShownAt":1000,"lastAt":121000},"BENCHMARK 71 -> 79 -> 84 (+13)"]}
+  },
+  {
+   "name": "benchmark-headline-last-3-of-4",
+   "input": {"rows":[{"startedAt":1000,"overall":60,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":71,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":121000,"overall":79,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":181000,"overall":84,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkHeadline"}]},
+   "expect": {"results":[{"walks":4,"shown":[71,79,84],"delta":13,"firstShownAt":61000,"lastAt":181000}]}
+  },
+  {
+   "name": "benchmark-line-two-row-plus",
+   "input": {"rows":[{"startedAt":1000,"overall":78,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkHeadline"},{"fn":"benchmarkLine"}]},
+   "expect": {"results":[{"walks":2,"shown":[78,80],"delta":2,"firstShownAt":1000,"lastAt":61000},"BENCHMARK 78 -> 80 (+2)"]}
+  },
+  {
+   "name": "benchmark-line-even",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkLine"}]},
+   "expect": {"results":["BENCHMARK 80 -> 80 (EVEN)"]}
+  },
+  {
+   "name": "benchmark-line-negative",
+   "input": {"rows":[{"startedAt":1000,"overall":84,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkLine"}]},
+   "expect": {"results":["BENCHMARK 84 -> 80 (-4)"]}
+  },
+  {
+   "name": "benchmark-headline-under-2-null",
+   "input": {"rows":[{"startedAt":1000,"overall":71,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head","benchmark":true}],"queries":[{"fn":"benchmarkHeadline"},{"fn":"benchmarkLine"}]},
+   "expect": {"results":[null,null]}
+  },
+  {
+   "name": "benchmark-headline-unstamped-null",
+   "input": {"rows":[{"startedAt":1000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head"},{"startedAt":61000,"overall":80,"modeId":"beginner","passThreshold":78,"shapeKind":"straight","primarySource":"head"}],"queries":[{"fn":"benchmarkHeadline"}]},
+   "expect": {"results":[null]}
+  },
+  {
+   "name": "benchmark-config-at-walk-start",
+   "input": {"rows":[],"queries":[{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":false,"modeId":"beginner","shapeKind":"straight"}},{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":true,"modeId":"beginner","shapeKind":"straight"}},{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":false,"modeId":"challenge","shapeKind":"straight"}},{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":false,"modeId":"beginner","shapeKind":"T"}},{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":false,"modeId":null,"shapeKind":"straight"}},{"fn":"benchmarkConfigAtWalkStart","args":{"synthetic":false,"modeId":"beginner","shapeKind":null}}]},
+   "expect": {"results":[true,false,false,false,false,false]}
+  },
+  {
+   "name": "benchmark-at-finalize-section-g",
+   "input": {"rows":[],"queries":[{"fn":"benchmarkAtFinalize","args":{"stamped":true,"modeId":"beginner"}},{"fn":"benchmarkAtFinalize","args":{"stamped":true,"modeId":"challenge"}},{"fn":"benchmarkAtFinalize","args":{"stamped":false,"modeId":"beginner"}},{"fn":"benchmarkAtFinalize","args":{"modeId":"beginner"}},{"fn":"benchmarkAtFinalize","args":{"stamped":true,"modeId":null}}]},
+   "expect": {"results":[true,false,false,false,false]}
+  },
+  {
+   "name": "repeat-constants-and-disclosures",
+   "input": {"rows":[],"queries":[{"fn":"constants"}]},
+   "expect": {"results":[{"REPEAT_MIN_WALKS":3,"REPEAT_WINDOW":5,"REPEAT_OUTLIER_PCT":10,"REPEAT_OUTLIER_DOMINANCE":2,"REPEAT_DISCLOSURE":"MEASURED SPREAD ACROSS REPEAT WALKS UNDER THE SAME MODE, SHAPE, SENSOR, TEMPO AND DURATION. IT SHOWS HOW MUCH YOUR WALKS DIFFER, NOT WHY.","DEFAULT_NORMALIZATION":"default.v1","BENCHMARK_MODE_ID":"beginner","BENCHMARK_SHAPE_KIND":"straight","BENCHMARK_HEADLINE_SHOWN":3,"BENCHMARK_TOOLTIP":"Beginner mode on the straight runway, graded against the same bar every time. Benchmark walks are the only series compared like-for-like, so only these deltas are read as improvement. The series restarts if the scoring sensor, calibration, music tempo, walk duration or scoring scale changes."}]}
+  }
+ ]
+}

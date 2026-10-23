@@ -1,0 +1,83 @@
+# RESEARCH: web-fidelity UI in the WebXR headset panel (2026-07-10)
+
+*Deep-research run (104 agents; every claim 3-vote adversarially verified against primary sources).
+Commissioned for the founder ask: 'adapt the web rendering engine to the headset panel'.*
+
+## Verdict
+
+Live HTML/CSS cannot be world-anchored inside a WebXR immersive-ar session on Quest 3: the DOM Overlay API is UA-positioned (screen/floating/head-locked, never app-posed), world anchoring is an explicit spec non-goal backed by a Google+Meta "two-of-three" (interactive/cross-origin/arbitrary-placement) security consensus, and Meta's own WebXR engineer confirmed in Feb 2025 that dom-overlay is not workable on Quest-class headsets — pointing developers to pmndrs/uikit instead. The WebXR Layers API's quad/cylinder layers ARE app-positionable world-space panels and render text significantly sharper than the main projection layer (single compositor resample), but they are strictly texture/media-backed — the "DOM Layers" proposal to put HTML into them never shipped in any browser. The evidence therefore converges on one viable architecture family for brand-exact gradients/glass: rasterize the CSS look to GPU textures (build-time baked PNGs and/or runtime DOM-to-canvas) and present them on in-scene texture surfaces — @pmndrs/uikit panels carrying the baked art, with in-engine controller-ray interaction, optionally promoting static high-value panels to a WebXR quad/cylinder layer (e.g. via a pmndrs/xr-style XRLayer with a static image source) for maximum text crispness. The confirmed-claim set covers architectures (1) and (2) plus the layer-as-carrier conclusion decisively, but produced no surviving claims on HTMLMesh CSS coverage, foreignObject rasterization specifics, or uikit Image/instancing caveats — those legs of the question remain to be established separately.
+
+## Verified findings
+
+### Platform baseline: Meta Quest Browser supports WebXR immersive-ar sessions (requestSession('immersive-ar'), pa...
+- **Confidence:** high (votes 3-0, 3-0 (2 merged claims))
+- **Claim:** Platform baseline: Meta Quest Browser supports WebXR immersive-ar sessions (requestSession('immersive-ar'), passthrough MR announced at Connect 2022, corroborated on Quest 3), but Meta's official mixed-reality documentation covers passthrough/planes/hit-test/anchors and never mentions the DOM Overlay or Layers APIs — so support status for those must be established from spec repos and implementer statements, not Meta docs.
+- **Evidence:** "Browser has added support for WebXR mixed reality services on Meta Quest 2 and Meta Quest Pro headsets"; "To use passthrough, use the new 'immersive-ar' mode when you request the WebXR session." Verifiers grepped the page: zero occurrences of 'overlay' or 'layer'; third-party Quest 3 immersive-ar tutorials corroborate current support.
+- **Sources:** https://developers.meta.com/horizon/documentation/web/webxr-mixed-reality/
+
+### DOM Overlay design: it is an immersive-ar add-on that composites a single transparent-background rectangular D...
+- **Confidence:** high (votes 3-0 x4 (4 merged claims))
+- **Claim:** DOM Overlay design: it is an immersive-ar add-on that composites a single transparent-background rectangular DOM element as the topmost, non-occludable layer, with three display types — 'screen' (handheld fullscreen), 'floating' (UA-placed rectangle in space), 'head-locked' (HUD). The app supplies only a root element (XRDOMOverlayInit { required Element root }); the UA alone decides the type (read-only XRDOMOverlayState.type) and the floating rectangle's location — so a spec-conformant overlay can never be app-anchored at an arbitrary world pose.
+- **Evidence:** Spec: "The user agent MUST set the type to indicate how the DOM overlay is being displayed"; "The initial location of this rectangle in world space is up to the UA"; "The DOM content MUST be composited as if it were the topmost content layer. It MUST NOT be occluded by content from the XRWebGLLayer." The init dictionary has no pose/type member; even the spec's future note contemplates only READING a floating overlay's location, never setting it.
+- **Sources:** https://www.w3.org/TR/webxr-dom-overlays-1/ | https://github.com/immersive-web/dom-overlays/blob/master/explainer.md | https://github.com/immersive-web/dom-overlays/issues/42
+
+### World anchoring is an explicit non-goal of DOM Overlay: the explainer declares placing DOM elements at specifi...
+- **Confidence:** high (votes 3-0, 3-0 (2 merged claims))
+- **Claim:** World anchoring is an explicit non-goal of DOM Overlay: the explainer declares placing DOM elements at specific 3D locations (e.g. labels on 3D objects or world features) out of scope, and issue #28 requesting relaxation was closed as 'not feasible for the DOM overlay module'. No 2024-2026 spec change added world anchoring.
+- **Evidence:** Explainer non-goals: "This API is not intended to support placing individual DOM elements at specific locations in the 3D scene. It does not address use cases such as placing labels directly on 3D objects or world features." Verifiers confirmed the restriction was never lifted; klausw (Chrome, spec author) closed #28.
+- **Sources:** https://github.com/immersive-web/dom-overlays/blob/master/explainer.md | https://github.com/immersive-web/dom-overlays/issues/28 | https://www.w3.org/TR/webxr-dom-overlays-1/
+
+### The structural reason DOM can't be a world-anchored interactive panel: Google's DOM Overlay implementer (klaus...
+- **Confidence:** high (votes 3-0, 3-0 (2 merged claims))
+- **Claim:** The structural reason DOM can't be a world-anchored interactive panel: Google's DOM Overlay implementer (klausw) and Meta's Layers editor (cabanier) explicitly agreed WebXR DOM integration can support at most two of three properties — interactive, cross-origin, arbitrary 3D placement/occlusion — for security/privacy reasons. DOM Overlay chose interactive + cross-origin at the cost of placement; the arbitrary-placement alternative ('DOM Layers', same-origin) also never shipped, so in practice no combination beyond DOM Overlay exists.
+- **Evidence:** klausw: "an implementation or API can basically choose two out of these three features for DOM content... * interactive * cross-origin * arbitrary layer placement and occlusion" — cabanier: "Yes :-)". klausw separately: "The WebXR DOM Overlay module supports interactivity and cross-origin content, but not arbitrary 3D placement." Verifiers confirmed both quotes verbatim via GitHub API and confirmed no browser ships all three as of 2025-2026. Caveat: an informal exchange with hedging ('seems to be'), one engineer per company.
+- **Sources:** https://github.com/immersive-web/dom-overlays/issues/28 | https://github.com/immersive-web/dom-overlays/issues/42
+
+### DOM Overlay is effectively unavailable on Quest 3 anyway: in Feb 2025, Meta Quest Browser WebXR engineer Rik C...
+- **Confidence:** high (votes 3-0)
+- **Claim:** DOM Overlay is effectively unavailable on Quest 3 anyway: in Feb 2025, Meta Quest Browser WebXR engineer Rik Cabanier said "I don't see how dom-overlay could work on non-touchscreen devices" and recommended pmndrs/uikit for spatial UI. Verifier corroboration (Meta Community Forums, Horizon OS docs omitting dom-overlay) indicates Quest Browser does not implement dom-overlay in immersive sessions on real hardware — it only works in Meta's desktop Immersive Web Emulator. This kills architecture (1) outright for this project.
+- **Evidence:** cabanier (2025-02-19, verified via GitHub API): "Have you tried https://github.com/pmndrs/uikit? I don't see how dom-overlay could work on non-touchscreen devices..." — a direct reply to a developer asking for spatial DOM UI. Note: the hardware non-implementation detail rests on forum corroboration surfaced by verifiers, not an official Meta statement; the cabanier quote itself is primary.
+- **Sources:** https://github.com/immersive-web/dom-overlays/issues/42 | https://developers.meta.com/horizon/documentation/web/webxr-mixed-reality/
+
+### WebXR Layers API quad/cylinder layers are texture/media-only — no DOM/HTML path exists or ever shipped. Every ...
+- **Confidence:** high (votes 3-0 x5 (5 merged claims))
+- **Claim:** WebXR Layers API quad/cylinder layers are texture/media-only — no DOM/HTML path exists or ever shipped. Every composition layer is backed by an opaque GPU texture via XRWebGLBinding; the sole non-WebGL source is HTMLVideoElement via XRMediaBinding (Section 7, 'Video layer creation'). The word 'DOM' does not appear in the Layers explainer. Cabanier's same-origin 'DOM Layers' proposal (Nov 2021) was never implemented in any browser: a Feb 2024 status inquiry went unanswered and Feb 2025 commenters report no headset platform supports it; WG minutes through 2024 show it still proposal-stage. Architecture (2) can therefore only carry pre-rasterized textures, never live HTML.
+- **Evidence:** Spec: "When a layer is created it is backed by a GPU resource, typically a texture, provided by one of the Web platform's graphics APIs." cabanier (2021): "I made a proposal to have WebXR Quad and Cylinder layers populated with a same-origin URL. This is not implemented yet... Having parts of your DOM appear in 3D is not possible because of the assumptions that are built into browsers." atx-barnes (2025-02-17): "still no support for any AR platforms to my knowledge." The current Layers WD (2026-06-12) still defines only XRWebGLBinding + XRMediaBinding.
+- **Sources:** https://www.w3.org/TR/webxrlayers-1/ | https://github.com/immersive-web/layers/blob/main/explainer.md | https://github.com/immersive-web/dom-overlays/issues/28 | https://github.com/immersive-web/dom-overlays/issues/42
+
+### Quad/cylinder layers are, however, exactly the right CARRIER for a baked UI texture: XRQuadLayer/XRCylinderLay...
+- **Confidence:** high (votes 3-0, 3-0 (2 merged claims))
+- **Claim:** Quad/cylinder layers are, however, exactly the right CARRIER for a baked UI texture: XRQuadLayer/XRCylinderLayer are app-positionable world-space surfaces (space + transform attributes; all XRSpace types including world-locked and anchor spaces MUST be supported), and composition layers render text significantly sharper than the main projection layer because the compositor samples the source texture at full resolution once instead of the eye-buffer double-resample. Meta/VIVE/Godot OpenXR docs all recommend layers specifically for text/UI clarity.
+- **Evidence:** Spec: "An XRQuadLayer renders a layer that takes up a flat rectangular space in the virtual environment." Explainer: "Since composition layers allow to sample source texture at full resolution without multiple re-samplings the readability of the text is going to be significantly improved." Verifiers cross-checked Meta Horizon OS compositor-layer docs recommending layers for text/UI.
+- **Sources:** https://www.w3.org/TR/webxrlayers-1/ | https://github.com/immersive-web/layers/blob/main/explainer.md
+
+### Ecosystem carrier #1 — pmndrs/xr XRLayer: supports exactly three shapes (quad/cylinder/equirect; XRLayerShape ...
+- **Confidence:** high (votes 3-0, 3-0, 2-1 (3 merged claims; the 2-1 covers only the 'children must be GPU-renderable' phrasing — its media-src exception is video/image, not DOM/CSS, so the operative conclusion is unanimous))
+- **Claim:** Ecosystem carrier #1 — pmndrs/xr XRLayer: supports exactly three shapes (quad/cylinder/equirect; XRLayerShape type in packages/xr/src/layer.ts), positioned in the docs as the high-quality path for "flat, high-quality content, such as videos, images and user interfaces". Content model is strictly texture-based: `src` accepts static images/video (with an `isStatic` optimization flag — ideal for a build-time-baked UI PNG) or dynamically rendered three.js children via WebGLRenderTarget; there is no live-DOM pathway, so DOM/CSS must be rasterized to a texture before entering a layer. World anchoring via space/transform is implemented in the framework-agnostic @pmndrs/xr core, so it applies to vanilla three.js/IWSDK use, not just react-three.
+- **Evidence:** Docs: "Layers allow to render videos, images, and complete scenes with higher performance and higher quality... Layers are perfect for use cases that display flat, high-quality content, such as videos, images and user interfaces." Source verified: `export type XRLayerShape = 'cylinder' | 'equirect' | 'quad'`; `src?: Exclude<XRLayerSrc, WebGLRenderTarget>` plus `customRender`/children-to-render-target — no DOM mechanism.
+- **Sources:** https://pmndrs.github.io/xr/docs/tutorials/layers | https://github.com/pmndrs/xr
+
+### Ecosystem carrier #2 — three.js core: Meta's cabanier proposed WebXR Layers integration in three.js PR #25254,...
+- **Confidence:** medium (votes 3-0 (but the companion 'never merged' claim was refuted 0-3))
+- **Claim:** Ecosystem carrier #2 — three.js core: Meta's cabanier proposed WebXR Layers integration in three.js PR #25254, where quad/cylinder layer content is populated by a per-layer three.js render call (GPU-rendered scene content; no DOM path anywhere in the PR, with emulation fallback when Layers is unsupported). This confirms the texture-only model at the engine level, but the PR's fate is contested in this evidence set (see caveats) — do not assume built-in Layers support in three.js core without checking the current release.
+- **Evidence:** PR description: "The individual layer has its own render call and you can draw a scene to the layer contents as usual." One verifier states the PR closed unmerged 2023-10-06; however the separate detailed never-merged claim was refuted 0-3, leaving three.js core's current Layers status unresolved here.
+- **Sources:** https://github.com/mrdoob/three.js/pull/25254
+
+### RECOMMENDED ARCHITECTURE (synthesis of the above for xrunway): keep all UI as in-scene three.js content. (a) B...
+- **Confidence:** medium (votes derived (each premise 3-0; the composition is synthesis, and the uikit-specific mechanics were not verified))
+- **Claim:** RECOMMENDED ARCHITECTURE (synthesis of the above for xrunway): keep all UI as in-scene three.js content. (a) Bake brand-exact gradients/glass to textures — build-time headless-browser renders for static chrome, with runtime DOM rasterization only as a fallback path — since no live-DOM route exists in-session. (b) Mount them in @pmndrs/uikit panels: this is the path Meta's own Quest Browser WebXR engineer recommends for spatial UI, it keeps controller-ray interactivity in-engine (no DOM event bridge needed), and it composes with IWSDK's existing ray/panel systems. (c) Where text crispness matters most and content is static or slowly-updated, promote the panel to a world-anchored WebXR quad/cylinder layer (pmndrs/xr XRLayer with static image src, or raw XRWebGLBinding) to get the single-resample compositor sharpness win. This preserves crisp text, reliable ray input, brand-exact CSS visuals, and zero per-frame update cost for static panels.
+- **Evidence:** Premises all verified 3-0: DOM Overlay ruled out on Quest (cabanier: "I don't see how dom-overlay could work on non-touchscreen devices... Have you tried pmndrs/uikit?"); Layers texture-only but world-anchorable with "significantly improved" text readability; pmndrs/xr XRLayer accepts static image sources with isStatic. Marked medium because the uikit Image-in-instanced-pipeline mechanics, zIndexOffset layering, texture sizing/mipmap guidance, and the HTMLMesh/foreignObject alternatives produced no surviving claims to weigh against.
+- **Sources:** https://github.com/immersive-web/dom-overlays/issues/42 | https://www.w3.org/TR/webxrlayers-1/ | https://github.com/immersive-web/layers/blob/main/explainer.md | https://pmndrs.github.io/xr/docs/tutorials/layers
+
+## What shipped from this research
+
+- `scripts/gen-panel-skins.mjs` + `public/skins/` + `src/panel-skins.ts` (commit b034d23):
+  headless-Chromium-baked ALPHA washes of the web landing's CSS material, mounted as
+  absolutely-positioned `UIKit.Image` children behind the panel surfaces. Probe-verified in the
+  emulator before adoption (images composite under MSDF text; pointer-events none; zIndexOffset -1).
+- NOT built (viable future): promoting the panel to a WebXR quad layer for sharper text
+  (single compositor resample) - texture-only, compatible with the baked-skin pipeline;
+  pmndrs/xr's XRLayer is the pattern to steal.
+- Dead ends (do not revisit without new spec movement): DOM Overlay world-anchoring (spec
+  non-goal, Meta says unworkable on Quest), DOM-into-Layers (never shipped anywhere),
+  live-DOM panels of any kind (the two-of-three security consensus is structural).

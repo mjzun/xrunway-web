@@ -1,0 +1,1632 @@
+<style>
+  /* (X)RUNWAY lesson HUD REV2 - first-person trainee panel, faithful to the
+     founder's hand sketch: header (NAME/ID | LESSON + TITLE box | TIME box),
+     instruction box + quote, live metrics M1-M7 with checkboxes, summary,
+     footer (LOCATION: AR + controls).
+
+     Colors are BRAND_CSS twins (src/theme.ts):
+       bg #0a0c10 . bgDeep #05070a . accent #4b9cd3 (Carolina Blue)
+       accentSoft #8ec4e8 . accentDeep #2f7cb3 . white #f2f5f8 . silver #8a8f96
+     Chrome neutrals derived from the cool bg family:
+       glass #10151b . track #161c23 . border #232a33 . border-soft #1a2027
+       check-off border #2f3a47 (mirrored in src/hud.ts CHECK_OFF_* consts).
+
+     ASCII punctuation ONLY - the panel font has no middle-dot, em-dash or
+     curly quote glyphs. Straight quotes and hyphens only. */
+
+  /* Border tier system (premium pass 2026-07-10): edge light comes from
+     BORDER COLOR contrast, not lighting. uikit's border-bend bevel was
+     tried and REMOVED - the panel renders with the default unlit
+     MeshBasicMaterial, whose shader never runs the bend (verified in
+     @pmndrs/uikit shader.js), and switching to a lit panel-material-class
+     let the scene's dim lights crush the brand colors (the START pill went
+     near-black in the experiment). Tiers: light rims on primary surfaces
+     (#8ec4e8 on accent pills, #f2f5f8 lip on the medal, #2c3540 on the
+     title box), standard #232a33 on controls, #1d242e groove edges on the
+     metric tracks/bars. Hairline dividers stay untinted. */
+  .hud-root {
+    display: flex;
+    flex-direction: column;
+    width: 60;
+    padding: 2.6;
+    gap: 1.5;
+    background-color: #0a0c10;
+    border-color: #2a333f;
+    border-width: 0.12;
+    border-radius: 2.8;
+  }
+
+  /* ---------- header: MATT - ID 001 | LESSON 01 + BEGINNER WALK | TIME ---------- */
+
+  .header-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.2;
+    border-bottom-width: 0.07;
+    border-color: #1a2027;
+  }
+
+  /* Stacked ident (name over ID) - the single-row "MATT - ID 001" overflowed
+     its 14-wide box and wrapped mid-id in the headset (founder's photo). A
+     column never overflows horizontally and frees width for the lesson title. */
+  /* Header column widths + title metrics sized so both UI-reachable mode
+     labels fit the middle slot on ONE line (premium pass 2026-07-10 - the
+     founder's screenshot showed "BEGINNER WALK" wrapping): with the real
+     Inter MSDF advances at 1.7/0.3, BEGINNER WALK = ~21.9 and EMERGING
+     RUNWAY = ~25.6 + box padding 3.78 vs 54.56 - 12 - 10 = ~32.5
+     available. CAVEAT: the founder-hidden legacy labels (COMMERCIAL
+     MODELING ~30.9 borderline, PERFORMANCE CHALLENGE ~33.9 overflows) can
+     resurface via a stale xrunway.mode.v1 localStorage pref and the
+     21-cap one still wraps - retire those labels or clear the pref before
+     ever re-surfacing the mode picker. */
+  .ident {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.15;
+    width: 12;
+  }
+
+  .ident-name {
+    color: #f2f5f8;
+    font-size: 1.7;
+    font-weight: semi-bold;
+    letter-spacing: 0.3;
+  }
+
+  .ident-id {
+    color: #8a8f96;
+    font-size: 1.25;
+    letter-spacing: 0.3;
+  }
+
+  .lesson-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55;
+  }
+
+  .lesson-no {
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.5;
+  }
+
+  .title-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-x: 1.8;
+    padding-y: 0.75;
+    background-color: #10151b;
+    border-width: 0.09;
+    border-color: #2c3540;
+    border-radius: 1;
+  }
+
+  .title-text {
+    color: #f2f5f8;
+    font-size: 1.7;
+    font-weight: semi-bold;
+    letter-spacing: 0.3;
+  }
+
+  .time-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5;
+    width: 10;
+  }
+
+  .time-label {
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.5;
+  }
+
+  .time-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 9;
+    padding-y: 0.65;
+    background-color: #10151b;
+    border-width: 0.09;
+    border-color: #2f7cb3;
+    border-radius: 1;
+  }
+
+  .time-val {
+    color: #4b9cd3;
+    font-size: 2.1;
+    font-weight: bold;
+    letter-spacing: 0.3;
+  }
+
+  /* ---------- shared section / buttons ---------- */
+
+  .section {
+    flex-direction: column;
+    gap: 1.3;
+  }
+
+  .pill {
+    padding-x: 1.5;
+    padding-y: 1.1;
+    border-radius: 2.2;
+    font-size: 1.35;
+    font-weight: semi-bold;
+    letter-spacing: 0.15;
+    text-align: center;
+  }
+
+  /* Primary pills carry a light accent rim (the web pass's lit convex CTA
+     read); glass pills go a shade deeper so they read as outlines. */
+  .pill-accent {
+    background-color: #4b9cd3;
+    color: #05070a;
+    border-width: 0.09;
+    border-color: #8ec4e8;
+  }
+
+  .pill-accent:hover {
+    background-color: #2f7cb3;
+    border-color: #8ec4e8;
+  }
+
+  .pill-glass {
+    background-color: #0d1218;
+    color: #f2f5f8;
+    border-width: 0.09;
+    border-color: #232a33;
+  }
+
+  .pill-glass:hover {
+    border-color: #4b9cd3;
+    color: #8ec4e8;
+  }
+
+  /* Quiet reference pills (Details / Scoring): links recede, actions stand
+     forward - breaks the settings chip wall into tiers (premium pass). */
+  .pill-ref {
+    background-color: #0a0c10;
+    color: #8a8f96;
+    border-width: 0.08;
+    border-color: #1a2027;
+    padding-y: 0.85;
+    font-size: 1.25;
+  }
+
+  .pill-ref:hover {
+    border-color: #4b9cd3;
+    color: #8ec4e8;
+  }
+
+  /* ---------- brief: instruction box + quote ---------- */
+
+  .instruction-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1;
+    padding: 1.8;
+    background-color: #10151b;
+    border-width: 0.07;
+    border-color: #1a2027;
+    border-radius: 1.6;
+  }
+
+  .instruction {
+    color: #f2f5f8;
+    font-size: 1.9;
+    line-height: 145%;
+  }
+
+  .quote-wrap {
+    display: flex;
+    flex-direction: column;
+    border-left-width: 0.25;
+    border-color: #4b9cd3;
+    padding-left: 1.2;
+  }
+
+  .quote {
+    color: #8ec4e8;
+    font-size: 1.9;
+    line-height: 145%;
+  }
+
+  /* Pass bar + target pace for the active mode (small, factual). */
+  .brief-bar {
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.4;
+    text-align: center;
+  }
+
+  /* One-line coach-voice mention (#20/#48): mid-walk the trainee faces AWAY
+     from this panel, so the brief says once that the coach will SPEAK. */
+  .brief-coach {
+    color: #5f666e;
+    font-size: 1.35;
+    letter-spacing: 0.4;
+    text-align: center;
+  }
+
+  /* Wave 1 FIT guidance line: painted from globals.bodyFitFlow while a fit
+     runs (showPhase stays idle, so the brief section is on screen). Hidden
+     by hud.ts when no flow is live; the "..." placeholder is LOAD-BEARING
+     (an empty text element compiles to a childless Container). */
+  .bodyfit-line {
+    color: #4b9cd3;
+    font-size: 1.5;
+    letter-spacing: 0.4;
+    text-align: center;
+  }
+
+  /* Wave 1 FIT settings-row status ("Fit: not set" / "Fit: set 3d ago"). */
+  .bodyfit-status {
+    color: #c7ccd2;
+    font-size: 1.35;
+    flex-grow: 1;
+  }
+
+  /* ---------- live: M1-M7 chip + label + bar + value + checkbox ---------- */
+
+  #live-section {
+    display: none;
+  }
+
+  #phase-line {
+    color: #4b9cd3;
+    font-size: 4.2;
+    font-weight: bold;
+    letter-spacing: 0.6;
+    text-align: center;
+    margin-top: 0.4;
+    margin-bottom: 0.8;
+  }
+
+  .metric-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1;
+  }
+
+  .chip {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 3.4;
+    padding-y: 0.35;
+    background-color: #161c23;
+    border-width: 0.06;
+    border-color: #232a33;
+    border-radius: 0.5;
+  }
+
+  .chip-text {
+    color: #4b9cd3;
+    font-size: 1.3;
+    font-weight: semi-bold;
+    letter-spacing: 0.2;
+  }
+
+  .metric-label {
+    width: 11;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.22;
+  }
+
+  /* Inset groove edge - the accent fill runs inside a rimmed channel. */
+  .metric-track {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    height: 1;
+    background-color: #161c23;
+    border-width: 0.06;
+    border-color: #1d242e;
+    border-radius: 0.5;
+  }
+
+  .metric-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #4b9cd3;
+    border-radius: 0.5;
+  }
+
+  .metric-val {
+    width: 4.2;
+    color: #f2f5f8;
+    font-size: 1.5;
+    text-align: right;
+  }
+
+  .check {
+    width: 1.7;
+    height: 1.7;
+    background-color: #10151b;
+    border-width: 0.12;
+    border-color: #2f3a47;
+    border-radius: 0.4;
+  }
+
+  /* ---------- summary: as v1 + final checks ---------- */
+
+  #summary-section {
+    display: none;
+  }
+
+  /* Summary hierarchy (premium pass): four distinct steps under the score -
+     6.0 bold white score, 1.8 semibold colored verdict, 1.4 accentSoft
+     delta, 1.25 quiet stat. The founder's screenshot showed these stacked
+     at near-equal weight. */
+  .summary-header {
+    color: #5f6a74;
+    font-size: 1.2;
+    letter-spacing: 0.9;
+    text-align: center;
+    margin-top: 0.6;
+  }
+
+  #overall-score {
+    color: #f2f5f8;
+    /* 6 (was 9): the summary section grew verdict/stat/coach-note rows past
+       the panel's maxWidth/maxHeight aspect bound, which shrinks the WHOLE
+       panel (every font) at the score reveal. A smaller hero number keeps the
+       stack closer to width-bound; still ~3x the body copy. */
+    font-size: 6;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* ---------- the medal badge (shares the hero row - no stack growth) ---------- */
+
+  .hero-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5;
+  }
+
+  .medal {
+    display: none;
+    background-color: #d9b78a;
+    border-width: 0.08;
+    border-color: #f2f5f8;
+    border-radius: 1.4;
+    padding-x: 1.2;
+    padding-y: 0.7;
+  }
+
+  .medal-text {
+    color: #0a0c10;
+    font-size: 1.4;
+    font-weight: semi-bold;
+    letter-spacing: 0.3;
+  }
+
+  /* PASS / NEEDS WORK vs the mode's own bar. hud.ts recolors per verdict. */
+  #sum-verdict {
+    color: #4b9cd3;
+    font-size: 1.8;
+    font-weight: semi-bold;
+    letter-spacing: 0.5;
+    text-align: center;
+  }
+
+  #delta-line {
+    color: #8ec4e8;
+    font-size: 1.4;
+    letter-spacing: 0.5;
+    text-align: center;
+  }
+
+  /* Ranking-medal caption (F.24): the medal is a personal RANK, the verdict is
+     the absolute bar - so a gold can sit beside NEEDS WORK. hud.ts fills it
+     from MEDAL_RANK_NOTE and reveals it only when a medal shows (display:none
+     otherwise, the sum-carriage pattern). Quietest line in the stack - well
+     under the settings-section height bound (one short caption). */
+  #medal-note {
+    display: none;
+    color: #5f6a74;
+    font-size: 1.1;
+    letter-spacing: 0.2;
+    text-align: center;
+    margin-top: 0.2;
+  }
+
+  /* Duration + real steps/cadence, e.g. "58S ON THE RUNWAY - 58 STEPS - 96/MIN". */
+  #sum-stat {
+    color: #5f6a74;
+    font-size: 1.25;
+    letter-spacing: 0.5;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* M8 head-carriage line, e.g. "HEAD CARRIAGE - CHIN LEVEL 84% - FACING ON
+     LINE 91% - 1 HEAD DROP". Hidden until hud.ts fills it per summary (the
+     coach-note pattern; stays hidden when the channel never engaged). */
+  #sum-carriage {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* M10 hold line, e.g. "HOLD 1.6S - STILL 2.4 CM - MARK 12 CM" (or the
+     NO READ branches). Hidden until hud.ts fills it from a director-built
+     summary (the sum-carriage pattern). */
+  #sum-hold {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* M9 beat line, e.g. "BEAT LOCK 78% - GRID 61/MIN - 34 STRIKES" (or the
+     NO READ reason branches). Hidden until hud.ts fills it from a
+     director-built summary (the sum-hold pattern; summary row order
+     HOLD -> BEAT, adjudication G). */
+  #sum-beat {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* M11 turn line, e.g. "TURN 1.2S - ONE MOTION - DIP 2 CM - LINE IN 0.8S"
+     (or the NO READ reason branches). Hidden until hud.ts fills it from a
+     summary whose analyzer ran (the both-null stamps hide it; summary row
+     order HOLD -> BEAT -> TURN, adjudication G). */
+  #sum-turn {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* M12 consistency line, e.g. "5 MATCHED WALKS: PACE SPREAD 3%, CADENCE 4%".
+     Hidden until hud.ts fills it (the sum-carriage pattern; stays hidden
+     until 3 matched walks exist for the current trainee). */
+  #sum-repeat {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+    text-align: center;
+    margin-bottom: 0.8;
+  }
+
+  /* F.27 head-motion observation notes (hold dwell + turn smoothness). A
+     quiet, unlit gray read - color contrast carries it (border-tier law, no
+     bevel), and the neutral gray keeps it clearly an OBSERVATION, not a scored
+     coach note (accent-ruled) or a metric bar. Hidden until hud.ts fills it;
+     one short line each, gated so at most two show (well under the
+     settings-section height bound). */
+  .obs-note {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.25;
+    letter-spacing: 0.3;
+    line-height: 130%;
+    text-align: center;
+    margin-top: 0.4;
+  }
+
+  /* Coach's notes - up to three short corrective lines under the scores.
+     Hidden until hud.ts fills them per summary (unused slots stay hidden). */
+  /* Accent-ruled like the web landing's coach/quote blocks - the same
+     visual sentence on both surfaces (web parity pass 2026-07-10). */
+  .coach-note {
+    display: none;
+    color: #c7ccd2;
+    font-size: 1.3;
+    line-height: 140%;
+    border-left-width: 0.25;
+    border-color: #4b9cd3;
+    padding-left: 1.2;
+  }
+
+  /* The metric rows' card surface - the web summary's glass rows region.
+     Tight padding: summary is not the height-binding state (settings is),
+     but the hero score row above must keep its clearance. */
+  .score-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #10151b;
+    border-width: 0.07;
+    border-color: #1a2027;
+    border-radius: 1.6;
+    padding-x: 1.4;
+    padding-y: 0.5;
+  }
+
+  /* No hairline-under-every-row (the AI-tell the skill bans); the rows
+     breathe on padding alone. */
+  .score-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-y: 0.55;
+  }
+
+  .score-label {
+    color: #8a8f96;
+    font-size: 1.4;
+    letter-spacing: 0.22;
+  }
+
+  .score-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1;
+  }
+
+  .score-val {
+    width: 4.2;
+    color: #f2f5f8;
+    font-size: 1.6;
+    font-weight: semi-bold;
+    text-align: right;
+  }
+
+  .button-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2;
+    margin-top: 0.4;
+  }
+
+  .pill-grow {
+    flex-grow: 1;
+  }
+
+  /* ---------- mapping: walk-and-place runway onto the real floor ---------- */
+
+  #map-section {
+    display: none;
+    flex-direction: column;
+    gap: 1.4;
+    align-items: center;
+  }
+
+  /* The mapping screens read as a guided moment (premium pass): kicker ->
+     accent rule -> big prompt -> measured note -> paired pills. The empty
+     space becomes intentional framing, keynote-title-slide rhythm. */
+  .map-kicker {
+    color: #5f6a74;
+    font-size: 1.2;
+    letter-spacing: 1;
+    text-align: center;
+    margin-top: 1.6;
+  }
+
+  .map-rule {
+    width: 8;
+    height: 0.16;
+    border-radius: 0.5;
+    background-color: #4b9cd3;
+    align-self: center;
+    margin-top: 0.9;
+  }
+
+  .map-prompt {
+    color: #4b9cd3;
+    font-size: 2.9;
+    font-weight: bold;
+    letter-spacing: 0.35;
+    text-align: center;
+    line-height: 130%;
+    margin-top: 0.8;
+    margin-bottom: 0.8;
+  }
+
+  .map-note {
+    color: #8a8f96;
+    font-size: 1.4;
+    line-height: 145%;
+    text-align: center;
+    max-width: 40;
+    align-self: center;
+  }
+
+  .map-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2;
+    margin-top: 1.6;
+  }
+
+  /* ---------- fit-to-room status (#15): one line above the footer ----------
+     Hidden until MappingSystem publishes a fit edge; hud.ts recolors per
+     status (silver searching / red no-floor hint / accent fitted). */
+
+  .fit-status {
+    display: none;
+    color: #8a8f96;
+    font-size: 1.3;
+    line-height: 140%;
+    text-align: center;
+  }
+
+  /* ---------- tracking source (#32/#46): strip above the footer ----------
+     Which body-tracking source is scoring (camera skeleton vs head-only).
+     hud.ts drives #track-src text + color (accent = camera, silver = head). */
+
+  .track-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  /* ---------- footer: LOCATION: AR + controls ---------- */
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1;
+    padding-top: 1.2;
+    border-top-width: 0.07;
+    border-color: #1a2027;
+  }
+
+  .location-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .loc-caps {
+    color: #8a8f96;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+  }
+
+  .loc-caps-accent {
+    color: #4b9cd3;
+    font-size: 1.35;
+    letter-spacing: 0.3;
+  }
+
+  .footer-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1;
+  }
+
+  /* ---------- settings: grouped runway + mode editor ---------- */
+
+  #settings-section {
+    display: none;
+    flex-direction: column;
+    gap: 0.7;
+  }
+
+  .set-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .set-title {
+    color: #f2f5f8;
+    font-size: 2;
+    font-weight: semi-bold;
+    letter-spacing: 0.2;
+  }
+
+  .set-done {
+    background-color: #10151b;
+    color: #8ec4e8;
+    border-width: 0.08;
+    border-color: #232a33;
+    border-radius: 2.4;
+    padding-x: 1.5;
+    padding-y: 0.8;
+    font-size: 1.3;
+    font-weight: semi-bold;
+  }
+
+  .set-done:hover {
+    border-color: #4b9cd3;
+  }
+
+  /* Section labels earn legibility from weight + tracking + one contrast
+     tier - NOT size (same font-size = zero cost on the height budget; the
+     founder's screenshot flagged these as barely legible). */
+  /* Kickers carry the web landing's accent-kicker language (the .kicker
+     Carolina label over every web card) - instantly the same brand voice. */
+  .set-kicker {
+    color: #4b9cd3;
+    font-size: 1.15;
+    font-weight: medium;
+    letter-spacing: 0.75;
+    margin-top: 0.4;
+  }
+
+  /* The ADVANCED kicker recedes on purpose (founder call 2026-07-18):
+     smallest type, dimmest neutral - the accent voice is NOT spent here. */
+  .set-kicker-dim {
+    color: #5f666e;
+    font-size: 1.0;
+    letter-spacing: 0.75;
+    margin-top: 0.6;
+  }
+
+  .set-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.7;
+  }
+
+  /* ---------- details: the mode + music-tempo reference subsection ---------- */
+
+  #details-section {
+    display: none;
+    flex-direction: column;
+    gap: 0.7;
+  }
+
+  .det-name {
+    color: #f2f5f8;
+    font-size: 1.5;
+    font-weight: semi-bold;
+    letter-spacing: 0.3;
+    margin-top: 0.3;
+  }
+
+  .det-fact {
+    color: #8ec4e8;
+    font-size: 1.2;
+    letter-spacing: 0.25;
+  }
+
+  .det-note {
+    color: #c7ccd2;
+    font-size: 1.2;
+    line-height: 1.4;
+  }
+
+  /* ---------- scoring: the UNDERSTANDING THE SCORE education subsection ----------
+     The XR twin of the landing #scoring-block; same text hierarchy as the web
+     (.score-math silver, .scoring-sensor accent-soft), sized a notch under the
+     det- tiers so the three wrapped formula lines keep the section inside the
+     panel's aspect bound (no scrolling exists - a too-tall section shrinks
+     the WHOLE panel). */
+
+  #scoring-section {
+    display: none;
+    flex-direction: column;
+    gap: 0.7;
+  }
+
+  /* The formula sits in its own boxed surface - the twin of the web
+     education block's bordered score-math boxes (web parity pass). */
+  .edu-math {
+    color: #8a8f96;
+    font-size: 1.1;
+    line-height: 1.35;
+    background-color: #10151b;
+    border-width: 0.06;
+    border-color: #1a2027;
+    border-radius: 0.8;
+    padding-x: 1;
+    padding-y: 0.7;
+  }
+
+  .edu-sensor {
+    color: #8ec4e8;
+    font-size: 1.1;
+    line-height: 1.35;
+    margin-top: 0.4;
+  }
+
+  /* F.17 provenance: the cited industry instruction under each formula. */
+  .edu-src {
+    color: #5f6a74;
+    font-size: 1.05;
+    line-height: 1.35;
+  }
+
+  /* Base values mirror hud.ts setChipActive's INACTIVE write - the two
+     must move together (the runtime stamps these after first update). */
+  .seg {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1.35;
+    font-weight: semi-bold;
+    padding-y: 1.15;
+    border-radius: 1.6;
+    background-color: #0d1218;
+    color: #c7ccd2;
+    border-width: 0.08;
+    border-color: #232a33;
+  }
+
+  .seg:hover {
+    border-color: #4b9cd3;
+    color: #8ec4e8;
+  }
+
+  .seg-sm {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1.2;
+    font-weight: semi-bold;
+    padding-y: 1;
+    border-radius: 1.4;
+    background-color: #10151b;
+    color: #c7ccd2;
+    border-width: 0.08;
+    border-color: #232a33;
+  }
+
+  .seg-sm:hover {
+    border-color: #4b9cd3;
+    color: #8ec4e8;
+  }
+
+  .adj {
+    flex-direction: column;
+    gap: 0.85;
+    background-color: #10151b;
+    border-width: 0.07;
+    border-color: #1d2530;
+    border-radius: 1.6;
+    padding-x: 1.3;
+    padding-y: 1.1;
+  }
+
+  .adj-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .adj-label {
+    color: #c7ccd2;
+    font-size: 1.35;
+  }
+
+  .adj-ctrl {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.1;
+  }
+
+  /* Fixed-size keycaps read as physical buttons. */
+  .step {
+    width: 3.7;
+    height: 3.7;
+    border-radius: 1.1;
+    background-color: #161d26;
+    color: #8ec4e8;
+    border-width: 0.08;
+    border-color: #2b3540;
+    font-size: 2.1;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .step:hover {
+    border-color: #4b9cd3;
+  }
+
+  .adj-val {
+    color: #f2f5f8;
+    font-size: 1.5;
+    font-weight: semi-bold;
+    width: 6.5;
+    text-align: center;
+  }
+
+  .bar {
+    height: 0.42;
+    border-radius: 1;
+    background-color: #222b35;
+    border-width: 0.05;
+    border-color: #1d242e;
+  }
+
+  /* 0.32 = the track's 0.42 minus its 2 x 0.05 border: yoga insets children
+     by the border, so a full-height fill would overhang the groove's bottom
+     edge (review catch 2026-07-10). */
+  .bar-fill {
+    height: 0.32;
+    border-radius: 1;
+    background-color: #4b9cd3;
+  }
+
+  .set-foot {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-top-width: 0.07;
+    border-color: #1a2027;
+    padding-top: 1;
+    margin-top: 0.3;
+  }
+
+  .set-foot-label {
+    color: #8a8f96;
+    font-size: 1.3;
+  }
+
+  .set-foot-btns {
+    display: flex;
+    flex-direction: row;
+    gap: 0.8;
+  }
+
+  .mini {
+    background-color: #10151b;
+    color: #8ec4e8;
+    border-width: 0.08;
+    border-color: #232a33;
+    border-radius: 1.2;
+    padding-x: 1.3;
+    padding-y: 0.85;
+    font-size: 1.25;
+  }
+
+  .mini:hover {
+    border-color: #4b9cd3;
+  }
+
+  .set-controls {
+    color: #5f6a74;
+    font-size: 1.05;
+    line-height: 1.45;
+    border-top-width: 0.07;
+    border-color: #1a2027;
+    padding-top: 0.85;
+    margin-top: 0.5;
+  }
+
+  /* ---------- tutorial: the first-run in-headset guide (2026-07-11) ----------
+     One card at a time (kicker + hero title + body + optional cadence track +
+     dots/nav), so this section is well UNDER the tallest state (settings) - it
+     never becomes the binding aspect-bound. Reuses the glass tiers, the
+     Carolina .set-kicker voice, the .set-done header button, and the .pill
+     family for nav; only the hero title, body, dots and the cadence track are
+     new. Unlit-material law: edges are BORDER-COLOR tiers, never bevels. */
+
+  #tutorial-section {
+    display: none;
+    flex-direction: column;
+    gap: 1.1;
+  }
+
+  /* Hero cue - bigger + bolder than a section title (this IS the lesson). */
+  .tut-title {
+    color: #f2f5f8;
+    font-size: 2.3;
+    font-weight: bold;
+    letter-spacing: 0.2;
+    line-height: 118%;
+  }
+
+  .tut-body {
+    color: #c7ccd2;
+    font-size: 1.45;
+    line-height: 145%;
+  }
+
+  /* Progress dots (one per card): the active dot fills Carolina + pops scale,
+     stamped by hud.ts renderTutorialStep (paint-only, no relayout). */
+  .tut-dots {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6;
+  }
+
+  .tut-dot {
+    width: 1.1;
+    height: 1.1;
+    border-radius: 2;
+    background-color: #2b3540;
+  }
+
+  /* The cadence track (PACE card only, #tutorial-section step 4): step pips
+     light left-to-right to a slow beat so the trainee FEELS the rhythm before
+     they walk it. hud.ts advances the lit pip; only ticks while this card is
+     the visible tutorial card (frame-budget guard). Groove is the size-bar
+     material (unlit, border-tier edge). */
+  .tut-cad {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #10151b;
+    border-width: 0.06;
+    border-color: #1a2027;
+    border-radius: 0.9;
+    padding-x: 1.3;
+    padding-y: 1;
+  }
+
+  /* Preference pills (MAKE IT YOURS card only, #tutorial-section step 1):
+     stacked set-rows of the same pill material as settings. */
+  .tut-prefs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7;
+  }
+
+  .tut-pip {
+    width: 1.5;
+    height: 1.5;
+    border-radius: 2;
+    background-color: #222b35;
+  }
+
+  /* Live head-level indicator (CARRIAGE card only, #tutorial-section step 2):
+     the learn-by-doing beat. hud.ts reads the LIVE head pitch off player.head
+     each frame and slides the marker so the trainee proves the headset sees
+     their head BEFORE any score is at stake. Marker + zone glow Carolina when
+     the head is level; the label reads the correction otherwise. Shown/hidden
+     per step (the tut-cad precedent), paint-only, unlit border-tier material. */
+  .tut-level {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7;
+  }
+
+  .tut-level-track {
+    width: 34;
+    height: 2.4;
+    align-items: center;
+    justify-content: center;
+    background-color: #10151b;
+    border-width: 0.06;
+    border-color: #1a2027;
+    border-radius: 1.2;
+  }
+
+  /* The centered LEVEL zone - where the head reads level (the +-7 deg carriage
+     band). Its border glows Carolina when the marker is inside it. */
+  .tut-level-zone {
+    width: 10;
+    height: 1.5;
+    border-radius: 0.9;
+    border-width: 0.08;
+    border-color: #2b3540;
+    background-color: #141b22;
+  }
+
+  /* The moving marker - absolutely centered over the zone (position maps to
+     yoga positionType), hud.ts translateX-es it with the live head pitch.
+     Carolina when level, dim otherwise. */
+  .tut-level-marker {
+    position: absolute;
+    width: 1.6;
+    height: 2;
+    border-radius: 0.7;
+    background-color: #2b3540;
+  }
+
+  .tut-level-label {
+    color: #8a8f96;
+    font-size: 1.15;
+    letter-spacing: 0.25;
+    text-align: center;
+  }
+
+  /* Bottom nav: dots on the left, Back/Next on the right. */
+  .tut-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.9;
+    margin-top: 0.3;
+  }
+
+  .tut-nav-btns {
+    display: flex;
+    flex-direction: row;
+    gap: 0.8;
+  }
+</style>
+<div id="hud-root" class="hud-root">
+  <div class="header-row">
+    <div class="ident">
+      <span id="ident-name" class="ident-name">TRAINEE</span>
+      <span id="ident-id" class="ident-id"> - ID 001</span>
+    </div>
+    <div class="lesson-block">
+      <span id="lesson-no" class="lesson-no">LESSON 01</span>
+      <div class="title-box">
+        <span id="title-text" class="title-text">BEGINNER WALK</span>
+      </div>
+    </div>
+    <div class="time-wrap">
+      <span class="time-label">TIME</span>
+      <div class="time-box">
+        <span id="time-box" class="time-val">60S</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="brief-section" class="section">
+    <div id="instruction-box" class="instruction-box">
+      <span id="instruction" class="instruction">Stand tall, eyes on one far point. Long strides - one foot in front of the other, down the invisible line. Steady to the beat. Hit the mark, hold, then bring it home.</span>
+      <div class="quote-wrap">
+        <span class="quote">"I don't see the audience. I hear the music." - Naomi Campbell</span>
+      </div>
+    </div>
+    <span id="brief-bar" class="brief-bar">PASS AT 78 - TARGET 0.85 M/S</span>
+    <span id="bodyfit-line" class="bodyfit-line">...</span>
+    <!-- Controls legend (tester catch 2026-07-09): the main-surface twin of
+         the settings set-controls line - trigger / slide / snap turn /
+         teleport were disclosed nowhere on this surface. Static mechanical
+         control tokens (COPY-WORKSHEET law: mechanical labels are exempt
+         from the founder-words law). Lives INSIDE the brief so it shows
+         only in idle/brief - the phases where these sticks are LIVE
+         (hud-state.ts pauses slide/teleport/snap-turn mid-walk). -->
+    <span class="set-controls">Controls - Trigger: click a button | Left stick: move | Right stick: snap turn | Right stick down: teleport | Left X/Y: fit to room | Right B: hide/show panel</span>
+  </div>
+
+  <div id="live-section" class="section">
+    <span id="phase-line">STAND BY</span>
+    <!-- Headset-only honest card: the head-measured metrics only. Element IDs
+         (m2/m3/m4) are unchanged so hud.ts still maps them to pace/rhythm/
+         footPlacement; POSTURE (m1) + the composites (m5/m6/m7) are cut. -->
+    <div class="metric-row">
+      <div class="chip"><span class="chip-text">M1</span></div>
+      <span class="metric-label">PACE</span>
+      <div class="metric-track">
+        <div id="m2-fill" class="metric-fill"></div>
+      </div>
+      <span id="m2-val" class="metric-val">0</span>
+      <div id="m2-check" class="check"></div>
+    </div>
+    <div class="metric-row">
+      <div class="chip"><span class="chip-text">M2</span></div>
+      <span class="metric-label">CARRIAGE</span>
+      <div class="metric-track">
+        <div id="m3-fill" class="metric-fill"></div>
+      </div>
+      <span id="m3-val" class="metric-val">0</span>
+      <div id="m3-check" class="check"></div>
+    </div>
+    <div class="metric-row">
+      <div class="chip"><span class="chip-text">M3</span></div>
+      <span class="metric-label">LINE</span>
+      <div class="metric-track">
+        <div id="m4-fill" class="metric-fill"></div>
+      </div>
+      <span id="m4-val" class="metric-val">0</span>
+      <div id="m4-check" class="check"></div>
+    </div>
+  </div>
+
+  <div id="summary-section" class="section">
+    <span class="summary-header">SCORED SUMMARY</span>
+    <!-- MEDAL (founder call 2026-07-09): the badge shares the hero row with
+         the number - ZERO stack growth against the aspect bound (the 9->6
+         hero-font lesson above). Hidden until hud.ts pops it at the graded
+         sting's +0.9 s anchor; the "-" placeholder is LOAD-BEARING. -->
+    <div class="hero-row">
+      <span id="overall-score">0</span>
+      <div id="medal-badge" class="medal">
+        <span id="medal-text" class="medal-text">-</span>
+      </div>
+    </div>
+    <span id="sum-verdict">PASS - BAR 78</span>
+    <!-- Ranking-medal caption (F.24): tells the trainee the medal is a rank
+         among their OWN walks (best = gold), NOT the pass bar - so a gold can
+         sit beside NEEDS WORK. hud.ts writes MEDAL_RANK_NOTE + reveals it only
+         when a medal shows. The "-" placeholder is LOAD-BEARING (an empty text
+         element compiles to a childless Container hud.ts can't write into). -->
+    <span id="medal-note">-</span>
+    <span id="delta-line">FIRST WALK</span>
+    <span id="sum-stat">0S ON THE RUNWAY</span>
+    <span id="sum-carriage">HEAD CARRIAGE</span>
+    <!-- Honest shipped card: PACE / CARRIAGE / LINE (the head-measured reads) +
+         the HEAD CARRIAGE row above. POSTURE + the composites (presence/
+         confidence/presentation) and the HOLD/BEAT/TURN/CONSISTENCY riders
+         are cut. Element IDs (s2/s3/s4) are unchanged so hud.ts keeps mapping
+         them to pace/rhythm/footPlacement. -->
+    <!-- The metric rows sit on their own card surface (web parity pass:
+         the landing's glass sum-rows region). No ids on the wrapper. -->
+    <div id="score-card" class="score-card">
+      <div class="score-row">
+        <span class="score-label">M1 PACE</span>
+        <div class="score-right">
+          <span id="s2-val" class="score-val">0</span>
+          <div id="s2-check" class="check"></div>
+        </div>
+      </div>
+      <div class="score-row">
+        <span class="score-label">M2 CARRIAGE</span>
+        <div class="score-right">
+          <span id="s3-val" class="score-val">0</span>
+          <div id="s3-check" class="check"></div>
+        </div>
+      </div>
+      <div class="score-row">
+        <span class="score-label">M3 LINE</span>
+        <div class="score-right">
+          <span id="s4-val" class="score-val">0</span>
+          <div id="s4-check" class="check"></div>
+        </div>
+      </div>
+    </div>
+    <!-- F.27 head-motion observation notes (hold DWELL + turn SMOOTHNESS):
+         display-only reads answering "did I hold long enough / was my turn
+         smooth", NOT scored metrics. Hidden until hud.ts fills them from a
+         director summary that measured a hold/turn (a null read hides the
+         line); the "-" placeholder is LOAD-BEARING (see the coach-note note
+         below). Gray, unlit - distinct from the accent coach notes. -->
+    <span id="sum-hold-note" class="obs-note">-</span>
+    <span id="sum-turn-note" class="obs-note">-</span>
+    <!-- The placeholder "-" is LOAD-BEARING: an EMPTY text element compiles to
+         a childless Container (no Text child), and hud.ts setProperties({text})
+         then has nothing to write into - the coach notes would never render.
+         Hidden until hud.ts fills them (display:none via .coach-note). -->
+    <span id="sum-note-1" class="coach-note">-</span>
+    <span id="sum-note-2" class="coach-note">-</span>
+    <span id="sum-note-3" class="coach-note">-</span>
+    <div class="button-row">
+      <button id="again-button" class="pill pill-accent pill-grow">WALK AGAIN</button>
+      <!-- Replay Theater: plays the ghost of this walk on the runway - the
+           trainee watches from where they stand (the rig is never moved in
+           XR). hud.ts hides it when the walk is not replayable. -->
+      <button id="replay-button" class="pill pill-glass pill-grow">REPLAY</button>
+    </div>
+    <div class="button-row">
+      <!-- THE WALK CARD's honest pill: the headset browser cannot save/share
+           a composed image, so tapping this says where the card lives (label
+           swap to SHARE_CARD_NOTE for a few seconds - hud.ts). -->
+      <button id="share-button" class="pill pill-glass pill-grow">SHARE CARD</button>
+    </div>
+  </div>
+
+  <div id="map-section" class="section">
+    <span class="map-kicker">MAP YOUR RUNWAY</span>
+    <!-- Text-free accent rule (premium pass) - no id, invisible to hud.ts. -->
+    <div class="map-rule"></div>
+    <span id="map-prompt" class="map-prompt">STAND AT YOUR START - PRESS TRIGGER</span>
+    <span id="map-note" class="map-note">Point at the floor with your right controller - the trigger drops your start point. CANCEL exits.</span>
+    <div class="map-buttons">
+      <button id="map-confirm" class="pill pill-accent pill-grow">CONFIRM</button>
+      <button id="map-cancel" class="pill pill-glass pill-grow">CANCEL</button>
+    </div>
+  </div>
+
+  <!-- TUTORIAL (first-run in-headset guide, 2026-07-11). Auto-opens on the
+       first XR entry (HUDSystem.onVisibility, gated on the xrunway.xr-tutorial.v1
+       key + 0 walks), re-openable from Settings -> Guide. Placed BEFORE
+       #settings-section deliberately: it sits outside every copy-slice test
+       window (scoring/details/controls-legend all start at or after settings).
+       All visible strings are written at runtime from TUTORIAL_STEPS
+       (hud-copy.ts) into these fixed elements - the MAP_PROMPTS pattern - so
+       the markup stays static + ASCII and the copy is drift-pinned by test.
+       Placeholder text is LOAD-BEARING (an empty text element compiles to a
+       childless Container that never renders). -->
+  <div id="tutorial-section" class="section">
+    <div class="set-head">
+      <span id="tut-kicker" class="set-kicker">WELCOME</span>
+      <button id="tut-skip" class="set-done">Skip</button>
+    </div>
+    <span id="tut-title" class="tut-title">You are the model.</span>
+    <span id="tut-body" class="tut-body">Loading your first lesson...</span>
+    <!-- Preference pills: MAKE IT YOURS card only (shown/hidden per step,
+         founder call 2026-07-16 - novices set their toggles before any walk).
+         Each writes the SAME shared signal its settings twin writes; labels
+         are stamped at runtime by the same hud.ts update fns. Half-width
+         pairs hold to the width-cap law (longest half label 15 chars); the
+         beat pill is full-width ("Beat pulse: countdown" is the cap label
+         and must not share a row - the b8c0ddf overlap lesson). -->
+    <div id="tut-prefs" class="tut-prefs">
+      <div class="set-row">
+        <button id="tut-music" class="pill pill-glass pill-grow">Music: on</button>
+        <button id="tut-mode" class="pill pill-glass pill-grow">Level: Beginner</button>
+      </div>
+      <div class="set-row">
+        <button id="tut-bpm" class="pill pill-glass pill-grow">Music BPM: 100</button>
+        <button id="tut-duration" class="pill pill-glass pill-grow">Duration: 20s</button>
+      </div>
+      <div class="set-row">
+        <button id="tut-beat" class="pill pill-glass pill-grow">Beat pulse: countdown</button>
+      </div>
+    </div>
+    <!-- The cadence track: five step pips + hud.ts lights them in sequence on
+         the PACE card only (shown/hidden per step). -->
+    <div id="tut-cad" class="tut-cad">
+      <div id="tut-pip-0" class="tut-pip"></div>
+      <div id="tut-pip-1" class="tut-pip"></div>
+      <div id="tut-pip-2" class="tut-pip"></div>
+      <div id="tut-pip-3" class="tut-pip"></div>
+      <div id="tut-pip-4" class="tut-pip"></div>
+    </div>
+    <!-- The live head-level indicator: CARRIAGE card only (shown/hidden per
+         step). hud.ts reads the LIVE head pitch each frame and slides the
+         marker so the trainee proves the headset sees their head before any
+         score. Label text is written at runtime from TUT_LEVEL_LABELS
+         (hud-copy.ts); the placeholder is LOAD-BEARING (non-empty). -->
+    <div id="tut-level" class="tut-level">
+      <div class="tut-level-track">
+        <div id="tut-level-zone" class="tut-level-zone"></div>
+        <div id="tut-level-marker" class="tut-level-marker"></div>
+      </div>
+      <span id="tut-level-label" class="tut-level-label">MOVE YOUR HEAD</span>
+    </div>
+    <div class="tut-nav">
+      <div id="tut-dots" class="tut-dots">
+        <div id="tut-dot-0" class="tut-dot"></div>
+        <div id="tut-dot-1" class="tut-dot"></div>
+        <div id="tut-dot-2" class="tut-dot"></div>
+        <div id="tut-dot-3" class="tut-dot"></div>
+        <div id="tut-dot-4" class="tut-dot"></div>
+        <div id="tut-dot-5" class="tut-dot"></div>
+        <div id="tut-dot-6" class="tut-dot"></div>
+        <div id="tut-dot-7" class="tut-dot"></div>
+      </div>
+      <div class="tut-nav-btns">
+        <button id="tut-back" class="pill pill-glass">Back</button>
+        <button id="tut-next" class="pill pill-accent">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-section" class="section">
+    <div class="set-head">
+      <span class="set-title">Your runway</span>
+      <button id="set-done" class="set-done">Done</button>
+    </div>
+
+    <span class="set-kicker">SHAPE</span>
+    <div class="set-row">
+      <button id="set-shape-straight" class="seg">Straight</button>
+      <button id="set-shape-t" class="seg">T</button>
+      <button id="set-shape-x" class="seg">X</button>
+      <button id="set-shape-u" class="seg">U</button>
+    </div>
+
+    <span class="set-kicker">SIZE</span>
+    <div id="row-length" class="adj">
+      <div class="adj-top">
+        <span class="adj-label">Length</span>
+        <div class="adj-ctrl">
+          <button id="set-length-dec" class="step">-</button>
+          <span id="set-length-val" class="adj-val">10.0 m</span>
+          <button id="set-length-inc" class="step">+</button>
+        </div>
+      </div>
+      <div class="bar"><div id="set-length-fill" class="bar-fill"></div></div>
+    </div>
+    <div id="row-width" class="adj">
+      <div class="adj-top">
+        <span class="adj-label">Width</span>
+        <div class="adj-ctrl">
+          <button id="set-width-dec" class="step">-</button>
+          <span id="set-width-val" class="adj-val">1.4 m</span>
+          <button id="set-width-inc" class="step">+</button>
+        </div>
+      </div>
+      <div class="bar"><div id="set-width-fill" class="bar-fill"></div></div>
+    </div>
+    <div id="row-arm" class="adj">
+      <div class="adj-top">
+        <span class="adj-label">Arm span</span>
+        <div class="adj-ctrl">
+          <button id="set-arm-dec" class="step">-</button>
+          <span id="set-arm-val" class="adj-val">3.0 m</span>
+          <button id="set-arm-inc" class="step">+</button>
+        </div>
+      </div>
+      <div class="bar"><div id="set-arm-fill" class="bar-fill"></div></div>
+    </div>
+    <div id="row-cross" class="adj">
+      <div class="adj-top">
+        <span class="adj-label">Cross point</span>
+        <div class="adj-ctrl">
+          <button id="set-cross-dec" class="step">-</button>
+          <span id="set-cross-val" class="adj-val">50%</span>
+          <button id="set-cross-inc" class="step">+</button>
+        </div>
+      </div>
+      <div class="bar"><div id="set-cross-fill" class="bar-fill"></div></div>
+    </div>
+
+    <span class="set-kicker">BODY FIT</span>
+    <div class="set-row">
+      <span id="set-bodyfit-status" class="bodyfit-status">Fit: not set</span>
+      <button id="set-bodyfit-run" class="seg">Run fit</button>
+    </div>
+
+    <span class="set-kicker">ROOM</span>
+    <div class="set-row">
+      <button id="set-fit" class="pill pill-accent pill-grow">Fit to my room</button>
+      <button id="set-crowd" class="pill pill-glass pill-grow">Crowd: on</button>
+    </div>
+    <!-- Coach voice pill REMOVED (founder ruling 2026-07-16, repeated from an
+         earlier chat: the coach is text-only for this product - no spoken
+         coaching, no toggle to suggest otherwise). -->
+    <div class="set-row">
+      <button id="set-music" class="pill pill-glass pill-grow">Music: on</button>
+    </div>
+    <div class="set-row">
+      <button id="set-beat" class="pill pill-glass pill-grow">Beat pulse: countdown</button>
+    </div>
+    <!-- Floor-glow toggle (founder call 2026-07-13): the always-on blue warp
+         rings on the live floor can distract (tester note); this gates them
+         (the per-step ripples stay). Own row - "Beat pulse: countdown" is the
+         width-cap label and must not share a row (the b8c0ddf overlap lesson). -->
+    <!-- LEVEL (founder ruling 2026-07-15: make EMERGING reachable in-headset -
+         the exec-review coach P0). A toggle pill, not the retired 4-chip mode
+         row: only the two founder-named tiers are offered (the legacy
+         COMMERCIAL/PERFORMANCE labels overflow the header title box - the
+         in-file width caveat), and pairing it on the floor-glow row adds ZERO
+         height to settings, the panel's aspect-bound tallest state. Both
+         labels are mid-short (the Music BPM + Duration pairing precedent). -->
+    <div class="set-row">
+      <button id="set-level" class="pill pill-glass pill-grow">Level: Beginner</button>
+      <button id="set-floorfx" class="pill pill-glass pill-grow">Floor glow: on</button>
+    </div>
+    <!-- Music tempo + walk duration pair (founder call 2026-07-09: 10-60 s,
+         default 20 - hud.ts cycles the pref, ShowDirector locks it per run);
+         the two short reference pills (Details + Scoring) pair on the next
+         row. "Beat pulse: countdown" is the longest settings label and
+         half-width would risk the exact overlap class the founder
+         photographed (the b8c0ddf lesson) - "Music BPM: 100" and
+         "Duration: 20s" are both mid-short; eyeball face-on + on-device. -->
+    <div class="set-row">
+      <button id="set-bpm" class="pill pill-glass pill-grow">Music BPM: 100</button>
+      <button id="set-duration" class="pill pill-glass pill-grow">Duration: 20s</button>
+    </div>
+    <!-- Pace style (founder ask 2026-07-18): which side of the target speed
+         the scoring forgives - "Confident stride" (default, fast is gentle)
+         or "Take your time" (directors' orders - slow is gentle). Own row:
+         "Pace style: Confident stride" is a width-cap-class label. -->
+    <div class="set-row">
+      <button id="set-pace-style" class="pill pill-glass pill-grow">Pace style: Confident stride</button>
+    </div>
+    <div class="set-row">
+      <button id="set-details" class="pill pill-ref pill-grow">Details</button>
+      <button id="set-scoring" class="pill pill-ref pill-grow">Scoring</button>
+      <button id="set-guide" class="pill pill-ref pill-grow">Guide</button>
+    </div>
+    <!-- ADVANCED (deliberately the quietest thing in settings - founder call:
+         hardest to find by design language: last row, dimmest kicker, a
+         single ref-tier pill). Cycles the pace control-band half-width. -->
+    <span class="set-kicker-dim">ADVANCED</span>
+    <div class="set-row">
+      <button id="set-pace-band" class="pill pill-ref pill-grow">Pace band: 0.10 m/s</button>
+    </div>
+
+    <!-- LESSON mode selector removed (founder call): modes aren't visibly
+         differentiated yet, so the walk stays on the default. hud.ts's
+         set-mode-0..3 onClick + modeChips lookups are ?.-guarded, so the
+         missing elements are safe no-ops. Restore by re-adding this row. -->
+
+    <div class="set-foot">
+      <span class="set-foot-label">Preset</span>
+      <div class="set-foot-btns">
+        <button id="set-preset-prev" class="mini">Prev</button>
+        <button id="set-preset-next" class="mini">Next</button>
+        <button id="set-reset" class="mini">Reset</button>
+      </div>
+    </div>
+    <span class="set-controls">Controls - Left X/Y: fit to room | Right B: hide/show panel | Right stick: scrub a focused size</span>
+  </div>
+
+  <!-- SCORING (queue #5): the in-headset twin of the landing UNDERSTANDING
+       THE SCORE block (index.html #scoring-block). Opened from settings via
+       #set-scoring, #scoring-done returns (hud.ts applySections). The intro +
+       the three metric definitions are the founder's own words (no-AI-text
+       law) transliterated ONLY as the ASCII panel font demands (x for the
+       times sign, deg for the degree sign, - for the em-dash, "and" for the
+       ampersand); the "score =" lines are the ACTUAL scoring formulas
+       (metrics.ts headset path / pose-derive.ts twin) - both surfaces are
+       drift-pinned by test/scoring-copy.test.ts. -->
+  <div id="scoring-section" class="section">
+    <div class="set-head">
+      <span class="set-title">Understanding the score</span>
+      <button id="scoring-done" class="set-done">Done</button>
+    </div>
+    <span class="det-note">Here are how the 3 main metrics are defined, tracked, and what it means for you. Please note that the data for these metrics is tracked by the headset only.</span>
+    <span class="det-name">PACE</span>
+    <span class="det-note">head speed vs the target head speed</span>
+    <span class="edu-math">score = 100 within 0.10 m/s of the target; slower costs 90 per m/s, faster costs 45 (40-100). In the band = 100.</span>
+    <span class="edu-src">In the industry's words: "take long strides, and control your pace" - Naomi Campbell</span>
+    <span class="det-name">CARRIAGE</span>
+    <span class="det-note">% of time the head stays level (downward glances negatively affect this score)</span>
+    <span class="edu-math">score = 40 + 60 x the share of the walk your head stayed level (chin within 7 deg of neutral) and facing down the line. A head-drop (>15 deg down) counts against it.</span>
+    <span class="edu-src">In the industry's words: "keep your head straight and steady" - CM Models</span>
+    <span class="det-name">LINE</span>
+    <span class="det-note">head alignment with the center line</span>
+    <span class="edu-math">score = 100 - (your average distance off the centerline, in meters) x 240 (40-100). Dead on the line = 100.</span>
+    <span class="edu-src">In the industry's words: "walking along a thin, invisible line" - Backstage</span>
+    <span class="edu-sensor">Computed on-device from Meta Quest 3 head tracking only - no camera, no body scan; nothing is scored that the headset did not measure.</span>
+  </div>
+
+  <!-- DETAILS (founder call 2026-07-08): the reference subsection for the
+       mode differences + the music tempo options. Opened from settings via
+       #set-details, #det-done returns to settings (hud.ts applySections).
+       Every visible line is a structural label, the modes' own shipped
+       chip facts (coach.ts targetPaceLabel/passBarLabel + the default
+       tempo), or the founder's VERBATIM note (the no-AI-text law) -
+       drift-pinned against the live constants by test/details-copy.test.ts.
+       Only the two founder-named modes are listed (commercial/challenge
+       tempo defaults are provisional - an open founder call). -->
+  <div id="details-section" class="section">
+    <div class="set-head">
+      <span class="set-title">Details</span>
+      <button id="det-done" class="set-done">Done</button>
+    </div>
+
+    <span class="set-kicker">MODES</span>
+    <span class="det-name">BEGINNER WALK</span>
+    <span class="det-fact">TARGET 0.85 M/S - PASS AT 78 - MUSIC 100 BPM</span>
+    <span class="det-note">everyday walking speed or leisure</span>
+    <span class="det-name">EMERGING RUNWAY</span>
+    <span class="det-fact">TARGET 0.72 M/S - PASS AT 80 - MUSIC 125 BPM</span>
+    <span class="det-note">emerging level walking speed (industry standard)</span>
+
+    <span class="set-kicker">MUSIC BPM</span>
+    <span class="det-note">62 - half time of the emerging level speed</span>
+    <span class="det-note">100 - everyday walking speed or leisure</span>
+    <span class="det-note">125 - emerging level walking speed (industry standard)</span>
+  </div>
+
+  <!-- Fit-to-room status (#15). The placeholder text is LOAD-BEARING: an empty
+       text element compiles to a childless Container (no Text child) and could
+       never render. Hidden until hud.ts shows it on a fit edge. -->
+  <span id="fit-status" class="fit-status">Looking for your floor...</span>
+
+  <!-- Tracking source (#32/#46). "HEAD ONLY" placeholder is load-bearing (an
+       empty text element can never render) AND the honest default. -->
+  <div class="track-row">
+    <span class="loc-caps">TRACKING: </span>
+    <span id="track-src" class="loc-caps">HEAD ONLY</span>
+  </div>
+
+  <!-- LOCATION: AR label removed - the backdrop picker is gone (scene is always
+       AR), so it was redundant AND it crowded the BEGIN WALK button (founder's
+       photo). The 5 buttons now get the full footer width, centered. -->
+  <div class="footer">
+    <div class="footer-buttons">
+      <!-- Founder B8.4/C8.3 (2026-07-09): "Start" - uikit has no
+           text-transform, so the styled ALL-CAPS form is literal (the
+           worksheet's caps law; the footer neighbors are all caps). -->
+      <button id="begin-button" class="pill pill-accent">START</button>
+      <button id="settings-button" class="pill pill-glass">SETTINGS</button>
+      <button id="map-button" class="pill pill-glass">MAP</button>
+      <button id="guide-button" class="pill pill-glass">GUIDE</button>
+      <button id="reset-button" class="pill pill-glass">RESET</button>
+      <button id="xr-button" class="pill pill-glass">EXIT</button>
+    </div>
+  </div>
+</div>

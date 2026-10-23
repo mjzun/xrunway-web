@@ -1,0 +1,102 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "walk-stats",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "finalize-null-when-nothing-ran",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"finalize","durationSec":30}]},
+   "expect": {"finals":[null]}
+  },
+  {
+   "name": "pace-duration-weighted-mean",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":1,"dt":1},{"op":"addPace","v":2,"dt":3},{"op":"finalize","durationSec":4}]},
+   "expect": {"finals":[{"meanPaceMps":1.75,"idealPaceMps":0.85,"paceDeltaMps":0.9,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "pace-mm-rounding",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":1.23456,"dt":1},{"op":"finalize","durationSec":1}]},
+   "expect": {"finals":[{"meanPaceMps":1.235,"idealPaceMps":0.85,"paceDeltaMps":0.385,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "negative-half-rounding-landmine",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addLateral","v":-0.0025,"dt":1},{"op":"addPosture","v":-0.0035,"dt":1},{"op":"finalize","durationSec":2}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":-0.002,"meanAbsLateralM":0.003,"postureDriftM":-0.003,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "non-finite-and-non-positive-dt-samples-rejected",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":{"$num":"nan"},"dt":1},{"op":"addPace","v":{"$num":"+inf"},"dt":1},{"op":"addPace","v":1,"dt":0},{"op":"addPace","v":1,"dt":-1},{"op":"addLateral","v":{"$num":"nan"},"dt":1},{"op":"addPosture","v":{"$num":"-inf"},"dt":1},{"op":"addPace","v":1.5,"dt":0.5},{"op":"finalize","durationSec":1}]},
+   "expect": {"finals":[{"meanPaceMps":1.5,"idealPaceMps":0.85,"paceDeltaMps":0.65,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "weave-cancels-signed-mean-not-abs",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addLateral","v":0.2,"dt":1},{"op":"addLateral","v":-0.2,"dt":1},{"op":"finalize","durationSec":2}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0,"meanAbsLateralM":0.2,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "channels-null-independently",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPosture","v":0.05,"dt":2},{"op":"finalize","durationSec":2}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":0.05,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "step-debounce-edges",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addStep","at":1},{"op":"addStep","at":1.1},{"op":"addStep","at":1.15},{"op":"addStep","at":5},{"op":"finalize","durationSec":60}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":2,"cadenceSpm":2,"source":"head"}]}
+  },
+  {
+   "name": "cadence-round1-half-case",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addStep","at":1},{"op":"addStep","at":2},{"op":"addStep","at":3},{"op":"addStep","at":4},{"op":"addStep","at":5},{"op":"finalize","durationSec":80}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":5,"cadenceSpm":3.8,"source":"head"}]}
+  },
+  {
+   "name": "source-dominance-most-time-wins",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"noteSource","source":"head","dt":2},{"op":"noteSource","source":"camera-world","dt":3},{"op":"finalize","durationSec":5}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"camera-world"}]}
+  },
+  {
+   "name": "source-tie-keeps-head",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"noteSource","source":"camera-world","dt":2},{"op":"noteSource","source":"head","dt":2},{"op":"finalize","durationSec":4}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "source-tie-image-beats-world",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"noteSource","source":"camera-world","dt":2},{"op":"noteSource","source":"camera-image","dt":2},{"op":"finalize","durationSec":4}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"camera-image"}]}
+  },
+  {
+   "name": "source-non-positive-dt-ignored",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"noteSource","source":"camera-world","dt":0},{"op":"noteSource","source":"camera-world","dt":-3},{"op":"noteSource","source":"head","dt":0.1},{"op":"finalize","durationSec":1}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "resetLateral-clears-only-centerline",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":1,"dt":1},{"op":"addLateral","v":0.3,"dt":1},{"op":"addStep","at":0.5},{"op":"resetLateral"},{"op":"addLateral","v":-0.1,"dt":1},{"op":"finalize","durationSec":2}]},
+   "expect": {"finals":[{"meanPaceMps":1,"idealPaceMps":0.85,"paceDeltaMps":0.15,"meanLateralM":-0.1,"meanAbsLateralM":0.1,"postureDriftM":null,"steps":1,"cadenceSpm":30,"source":"head"}]}
+  },
+  {
+   "name": "finalize-non-destructive",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":1,"dt":1},{"op":"finalize","durationSec":1},{"op":"finalize","durationSec":1},{"op":"addPace","v":3,"dt":1},{"op":"finalize","durationSec":2}]},
+   "expect": {"finals":[{"meanPaceMps":1,"idealPaceMps":0.85,"paceDeltaMps":0.15,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},{"meanPaceMps":1,"idealPaceMps":0.85,"paceDeltaMps":0.15,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},{"meanPaceMps":2,"idealPaceMps":0.85,"paceDeltaMps":1.15,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "reset-rearms-everything-incl-debounce-clock",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addPace","v":1,"dt":1},{"op":"addStep","at":1},{"op":"addStep","at":1.05},{"op":"reset","idealPace":1.05},{"op":"addStep","at":1.1},{"op":"finalize","durationSec":1}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":1.05,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":1,"cadenceSpm":60,"source":"head"}]}
+  },
+  {
+   "name": "mixed-cadence-weighting",
+   "input": {"ops":[{"op":"reset","idealPace":0.95},{"op":"addPace","v":1,"dt":0.011},{"op":"addPace","v":1,"dt":0.011},{"op":"addPace","v":1,"dt":0.011},{"op":"addPace","v":2,"dt":0.033},{"op":"finalize","durationSec":0.066}]},
+   "expect": {"finals":[{"meanPaceMps":1.5,"idealPaceMps":0.95,"paceDeltaMps":0.55,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "zero-duration-cadence-null",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"addStep","at":0.1},{"op":"finalize","durationSec":0}]},
+   "expect": {"finals":[{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":1,"cadenceSpm":null,"source":"head"}]}
+  },
+  {
+   "name": "reset-nulls-the-live-taps",
+   "input": {"ops":[{"op":"reset","idealPace":0.85},{"op":"setLive","pace":1.5,"lat":0.4,"post":-0.1},{"op":"readLive"},{"op":"setLive","pace":{"$num":"nan"},"lat":0.4,"post":-0.1},{"op":"readLive"},{"op":"reset","idealPace":0.95},{"op":"readLive"},{"op":"noteSource","source":"head","dt":1},{"op":"addPace","v":0.9,"dt":1},{"op":"addStep","at":0.01},{"op":"finalize","durationSec":30}]},
+   "expect": {"finals":[{"meanPaceMps":0.9,"idealPaceMps":0.95,"paceDeltaMps":-0.05,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":1,"cadenceSpm":2,"source":"head"}],"lives":[{"pace":1.5,"lat":0.4,"post":-0.1},{"pace":{"$num":"nan"},"lat":0.4,"post":-0.1},{"pace":null,"lat":null,"post":null}]}
+  }
+ ]
+}

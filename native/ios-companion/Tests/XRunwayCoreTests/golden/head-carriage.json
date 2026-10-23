@@ -1,0 +1,262 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "head-carriage",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "roll-invariance-plain",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-20,"yawDeg":15,"rollDeg":0,"reps":20}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0,"yawInBandFrac":0,"meanPitchDevDeg":-20,"glanceCount":1,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.5,"carriageScore":40},"livePitchDevDeg":-19.999999999999993,"liveYawDevDeg":-14.999999999999996,"engaged":true,"walkTime":2.5}]}
+  },
+  {
+   "name": "roll-invariance-rolled-25deg",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-20,"yawDeg":15,"rollDeg":25,"reps":20}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0,"yawInBandFrac":0,"meanPitchDevDeg":-20,"glanceCount":1,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.5,"carriageScore":40},"livePitchDevDeg":-19.99999999999999,"liveYawDevDeg":-14.999999999999996,"engaged":true,"walkTime":2.5}]}
+  },
+  {
+   "name": "yaw-sign-head-right-of-heading",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":-60,"walkYawDeg":30}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":0,"liveYawDevDeg":89.99999999999999,"engaged":false,"walkTime":0.125}]}
+  },
+  {
+   "name": "yaw-sign-head-left-reads-negative",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":20,"walkYawDeg":0}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":0,"liveYawDevDeg":-19.999999999999996,"engaged":false,"walkTime":0.125}]}
+  },
+  {
+   "name": "pitch-band-fraction-60pct",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":3,"reps":48},{"op":"frame","pitchDeg":20,"reps":32}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.6,"yawInBandFrac":1,"meanPitchDevDeg":9.8,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":85.6},"livePitchDevDeg":19.95786121299667,"liveYawDevDeg":0,"engaged":true,"walkTime":10}]}
+  },
+  {
+   "name": "yaw-band-fraction-75pct",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":-5,"reps":24},{"op":"frame","yawDeg":-30,"reps":8}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":0.75,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4,"carriageScore":94},"livePitchDevDeg":0,"liveYawDevDeg":24.421745996289246,"engaged":true,"walkTime":4}]}
+  },
+  {
+   "name": "rate-independence-32hz",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":3,"yawDeg":4,"dt":0.03125,"reps":192},{"op":"frame","pitchDeg":20,"yawDeg":30,"dt":0.03125,"reps":128}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.6,"yawInBandFrac":0.6,"meanPitchDevDeg":9.8,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":76},"livePitchDevDeg":19.957861212996672,"liveYawDevDeg":-29.935552443406667,"engaged":true,"walkTime":10}]}
+  },
+  {
+   "name": "rate-independence-64hz",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":3,"yawDeg":4,"dt":0.015625,"reps":384},{"op":"frame","pitchDeg":20,"yawDeg":30,"dt":0.015625,"reps":256}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.6,"yawInBandFrac":0.6,"meanPitchDevDeg":9.8,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":76},"livePitchDevDeg":19.957861212996665,"liveYawDevDeg":-29.935552443406664,"engaged":true,"walkTime":10}]}
+  },
+  {
+   "name": "head-drop-one-dip-counts-once",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":4},{"op":"frame","pitchDeg":-25,"reps":12},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.625,"yawInBandFrac":1,"meanPitchDevDeg":-9.4,"glanceCount":1,"firstGlanceAtSec":0.6,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4,"carriageScore":86.5},"livePitchDevDeg":-1.1134887492170642,"liveYawDevDeg":0,"engaged":true,"walkTime":4}]}
+  },
+  {
+   "name": "head-drop-recover-minus12-no-recount",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":-12,"reps":4},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.571,"yawInBandFrac":1,"meanPitchDevDeg":-8.9,"glanceCount":1,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":3.5,"carriageScore":84.6},"livePitchDevDeg":-1.0833629680656307,"liveYawDevDeg":0,"engaged":true,"walkTime":3.5}]}
+  },
+  {
+   "name": "head-drop-recover-minus8-rearms",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":-8,"reps":4},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.571,"yawInBandFrac":1,"meanPitchDevDeg":-8.3,"glanceCount":2,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":3.5,"carriageScore":84.6},"livePitchDevDeg":-1.0337279707945637,"liveYawDevDeg":0,"engaged":true,"walkTime":3.5}]}
+  },
+  {
+   "name": "head-drop-recover-minus5-rearms",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":-5,"reps":4},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.714,"yawInBandFrac":1,"meanPitchDevDeg":-7.9,"glanceCount":2,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":3.5,"carriageScore":89.7},"livePitchDevDeg":-0.9965017228412634,"liveYawDevDeg":0,"engaged":true,"walkTime":3.5}]}
+  },
+  {
+   "name": "head-drop-minus14-never-trips",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-14,"reps":8},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.667,"yawInBandFrac":1,"meanPitchDevDeg":-4.7,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":3,"carriageScore":88},"livePitchDevDeg":-0.6970189571500958,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "head-drop-costs-band-time-once",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":8},{"op":"frame","pitchDeg":0,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.75,"yawInBandFrac":1,"meanPitchDevDeg":-6.2,"glanceCount":1,"firstGlanceAtSec":0.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4,"carriageScore":91},"livePitchDevDeg":-0.27772491345605793,"liveYawDevDeg":0,"engaged":true,"walkTime":4}]}
+  },
+  {
+   "name": "neutral-stand-mean-wins",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":5,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":5,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":5,"neutralSource":"stand","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-approach-speed-gated",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":5,"speedMps":0,"reps":8},{"op":"stand","pitchDeg":-20,"speedMps":1,"reps":8},{"op":"begin-walk"},{"op":"frame","pitchDeg":5,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":5,"neutralSource":"stand","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-insane-stand-falls-to-walk",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":-25,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":-25,"neutralSource":"walk","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-fit-tertiary-rescues-insane-stand",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":-25,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":0.05235987755982989},{"op":"frame","pitchDeg":3,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":3,"neutralSource":"fit","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-insane-fit-same-gate",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":-25,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":0.3490658503988659},{"op":"frame","pitchDeg":0,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"walk","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-sane-stand-outranks-fit",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":5,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":0.05235987755982989},{"op":"frame","pitchDeg":5,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":5,"neutralSource":"stand","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-walk-window-running-mean",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"begin-walk"},{"op":"frame","pitchDeg":4,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":4,"neutralSource":"walk","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "neutral-dark-window-seeds-first-live-sample",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"begin-walk"},{"op":"frame","pitchDeg":6,"dt":1},{"op":"frame","pitchDeg":6,"dt":0.5,"reps":2}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":6,"neutralSource":"walk","measuredSec":2,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":2}]}
+  },
+  {
+   "name": "neutral-stand-survives-rerun",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":5,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":5,"reps":24},{"op":"begin-walk"},{"op":"frame","pitchDeg":5,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":5,"neutralSource":"stand","measuredSec":3,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":3}]}
+  },
+  {
+   "name": "turn-window-suppressed-calm",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":0,"reps":32},{"op":"frame","yawDeg":0,"suppressed":true,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":7,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":null,"engaged":true,"walkTime":7}]}
+  },
+  {
+   "name": "turn-window-suppressed-wild",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":0,"reps":32},{"op":"frame","yawDeg":90,"suppressed":true,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":7,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":null,"engaged":true,"walkTime":7}]}
+  },
+  {
+   "name": "turn-window-pitch-keeps-measuring",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":16},{"op":"frame","pitchDeg":20,"suppressed":true,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.5,"yawInBandFrac":1,"meanPitchDevDeg":10,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4,"carriageScore":82},"livePitchDevDeg":19.004258632642717,"liveYawDevDeg":null,"engaged":true,"walkTime":4}]}
+  },
+  {
+   "name": "return-flip-in-band",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":180,"walkYawDeg":0,"returning":true,"reps":20}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.5,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":7.016709298534876e-15,"engaged":true,"walkTime":2.5}]}
+  },
+  {
+   "name": "return-flip-negative-control",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":180,"walkYawDeg":0,"returning":false,"reps":20}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":0,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.5,"carriageScore":76},"livePitchDevDeg":0,"liveYawDevDeg":-180,"engaged":true,"walkTime":2.5}]}
+  },
+  {
+   "name": "one-way-suppressed-to-walk-end",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":0,"reps":8},{"op":"frame","yawDeg":170,"suppressed":true,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":null,"engaged":true,"walkTime":4}]}
+  },
+  {
+   "name": "yaw-under-min-sec-null",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":0,"reps":4},{"op":"frame","yawDeg":0,"suppressed":true,"reps":24}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":null,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":3.5,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":null,"engaged":true,"walkTime":3.5}]}
+  },
+  {
+   "name": "near-vertical-yaw-dark",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":0,"reps":8},{"op":"frame","pitchDeg":80,"reps":8}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.5,"yawInBandFrac":1,"meanPitchDevDeg":40,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2,"carriageScore":82},"livePitchDevDeg":62.149587188125565,"liveYawDevDeg":null,"engaged":true,"walkTime":2}]}
+  },
+  {
+   "name": "remap-clears-yaw-only",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":30,"reps":16},{"op":"frame","pitchDeg":-25,"reps":4},{"op":"reset-yaw"},{"op":"frame","yawDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":0.889,"yawInBandFrac":1,"meanPitchDevDeg":-2.8,"glanceCount":1,"firstGlanceAtSec":2.1,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":4.5,"carriageScore":96},"livePitchDevDeg":-0.6567330627963711,"liveYawDevDeg":0,"engaged":true,"walkTime":4.5}]}
+  },
+  {
+   "name": "remap-nulls-live-yaw-tap",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":30,"reps":16},{"op":"reset-yaw"}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":null,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":null,"engaged":true,"walkTime":2}]}
+  },
+  {
+   "name": "remap-tap-reseeds-raw",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","yawDeg":30,"reps":16},{"op":"reset-yaw"},{"op":"frame","yawDeg":-4}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":null,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.1,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":4,"engaged":true,"walkTime":2.125}]}
+  },
+  {
+   "name": "dark-frames-clean-twin",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":3,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":3,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2,"carriageScore":100},"livePitchDevDeg":3.0000000000000004,"liveYawDevDeg":0,"engaged":true,"walkTime":2}]}
+  },
+  {
+   "name": "dark-frames-carry-zero-weight",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":3,"reps":8},{"op":"dark-frame","reps":4},{"op":"bad-dt-frame","dt":0},{"op":"bad-dt-frame","dt":-0.1},{"op":"bad-dt-frame","dt":{"$num":"nan"}},{"op":"frame","pitchDeg":3,"reps":8}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":3,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2,"carriageScore":100},"livePitchDevDeg":3.0000000000000004,"liveYawDevDeg":0,"engaged":true,"walkTime":2.5}]}
+  },
+  {
+   "name": "dark-frame-taps-hold-last-value",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":5,"yawDeg":4},{"op":"dark-frame","reps":3}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":5.000000000000001,"liveYawDevDeg":-4.000000000000001,"engaged":false,"walkTime":0.5}]}
+  },
+  {
+   "name": "under-engage-not-finalized",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":15}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":false,"walkTime":1.875}]}
+  },
+  {
+   "name": "exactly-engage-finalizes",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":16}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2,"carriageScore":100},"livePitchDevDeg":0,"liveYawDevDeg":0,"engaged":true,"walkTime":2}]}
+  },
+  {
+   "name": "begin-walk-clears-walk-state",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":-25,"reps":24},{"op":"begin-walk"}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":null,"liveYawDevDeg":null,"engaged":false,"walkTime":0}]}
+  },
+  {
+   "name": "twin-pitch-shared-quats",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[-0.25881904510252074,0,0,0.9659258262890683]}]}},{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[-0.10585970446279853,0.08666226206310888,0.009261524064699536,0.9905541880569447]}]}},{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[-0.06104853953485687,0,0,0.9981347984218669]}]}},{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[0.025556450111561456,-0.21636544548810627,0.00566572858583374,0.9759614548618302]}]}},{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[0.134850930273723,0,0,0.9908658973868822]}]}},{"fn":"tape","args":{"ops":[{"op":"begin-walk","fitNeutralPitchRad":0},{"op":"quat-frame","q":[0.38231920253318413,0.04029905920751535,-0.01669241687462921,0.9230002039112792]}]}}]},
+   "expect": {"results":[{"stats":null,"livePitchDevDeg":-29.999999999999996,"liveYawDevDeg":0,"engaged":false,"walkTime":0.125},{"stats":null,"livePitchDevDeg":-12.199999999999998,"liveYawDevDeg":-10,"engaged":false,"walkTime":0.125},{"stats":null,"livePitchDevDeg":-7,"liveYawDevDeg":0,"engaged":false,"walkTime":0.125},{"stats":null,"livePitchDevDeg":3.0000000000000004,"liveYawDevDeg":25,"engaged":false,"walkTime":0.125},{"stats":null,"livePitchDevDeg":15.5,"liveYawDevDeg":0,"engaged":false,"walkTime":0.125},{"stats":null,"livePitchDevDeg":45.000000000000014,"liveYawDevDeg":-5.000000000000001,"engaged":false,"walkTime":0.125}]}
+  },
+  {
+   "name": "score-map-anchors",
+   "input": {"queries":[{"fn":"score","args":{"pitchFrac":1,"yawFrac":1}},{"fn":"score","args":{"pitchFrac":0,"yawFrac":0}},{"fn":"score","args":{"pitchFrac":0.5833333333333334,"yawFrac":null}},{"fn":"score","args":{"pitchFrac":0.5,"yawFrac":null}},{"fn":"score","args":{"pitchFrac":1,"yawFrac":0}}]},
+   "expect": {"results":[100,40,75,70,76]}
+  },
+  {
+   "name": "presence-blend-one-shot",
+   "input": {"queries":[{"fn":"blend","args":{"legacy":80,"carriage":40}},{"fn":"blend","args":{"legacy":60,"carriage":98}},{"fn":"blend","args":{"legacy":90,"carriage":90}}]},
+   "expect": {"results":[70,69.5,90]}
+  },
+  {
+   "name": "step-blend-idempotence-pin",
+   "input": {"queries":[{"fn":"stepBlend","args":{"legacy0":0,"steps":[{"derived":true,"target4":80,"engaged":true,"carriageScore":90}]}},{"fn":"stepBlend","args":{"legacy0":62,"steps":[{"derived":true,"target4":80,"engaged":true,"carriageScore":90},{"derived":false,"target4":null,"engaged":true,"carriageScore":90},{"derived":false,"target4":null,"engaged":true,"carriageScore":90}]}},{"fn":"stepBlend","args":{"legacy0":70,"steps":[{"derived":false,"target4":55.5,"engaged":true,"carriageScore":90}]}},{"fn":"stepBlend","args":{"legacy0":0,"steps":[{"derived":true,"target4":77,"engaged":false,"carriageScore":40},{"derived":false,"target4":77,"engaged":false,"carriageScore":40}]}}]},
+   "expect": {"results":[{"outputs":[82.5],"latchLegacy":80},{"outputs":[82.5,82.5,82.5],"latchLegacy":80},{"outputs":[75],"latchLegacy":70},{"outputs":[77,77],"latchLegacy":77}]}
+  },
+  {
+   "name": "carriage-line-branches",
+   "input": {"queries":[{"fn":"line","args":{"stats":{"pitchInBandFrac":0.84,"yawInBandFrac":0.91,"meanPitchDevDeg":0,"glanceCount":2,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"line","args":{"stats":{"pitchInBandFrac":0.84,"yawInBandFrac":0.91,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98},"sep":" · "}},{"fn":"line","args":{"stats":{"pitchInBandFrac":0.5,"yawInBandFrac":null,"meanPitchDevDeg":0,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"line","args":{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":1,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"line","args":{"stats":null}}]},
+   "expect": {"results":["HEAD CARRIAGE - CHIN LEVEL 84% - FACING ON LINE 91% - 2 HEAD DROPS","HEAD CARRIAGE · CHIN LEVEL 84% · FACING ON LINE 91% · NO HEAD DROPS","HEAD CARRIAGE - CHIN LEVEL 50% - NO HEAD DROPS","HEAD CARRIAGE - CHIN LEVEL 100% - FACING ON LINE 100% - 1 HEAD DROP",null]}
+  },
+  {
+   "name": "presence-cue-branches",
+   "input": {"queries":[{"fn":"cue","args":{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":1,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":-6,"glanceCount":3,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.5,"yawInBandFrac":0.9,"meanPitchDevDeg":-4.2,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.5,"yawInBandFrac":0.9,"meanPitchDevDeg":2.4,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":1,"yawInBandFrac":0.6,"meanPitchDevDeg":0.4,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.9,"yawInBandFrac":0.5,"meanPitchDevDeg":-2,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.3,"yawInBandFrac":0.7,"meanPitchDevDeg":-5,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.9,"yawInBandFrac":0.9,"meanPitchDevDeg":0.3,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"cue","args":{"stats":{"pitchInBandFrac":0.95,"yawInBandFrac":null,"meanPitchDevDeg":-0.4,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}}]},
+   "expect": {"results":["You dropped your head to the deck once - chin level, hold the far wall.","You dropped your head to the deck 3 times - chin level, hold the far wall.","Your chin averaged 4 deg below neutral - level it and hold the far wall.","Your chin averaged 2 deg above neutral - level it and hold the far wall.","Your head faced off the walk line 40 percent of the walk - pick the far point and hold it.","Your head faced off the walk line 50 percent of the walk - pick the far point and hold it.","Your chin averaged 5 deg below neutral - level it and hold the far wall.",null,null]}
+  },
+  {
+   "name": "apply-carriage-notes",
+   "input": {"queries":[{"fn":"applyNotes","args":{"context":{"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":50,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},"carriage":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":1,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"applyNotes","args":{"context":{"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":50,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},"carriage":null}},{"fn":"applyNotes","args":{"context":{"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":90,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},"carriage":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":2,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"applyNotes","args":{"context":{"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":50,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},"carriage":{"pitchInBandFrac":1,"yawInBandFrac":0.95,"meanPitchDevDeg":0.2,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}},{"fn":"applyNotes","args":{"context":{"scores":{"posture":50,"pace":95,"rhythm":95,"footPlacement":95,"presence":50,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},"carriage":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0,"glanceCount":1,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":10,"carriageScore":98}}}]},
+   "expect": {"results":[{"identity":false,"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presence","cue":"You dropped your head to the deck once - chin level, hold the far wall.","directional":true}]}},{"identity":true,"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presence","cue":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","directional":false}]}},{"identity":true,"report":{"overall":90,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}},{"identity":true,"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presence","cue":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","directional":false}]}},{"identity":false,"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"posture","cue":"Lift through the crown - shoulders back, chin level, ribs over hips.","directional":false},{"key":"presence","cue":"You dropped your head to the deck once - chin level, hold the far wall.","directional":true}]}}]}
+  },
+  {
+   "name": "frozen-tape-zero-measured-time",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":16},{"op":"frame","pitchDeg":3,"frozen":true,"reps":160}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":0.2,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":2.1,"carriageScore":100},"livePitchDevDeg":null,"liveYawDevDeg":null,"engaged":true,"walkTime":22}]}
+  },
+  {
+   "name": "dithered-stream-fully-measured",
+   "input": {"queries":[{"fn":"tape","args":{"ops":[{"op":"reset-neutral"},{"op":"stand","pitchDeg":0,"reps":8},{"op":"begin-walk","fitNeutralPitchRad":null},{"op":"frame","pitchDeg":0,"reps":16},{"op":"frame","pitchDeg":3,"reps":160}]}}]},
+   "expect": {"results":[{"stats":{"pitchInBandFrac":1,"yawInBandFrac":1,"meanPitchDevDeg":2.7,"glanceCount":0,"firstGlanceAtSec":null,"neutralPitchDeg":0,"neutralSource":"stand","measuredSec":22,"carriageScore":100},"livePitchDevDeg":2.99999999999972,"liveYawDevDeg":0,"engaged":true,"walkTime":22}]}
+  },
+  {
+   "name": "mark-turn-flags-law",
+   "input": {"queries":[{"fn":"markTurnFlags","args":{"markAtWalkTime":-1,"walkTime":10,"routeOneWay":false}},{"fn":"markTurnFlags","args":{"markAtWalkTime":-1,"walkTime":10,"routeOneWay":true}},{"fn":"markTurnFlags","args":{"markAtWalkTime":10,"walkTime":12,"routeOneWay":false}},{"fn":"markTurnFlags","args":{"markAtWalkTime":10,"walkTime":14,"routeOneWay":false}},{"fn":"markTurnFlags","args":{"markAtWalkTime":10,"walkTime":13.999999,"routeOneWay":false}},{"fn":"markTurnFlags","args":{"markAtWalkTime":10,"walkTime":110,"routeOneWay":true}}]},
+   "expect": {"results":[{"returning":false,"yawSuppressed":false},{"returning":false,"yawSuppressed":false},{"returning":true,"yawSuppressed":true},{"returning":true,"yawSuppressed":false},{"returning":true,"yawSuppressed":true},{"returning":false,"yawSuppressed":true}]}
+  },
+  {
+   "name": "carriage-strings-and-constants",
+   "input": {"queries":[{"fn":"tables"}]},
+   "expect": {"results":[{"M8_PITCH_BAND_DEG":7,"M8_YAW_BAND_DEG":12,"M8_GLANCE_PITCH_DEG":-15,"M8_GLANCE_REARM_DEG":-10,"M8_TURN_EXCLUDE_SEC":4,"M8_ENGAGE_SEC":2,"M8_NEUTRAL_FALLBACK_SEC":0.5,"M8_NEUTRAL_SANE_DEG":12,"M8_STAND_SPEED_MAX_MPS":0.3,"M8_MIN_HORIZ":0.35,"M8_EMA_RATE":1.5,"M8_YAW_MIN_SEC":1,"M8_PITCH_FRAC_WEIGHT":0.6,"M8_PRESENCE_WEIGHT":0.25,"M8_YAW_CUE_MIN_OFF_PCT":25,"CARRIAGE_TOOLTIP":"Measured from headset orientation - head carriage, not gaze; eyes are not tracked. Chin level: head pitch within 7 deg of your calibrated neutral (set during the countdown stand). Facing on line: head yaw within 12 deg of the walk direction; the turn at the mark is not counted. Head drops: head pitch dropping more than 15 deg below neutral, counted once per dip - a drop this deep points the head at the deck.","PRESENCE_EXPLAIN_WITH_CARRIAGE":"Composite read: your posture, rhythm and pace weighted together (posture counting most) at 75%, plus your measured head carriage at 25% - chin held level, head facing down the walk line. Still a composite - carriage is head orientation, not gaze; eyes are not tracked.","COMPOSITE_CAPTION_WITH_CARRIAGE":"CONFIDENCE and PRESENTATION are composite reads derived from the four measured channels - not separately measured. PRESENCE on this walk blends that composite at 75% with your measured head carriage at 25%.","carriageTooltipStand":"Measured from headset orientation - head carriage, not gaze; eyes are not tracked. Chin level: head pitch within 7 deg of your calibrated neutral (set during the countdown stand). Facing on line: head yaw within 12 deg of the walk direction; the turn at the mark is not counted. Head drops: head pitch dropping more than 15 deg below neutral, counted once per dip - a drop this deep points the head at the deck.","carriageTooltipFit":"Measured from headset orientation - head carriage, not gaze; eyes are not tracked. Chin level: head pitch within 7 deg of your calibrated neutral (from your FIT baseline). Facing on line: head yaw within 12 deg of the walk direction; the turn at the mark is not counted. Head drops: head pitch dropping more than 15 deg below neutral, counted once per dip - a drop this deep points the head at the deck.","carriageTooltipWalk":"Measured from headset orientation - head carriage, not gaze; eyes are not tracked. Chin level: head pitch within 7 deg of your calibrated neutral (from the first half second of the walk). Facing on line: head yaw within 12 deg of the walk direction; the turn at the mark is not counted. Head drops: head pitch dropping more than 15 deg below neutral, counted once per dip - a drop this deep points the head at the deck."}]}
+  }
+ ]
+}

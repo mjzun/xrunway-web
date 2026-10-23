@@ -1,0 +1,4271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#0a0c10" />
+    <title>(X)RUNWAY: Take the next step.</title>
+    <meta
+      name="description"
+      content="(X)RUNWAY tracks and trains your runway walk, anywhere in the world using AR technology. Try now to determine your pace, carriage, and line metrics in real time."
+    />
+    <link rel="icon" type="image/png" href="/brand-icon-512.png" />
+    <link rel="apple-touch-icon" href="/brand-icon-512.png" />
+    <!-- PWA manifest (marketplace pack 2026-07-15): gives the Quest browser
+         the install name/icons/colors so "Add to Home" ships a real app tile
+         instead of a bare bookmark. Icons are the green faceted (X) mark. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- link-sharing card (iMessage / Slack / LinkedIn / X). The 1200x630
+         image asset is READY at /og.png (regen: node scripts/gen-og-card.mjs)
+         but og:image/og:url stay out of the committed file: the majors need
+         an ABSOLUTE https URL and this build travels over ephemeral tunnel
+         hosts. After `npx vite build`, inject with
+           node scripts/set-og-origin.mjs https://<origin> dist/index.html
+         (adds og:url/og:image/dims/alt + twitter:image and flips
+         twitter:card to summary_large_image). Blocked only on the founder
+         claiming a canonical domain. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="(X)RUNWAY" />
+    <meta
+      property="og:title"
+      content="(X)RUNWAY: Take the next step."
+    />
+    <meta
+      property="og:description"
+      content="(X)RUNWAY tracks and trains your runway walk, anywhere in the world using AR technology. Try now to determine your pace, carriage, and line metrics in real time."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="(X)RUNWAY: Take the next step."
+    />
+    <meta
+      name="twitter:description"
+      content="(X)RUNWAY tracks and trains your runway walk, anywhere in the world using AR technology. Try now to determine your pace, carriage, and line metrics in real time."
+    />
+
+    <!-- Typefaces are self-hosted (latin slices under /fonts/, OFL notices in
+         /fonts/OFL-LICENSES.txt) so headset + phone typography never depends
+         on Google Fonts reachability. crossorigin is mandatory on font
+         preloads even same-origin, or Chromium fetches each file twice. -->
+    <link rel="preload" href="/fonts/inter-v20-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/playfair-display-v40-latin-italic-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/space-grotesk-v22-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+
+    <style>
+      /* ============================================================
+         (X)RUNWAY landing REV2 — glassmorphism over the live 3D scene.
+         First-person AR training simulator. Accent = Carolina Blue.
+         Brand values mirror src/theme.ts BRAND_CSS (re-applied by
+         landing.ts at mount as the source of truth).
+         ============================================================ */
+
+      /* Self-hosted variable-font slices (Google latin subsets; one
+         weight-range block per family replaces Google's per-weight
+         triplicates that all point at the same file). Space Grotesk stays
+         400-600: .sp-card-score's 700 is browser-synthesized bold, exactly
+         as it was when Google served the same slice. */
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/fonts/inter-v20-latin-wght.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Playfair Display";
+        font-style: italic;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/fonts/playfair-display-v40-latin-italic-wght.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Space Grotesk";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/fonts/space-grotesk-v22-latin-wght.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      :root {
+        --xr-bg: #0a0c10;
+        --xr-bg-deep: #05070a;
+        --xr-accent: #4b9cd3;
+        --xr-accent-soft: #8ec4e8;
+        --xr-accent-deep: #2f7cb3;
+        --xr-white: #f2f5f8;
+        --xr-silver: #8a8f96;
+        --xr-gold: #d9b78a;
+
+        --glass-bg: rgba(10, 12, 16, 0.55);
+        --glass-border: rgba(255, 255, 255, 0.14);
+        --glass-blur: 14px;
+
+        /* Glass elevation tiers — an HONEST WEB APPROXIMATION of Apple's
+           liquid-glass material (there is no official liquid-glass.css;
+           taste-skill Appendix C): layered gradient-over-tint fills, a
+           specular top rim, and saturate() so the live 3D scene's Carolina
+           glow blooms through. T1 ambient (nav / live strip), T2 card (the
+           .glass default), T3 modal (summary / panels / onboarding). */
+        --glass1-bg: rgba(10, 12, 16, 0.42);
+        --glass1-blur: 12px;
+        --glass2-bg: rgba(10, 12, 16, 0.58);
+        --glass2-blur: 18px;
+        --glass3-bg: rgba(8, 10, 14, 0.7);
+        --glass3-blur: 26px;
+        --glass-rim: rgba(242, 245, 248, 0.22);
+        --glass-rim-soft: rgba(242, 245, 248, 0.05);
+        --glass-tint: rgba(75, 156, 211, 0.06);
+
+        --font-body: "Inter", system-ui, sans-serif;
+        --font-serif: "Playfair Display", Georgia, serif;
+        --font-mono: "Space Grotesk", ui-monospace, monospace;
+      }
+
+      @property --score {
+        syntax: "<number>";
+        initial-value: 0;
+        inherits: true;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--xr-bg);
+        color: var(--xr-white);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+      }
+
+      /* Live 3D scene — always full-bleed behind everything. */
+      #scene-container {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+      }
+      #scene-container canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* ---------- ambient decoration (behind the glass) ---------- */
+      .bg-shapes {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        will-change: transform;
+      }
+      .shape-1 {
+        width: 42vw;
+        height: 42vw;
+        left: -12vw;
+        top: -14vw;
+        background: var(--xr-accent);
+        opacity: 0.11;
+        animation: drift-a 34s ease-in-out infinite alternate;
+      }
+      .shape-2 {
+        width: 30vw;
+        height: 30vw;
+        right: -10vw;
+        bottom: -8vw;
+        background: var(--xr-accent-deep);
+        opacity: 0.11;
+        animation: drift-b 28s ease-in-out infinite alternate;
+      }
+      .shape-3 {
+        width: 22vw;
+        height: 22vw;
+        right: 18vw;
+        top: -10vw;
+        background: var(--xr-white);
+        opacity: 0.05;
+        animation: drift-a 44s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes drift-a {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        to {
+          transform: translate3d(6vw, 4vh, 0) scale(1.12);
+        }
+      }
+      @keyframes drift-b {
+        from {
+          transform: translate3d(0, 0, 0) scale(1.05);
+        }
+        to {
+          transform: translate3d(-5vw, -5vh, 0) scale(0.94);
+        }
+      }
+
+      /* Slow spotlight sweep across the whole stage. */
+      #spotlight {
+        position: fixed;
+        inset: -25%;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(
+          104deg,
+          transparent 42%,
+          rgba(242, 245, 248, 0.06) 49%,
+          rgba(75, 156, 211, 0.055) 53%,
+          transparent 61%
+        );
+        animation: sweep 16s ease-in-out infinite alternate;
+        will-change: transform;
+      }
+      @keyframes sweep {
+        from {
+          transform: translateX(-16%) rotate(0.001deg);
+        }
+        to {
+          transform: translateX(16%) rotate(0.001deg);
+        }
+      }
+
+      /* ------------------------- overlay ------------------------- */
+      #landing {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: clamp(12px, 2vh, 24px);
+        padding: clamp(14px, 2.6vw, 32px);
+      }
+
+      /* T2 card glass (the default material). Layered backgrounds instead of
+         pseudo-elements: they cost no extra DOM/compositing and stay put in
+         overflow-y:auto cards. Dual shadow = tight contact + long ambient. */
+      .glass {
+        background:
+          radial-gradient(120% 60% at 50% 0%, var(--glass-tint), transparent 55%),
+          linear-gradient(160deg, rgba(242, 245, 248, 0.045), rgba(242, 245, 248, 0.008) 38%),
+          var(--glass2-bg);
+        -webkit-backdrop-filter: blur(var(--glass2-blur)) saturate(1.4) brightness(1.06);
+        backdrop-filter: blur(var(--glass2-blur)) saturate(1.4) brightness(1.06);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          inset 0 1px 0 var(--glass-rim),
+          inset 0 -1px 0 var(--glass-rim-soft),
+          0 24px 60px rgba(0, 0, 0, 0.5),
+          0 2px 8px rgba(0, 0, 0, 0.35);
+      }
+      /* T1 ambient — thinner and brighter; the runway reads through it. */
+      #nav,
+      #live-strip {
+        background:
+          linear-gradient(160deg, rgba(242, 245, 248, 0.06), rgba(242, 245, 248, 0.01) 45%),
+          var(--glass1-bg);
+        -webkit-backdrop-filter: blur(var(--glass1-blur)) saturate(1.5) brightness(1.1);
+        backdrop-filter: blur(var(--glass1-blur)) saturate(1.5) brightness(1.1);
+        box-shadow:
+          inset 0 1px 0 rgba(242, 245, 248, 0.28),
+          0 10px 32px rgba(0, 0, 0, 0.4);
+      }
+      /* T3 modal — densest material, floats above everything. */
+      #summary-card,
+      #sessions-panel,
+      #camera-panel,
+      .onb-card,
+      #runway-card.expanded {
+        background:
+          radial-gradient(130% 55% at 50% 0%, var(--glass-tint), transparent 55%),
+          linear-gradient(160deg, rgba(242, 245, 248, 0.05), rgba(242, 245, 248, 0.01) 40%),
+          var(--glass3-bg);
+        -webkit-backdrop-filter: blur(var(--glass3-blur)) saturate(1.45) brightness(1.05);
+        backdrop-filter: blur(var(--glass3-blur)) saturate(1.45) brightness(1.05);
+        box-shadow:
+          inset 0 1px 0 var(--glass-rim),
+          inset 0 -1px 0 var(--glass-rim-soft),
+          0 32px 80px rgba(0, 0, 0, 0.65),
+          0 4px 12px rgba(0, 0, 0, 0.4);
+      }
+      /* Contrast holds without blur (the rgba fills are load-bearing). */
+      @media (prefers-reduced-transparency: reduce) {
+        .glass,
+        #nav,
+        #live-strip,
+        #summary-card,
+        #sessions-panel,
+        #camera-panel,
+        .onb-card,
+        #runway-card.expanded {
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+          background: rgba(10, 12, 16, 0.94);
+        }
+        /* The onboarding scrim is the one full-viewport blur — honor the
+           preference there too (review catch 2026-07-10). */
+        .onb-overlay {
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+          background: rgba(4, 6, 10, 0.96);
+        }
+      }
+
+      /* Entrance choreography — one settle curve, ~110ms stagger, runs ONCE
+         at load in story order (identity -> the tool -> the method -> the
+         CTA), then releases its computed styles so the data-phase opacity
+         transitions own the elements again. Whole block is reduced-motion-
+         gated; transform/opacity only. */
+      @media (prefers-reduced-motion: no-preference) {
+        @keyframes glass-in {
+          from {
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        /* body:not(.settled) is the ONCE-enforcement: landing.ts stamps
+           body.settled after the cascade lands. Without it, the immersion
+           display:none toggle restarted these from zero on every EXIT
+           HEADSET (review catch 2026-07-10 — display:none resets CSS
+           animations). */
+        body:not(.settled) #nav {
+          animation: glass-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s backwards;
+        }
+        body:not(.settled) #runway-card {
+          animation: glass-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.16s backwards;
+        }
+        body:not(.settled) #flow-card {
+          animation: glass-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.27s backwards;
+        }
+        body:not(.settled) #lesson-card {
+          animation: glass-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.38s backwards;
+        }
+        body:not(.settled) #flow-steps .step {
+          animation: glass-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+        body:not(.settled) #flow-steps .step:nth-child(1) {
+          animation-delay: 0.4s;
+        }
+        body:not(.settled) #flow-steps .step:nth-child(2) {
+          animation-delay: 0.46s;
+        }
+        body:not(.settled) #flow-steps .step:nth-child(3) {
+          animation-delay: 0.52s;
+        }
+        body:not(.settled) #flow-steps .step:nth-child(4) {
+          animation-delay: 0.58s;
+        }
+        /* Summary reveal cascade: the ring lands first, bars second,
+           verdict/coach/actions last — sequenced under the medal's 0.9s
+           sting anchor (the medal rides .score-row, first to land). */
+        #landing[data-phase="summary"] .score-row {
+          animation: glass-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+        }
+        #landing[data-phase="summary"] .sum-rows {
+          animation: glass-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.22s backwards;
+        }
+        #landing[data-phase="summary"] .sum-coach,
+        #landing[data-phase="summary"] .sum-actions {
+          animation: glass-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.34s backwards;
+        }
+      }
+
+      .mono {
+        font-family: var(--font-mono);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      /* top nav pill */
+      #nav {
+        justify-self: center;
+        display: flex;
+        align-items: center;
+        gap: clamp(20px, 6vw, 72px);
+        padding: 12px 24px;
+        border-radius: 999px;
+      }
+      /* The (X)RUNWAY wordmark - ONE word in the app icon's green, italicised
+         Impact (founder call 2026-07-13: match the iOS logo's font + green,
+         drop the separate badge). Impact has no true italic, so the ~11 deg
+         lean is the same skew the icon uses (generate-app-icon.swift slant 0.2).
+         The green is the icon's facet ramp as a text clip; solid #6dbe71 is the
+         fallback where background-clip:text is unsupported. */
+      .wordmark {
+        font-family: Impact, "Haettenschweiler", "Franklin Gothic Bold",
+          "Arial Narrow", sans-serif;
+        font-weight: 400;
+        font-size: 21px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        display: inline-block;
+        transform: skewX(-10deg);
+        background: linear-gradient(178deg, #a8dca8 0%, #6dbe71 48%, #3f8f4c 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: #6dbe71;
+      }
+      #nav .tag {
+        font-size: 10px;
+        color: var(--xr-silver);
+        letter-spacing: 0.26em;
+        white-space: nowrap;
+      }
+      /* External-camera (Phase 2 pose tracker) live indicator. */
+      #tracker-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        color: var(--xr-accent);
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: rgba(75, 156, 211, 0.16);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        white-space: nowrap;
+      }
+      #tracker-pill[hidden] {
+        display: none;
+      }
+      /* Recorded-walk count + export-all (data-collection deliverable). */
+      #data-chip {
+        pointer-events: auto;
+        cursor: pointer;
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        color: var(--xr-white);
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--glass-border);
+        box-shadow: inset 0 1px 0 rgba(242, 245, 248, 0.1);
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.2s ease;
+      }
+      #data-chip:hover {
+        transform: translateY(-1px);
+      }
+      /* The methodology page link (the defensibility layer). */
+      #methodology-link {
+        pointer-events: auto;
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        color: var(--xr-silver);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      #methodology-link:hover {
+        color: var(--xr-accent-soft);
+      }
+      #data-chip:hover {
+        background: rgba(75, 156, 211, 0.16);
+        border-color: rgba(75, 156, 211, 0.4);
+      }
+      #data-chip[hidden] {
+        display: none;
+      }
+      /* "+ CAMERA" affordance — same chip look as #data-chip. */
+      #camera-chip {
+        pointer-events: auto;
+        cursor: pointer;
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        color: var(--xr-accent);
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: rgba(75, 156, 211, 0.1);
+        border: 1px solid rgba(75, 156, 211, 0.34);
+        box-shadow: inset 0 1px 0 rgba(242, 245, 248, 0.1);
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.2s ease;
+      }
+      #camera-chip:hover {
+        background: rgba(75, 156, 211, 0.2);
+        transform: translateY(-1px);
+      }
+      #camera-panel {
+        position: fixed;
+        right: clamp(14px, 2.6vw, 32px);
+        top: clamp(70px, 9vh, 96px);
+        z-index: 46;
+        width: min(360px, 92vw);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 20px;
+        border-radius: 18px;
+        pointer-events: auto;
+        /* box-shadow comes from the T3 glass tier (rim + dual shadow) — a
+           local shadow here would win the cascade and strip the rim
+           (review catch 2026-07-10). */
+      }
+      #camera-panel[hidden] {
+        display: none;
+      }
+      .cam-body {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--xr-silver);
+        margin: 0;
+      }
+      .cam-step {
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        color: var(--xr-accent);
+      }
+      .cam-url {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 9px 11px;
+        word-break: break-all;
+      }
+      .cam-note {
+        font-size: 9px;
+        letter-spacing: 0.05em;
+        color: var(--xr-silver);
+        line-height: 1.5;
+        margin: 0;
+      }
+      /* Session-data view (toggled by the data chip). */
+      #sessions-panel {
+        position: fixed;
+        right: clamp(14px, 2.6vw, 32px);
+        top: clamp(70px, 9vh, 96px);
+        z-index: 45;
+        width: min(360px, 92vw);
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 20px;
+        border-radius: 18px;
+        pointer-events: auto;
+        /* box-shadow comes from the T3 glass tier (rim + dual shadow) — a
+           local shadow here would win the cascade and strip the rim
+           (review catch 2026-07-10). */
+      }
+      #sessions-panel[hidden] {
+        display: none;
+      }
+      .sp-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--xr-white);
+      }
+      .sp-head .btn {
+        padding: 6px 12px;
+        font-size: 9px;
+      }
+      .sp-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        overflow-y: auto;
+        min-height: 0;
+      }
+      .sp-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .sp-when {
+        font-family: var(--font-mono);
+        color: rgba(242, 245, 248, 0.82);
+        letter-spacing: 0.04em;
+      }
+      .sp-src {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.12em;
+        color: var(--xr-accent);
+        text-transform: uppercase;
+      }
+      .sp-score {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--xr-white);
+        font-variant-numeric: tabular-nums;
+      }
+      .sp-empty {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--xr-silver);
+      }
+      .sp-actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sp-actions .btn {
+        flex: 1 1 auto;
+        padding: 10px 12px;
+        font-size: 9.5px;
+      }
+      /* CLEAR HISTORY (#26): destructive, so it whispers until armed — the
+         first tap turns it into the warning it is (same rose as .low scores),
+         the second erases; ~4s auto-disarm returns it to neutral glass. */
+      #clear-history.armed {
+        border-color: rgba(233, 129, 143, 0.55);
+        color: #e9818f;
+      }
+      /* --- run-history gallery (WS2) --- */
+      .sp-filters {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .sp-chip {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 5px 11px;
+        cursor: pointer;
+        transition:
+          color 0.18s ease,
+          background 0.18s ease,
+          border-color 0.18s ease;
+      }
+      .sp-chip:hover {
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(142, 196, 232, 0.5);
+      }
+      .sp-chip.active {
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        border-color: var(--xr-accent);
+      }
+      /* --- trends strip (#11): progress across walks, above the card list --- */
+      .sp-trends {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 11px 13px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sp-trends[hidden] {
+        display: none;
+      }
+      .sp-trends-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      .sp-trends-side {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .sp-trends-avg {
+        font-family: var(--font-mono);
+        font-size: 7.5px;
+        letter-spacing: 0.14em;
+        color: rgba(242, 245, 248, 0.82);
+      }
+      .sp-trends-best {
+        font-family: var(--font-mono);
+        font-size: 7.5px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--xr-accent-soft);
+        background: rgba(75, 156, 211, 0.1);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        border-radius: 5px;
+        padding: 2px 6px;
+      }
+      /* Overall-per-walk sparkline: one bar per real walk, oldest → newest,
+         the latest at full strength. Same fill language as the card minis. */
+      .sp-spark {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 34px;
+      }
+      .sp-spark-bar {
+        flex: 1 1 0;
+        min-width: 3px;
+        max-width: 16px;
+        border-radius: 2px 2px 0 0;
+        background: linear-gradient(
+          0deg,
+          var(--xr-accent-deep),
+          var(--xr-accent)
+        );
+        opacity: 0.55;
+      }
+      .sp-spark-bar.latest {
+        opacity: 1;
+      }
+      .sp-trend-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: 0.08em;
+        color: var(--xr-silver);
+      }
+      .sp-trend-line .up {
+        color: var(--xr-accent-soft);
+      }
+      .sp-trend-line .down {
+        color: #e9818f;
+      }
+      /* --- benchmark headline (M12): the like-for-like improvement line ---
+         Gold, the record color — this is the one series read as progress.
+         Its OWN strip (sibling of #sp-trends, the #sp-repeat chrome): its
+         visibility is independent of the trend strip's active-stamp scope. */
+      .sp-benchmark {
+        padding: 11px 13px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: 0.12em;
+        color: var(--xr-gold);
+        cursor: help;
+      }
+      .sp-benchmark[hidden] {
+        display: none;
+      }
+      /* --- per-mode records (#38): one chip per trained mode --- */
+      .sp-modes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .sp-modes[hidden] {
+        display: none;
+      }
+      /* --- M12 consistency strip: spread across matched walks (landing.ts
+         paints title/detail/verdict; the container tooltip is the fixed
+         repeatability disclosure). --- */
+      .sp-repeat {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 11px 13px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        cursor: help;
+      }
+      .sp-repeat[hidden] {
+        display: none;
+      }
+      .sp-repeat-title {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      .sp-repeat-detail {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: 0.08em;
+        color: rgba(242, 245, 248, 0.82);
+      }
+      .sp-repeat-verdict {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: 0.08em;
+        color: var(--xr-accent-soft);
+      }
+      .sp-mode-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 9px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: var(--font-mono);
+        font-size: 7.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      .sp-mode-best {
+        font-weight: 600;
+        color: var(--xr-accent-soft);
+      }
+      /* Earned mastery reads as the panel's strongest accent — the same
+         filled Carolina Blue as an active filter chip. */
+      .sp-mode-badge {
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+      /* RUN HISTORY cards — brought up to the glass-overhaul language
+         (founder directive 2026-07-22): specular top rim, gradient glass
+         surface, Carolina hover affordance. */
+      .sp-card {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 12px 13px;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.075),
+          rgba(255, 255, 255, 0.03)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+        transition:
+          border-color 0.25s ease,
+          transform 0.25s ease;
+      }
+      .sp-card:hover {
+        border-color: rgba(75, 156, 211, 0.38);
+        transform: translateY(-1px);
+      }
+      .sp-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .sp-card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+      }
+      .sp-card-when {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: rgba(242, 245, 248, 0.88);
+        letter-spacing: 0.04em;
+      }
+      /* Preview Walk auto-pilot runs — badged so synthetic data never poses
+         as a trainee walk in the history. */
+      .sp-badge {
+        margin-left: 7px;
+        font-family: var(--font-mono);
+        font-size: 7px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--xr-accent-soft);
+        background: rgba(75, 156, 211, 0.1);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        border-radius: 5px;
+        padding: 2px 5px;
+        vertical-align: 2px;
+      }
+      .sp-card-sub {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      .sp-card-sub .sp-src {
+        color: var(--xr-accent);
+      }
+      .sp-card-score {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 23px;
+        line-height: 1;
+        color: var(--xr-white);
+        font-variant-numeric: tabular-nums;
+        flex: none;
+      }
+      .sp-card-score.pass {
+        color: var(--xr-accent-soft);
+      }
+      .sp-card-score.low {
+        color: #e9818f;
+      }
+      /* The honest-3 detail: PACE / CARRIAGE / LINE (the walk-card reads). */
+      .sp-mini {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .sp-mini-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .sp-mini-val {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--xr-white);
+        font-variant-numeric: tabular-nums;
+      }
+      .sp-mini-bar {
+        width: 100%;
+        height: 28px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+      }
+      .sp-mini-fill {
+        width: 100%;
+        background: linear-gradient(
+          0deg,
+          var(--xr-accent-deep),
+          var(--xr-accent)
+        );
+      }
+      .sp-mini-fill.low {
+        background: linear-gradient(0deg, #8a3a44, #e9818f);
+      }
+      .sp-mini-lab {
+        font-family: var(--font-mono);
+        font-size: 7px;
+        letter-spacing: 0.12em;
+        color: var(--xr-silver);
+      }
+      .sp-card-actions {
+        display: flex;
+        gap: 7px;
+      }
+      .sp-card-actions .btn {
+        flex: 1;
+        padding: 6px 8px;
+        font-size: 8px;
+      }
+      /* Rows recorded before this page-load kept no time-series (#41) — an
+         honest muted tag replaces per-walk export buttons that could only
+         fail. The panel-level exports below still carry the summary. */
+      .sp-summary-only {
+        font-family: var(--font-mono);
+        font-size: 7.5px;
+        letter-spacing: 0.14em;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 5px;
+        padding: 3px 7px;
+      }
+      /* generic toast (export confirmations etc.) — mirrors #tracker-toast */
+      #app-toast {
+        position: fixed;
+        top: clamp(64px, 8vh, 88px);
+        left: 50%;
+        transform: translateX(-50%) translateY(-8px);
+        z-index: 52;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        padding: 9px 18px;
+        border-radius: 999px;
+        box-shadow: 0 0 28px rgba(75, 156, 211, 0.7);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+      }
+      #app-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .tp-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--xr-accent);
+        box-shadow: 0 0 8px var(--xr-accent);
+        animation: tp-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes tp-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .tp-dot { animation: none; }
+      }
+
+      /* middle: hero + user-flow card */
+      #main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: clamp(20px, 4vw, 56px);
+        min-height: 0;
+      }
+
+      /* Right column stacks the USER FLOW card + the RUNWAY editor card. */
+      #side-col {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(12px, 1.6vh, 20px);
+        width: min(400px, 38vw);
+        flex: none;
+        align-self: flex-start;
+        /* THE CLIPPING FIX (founder raised this repeatedly): the overlay is
+           position:fixed and never scrolls, so on desktop any content taller
+           than the viewport was simply CUT OFF. The column now scrolls
+           ITSELF. The earlier max-height+overflow attempt failed because
+           #landing's pointer-events:none swallowed the wheel — the
+           pointer-events:auto opt-in below is the missing half; without it
+           this rule is a no-op and must not be reverted to clipping again.
+           (The <=900px branch overrides back to natural height because the
+           WHOLE overlay scrolls there.)
+           2026-07-13: max-height was 100% - i.e. 100% of the COMPRESSED middle
+           grid row (~422px), which clipped the taller USER FLOW card at
+           CONTROLS even when it would fit the screen (founder: "extend this
+           box"). Cap to the real viewport height instead (minus the nav + top
+           padding), so the full card shows whenever it fits, and only scrolls
+           when the content genuinely exceeds the screen. */
+        max-height: calc(100dvh - 96px);
+        overflow-y: auto;
+        pointer-events: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+      }
+      #side-col::-webkit-scrollbar {
+        width: 8px;
+      }
+      #side-col::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+      }
+      #side-col::-webkit-scrollbar-thumb:hover {
+        background: rgba(142, 196, 232, 0.35);
+      }
+      #side-col #flow-card {
+        width: 100%;
+      }
+
+      #hero {
+        max-width: 560px;
+        transition: opacity 0.6s ease;
+      }
+      .kicker {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--xr-accent);
+        letter-spacing: 0.34em;
+        margin-bottom: 18px;
+      }
+      #hero h1 {
+        font-weight: 600;
+        font-size: clamp(32px, 4.4vw, 54px);
+        line-height: 1.08;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      .serif-accent {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 600;
+        color: var(--xr-accent);
+      }
+      #hero p {
+        margin-top: 18px;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: rgba(242, 245, 248, 0.78);
+        max-width: 52ch;
+      }
+      #hero ul {
+        margin-top: 20px;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+      }
+      #hero li {
+        position: relative;
+        padding-left: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(242, 245, 248, 0.86);
+      }
+      #hero li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.52em;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--xr-accent);
+        box-shadow: 0 0 10px rgba(75, 156, 211, 0.7);
+      }
+
+      /* user flow card */
+      #flow-card {
+        width: min(400px, 38vw);
+        flex: none;
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+      }
+      #flow-card .card-kicker {
+        font-size: 10px;
+        color: var(--xr-silver);
+        letter-spacing: 0.3em;
+      }
+      #flow-card h2 {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 21px;
+        margin: 6px 0 18px;
+        color: var(--xr-white);
+      }
+      #flow-steps {
+        display: grid;
+        gap: 14px;
+        transition: opacity 0.6s ease;
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .step .num {
+        flex: none;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--xr-accent);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        background: rgba(75, 156, 211, 0.08);
+        border-radius: 8px;
+        padding: 5px 8px;
+        margin-top: 1px;
+      }
+      .step .txt {
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: rgba(242, 245, 248, 0.8);
+      }
+
+      .controls-label {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 9.5px;
+        color: var(--xr-silver);
+        letter-spacing: 0.3em;
+        margin-bottom: 12px;
+      }
+      /* ---- educational scoring definitions (founder call) ---- */
+      #scoring-block {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      /* DETAILS: the same separated-block treatment as the scoring block. */
+      #details-block {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #details-block .card-kicker {
+        margin-bottom: 8px;
+      }
+      #scoring-block .card-kicker {
+        margin-bottom: 8px;
+      }
+      .scoring-intro {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--xr-silver);
+        margin-bottom: 14px;
+      }
+      .score-def {
+        margin-bottom: 12px;
+      }
+      .score-name {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        color: var(--xr-accent);
+      }
+      .score-what {
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--xr-white);
+        margin: 2px 0 3px;
+      }
+      .score-math {
+        font-size: 10px;
+        line-height: 1.45;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 2px solid var(--xr-accent-deep);
+        padding: 5px 8px;
+        border-radius: 4px;
+      }
+      /* F.17 provenance: the cited industry instruction under each formula. */
+      .score-src {
+        margin-top: 3px;
+        font-size: 10.5px;
+        font-style: italic;
+        color: var(--xr-silver);
+      }
+      /* Collapsed-by-default education folds (founder call 2026-07-09: the
+         full math is opt-in, never a wall of text). Native details/summary -
+         no JS, keyboard friendly. */
+      .edu-fold > summary {
+        /* #landing is pointer-events:none with per-element opt-in — without
+           this, desktop clicks on the fold fell through to the 3D canvas and
+           only keyboard could open it (review catch 2026-07-10). */
+        pointer-events: auto;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 8px;
+        margin: -4px -6px;
+        padding: 4px 6px;
+        transition: background 0.18s ease, color 0.18s ease;
+      }
+      .edu-fold > summary:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .edu-fold > summary:focus-visible {
+        outline: 2px solid var(--xr-accent-soft);
+        outline-offset: 2px;
+      }
+      .edu-fold > summary::-webkit-details-marker {
+        display: none;
+      }
+      .edu-fold > summary::after {
+        content: "+";
+        color: var(--xr-accent-soft);
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .edu-fold[open] > summary::after {
+        content: "\2212";
+      }
+      /* The formula boxes must never clip: wrap anywhere, relax the
+         uppercase tracking at phone widths (the founder's cut-off shots). */
+      .score-math {
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 520px) {
+        .score-math {
+          letter-spacing: 0.08em;
+        }
+      }
+      .scoring-sensor {
+        margin-top: 4px;
+        font-size: 9.5px;
+        line-height: 1.5;
+        letter-spacing: 0.04em;
+        color: var(--xr-accent-soft);
+      }
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      /* Desktop walk controls (#2): key-cap chips so a first-time laptop
+         visitor knows how to actually move during a walk. */
+      .controls-keys {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .kcap {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        padding: 4px 7px;
+        min-width: 24px;
+        text-align: center;
+      }
+      .kcap-label {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.22em;
+        color: var(--xr-silver);
+        margin-right: 8px;
+      }
+      /* Music control (#6): toggle + volume, same row style as the controls.
+         The slider reuses .rw-slider (incl. its pointer-events opt-in). */
+      .music-row {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      /* the [hidden] attribute must win over the flex display above (the
+         coach-voice row is hidden — coach is text-only). */
+      .music-row[hidden] {
+        display: none !important;
+      }
+      .music-row #music-btn {
+        flex: none;
+        min-width: 108px;
+      }
+      .music-row .rw-slider {
+        flex: 1;
+      }
+      /* Coach voice toggle (#20/#48): same row style, full-width button. */
+      /* Beat pulse control (M9): same row style, full-width button. */
+      .music-row #beat-btn {
+        flex: 1;
+      }
+      /* Music tempo picker: same row style, full-width button; the caption
+         under it carries the founder's per-option note. */
+      .music-row #bpm-btn {
+        flex: 1;
+      }
+      #lesson-card .bpm-note {
+        margin-top: 4px;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: rgba(242, 245, 248, 0.55);
+        text-align: left;
+      }
+
+      /* ADVANCED fold (2026-07-18): recedes on purpose - dim bare text, no
+         glass chrome, tucked under the settings stack. The summary MUST
+         carry its own pointer-events (the #landing overlay is
+         pointer-events:none - the .edu-fold lesson). */
+      #lesson-card .adv-fold {
+        margin-top: 6px;
+        text-align: left;
+      }
+      #lesson-card .adv-fold > summary {
+        pointer-events: auto;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(138, 143, 150, 0.6);
+      }
+      #lesson-card .adv-fold > summary:hover {
+        color: rgba(142, 196, 232, 0.8);
+      }
+      #lesson-card .adv-btn {
+        pointer-events: auto;
+        cursor: pointer;
+        margin-top: 4px;
+        padding: 4px 8px;
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        background: none;
+        border: 1px solid rgba(35, 42, 51, 0.9);
+        border-radius: 8px;
+        color: rgba(242, 245, 248, 0.6);
+      }
+      #lesson-card .adv-btn:hover {
+        border-color: rgba(75, 156, 211, 0.6);
+        color: rgba(142, 196, 232, 0.9);
+      }
+
+      /* Wave 1 FIT block: body-baseline status + guided-flow controls. */
+      #fit-block {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      /* --- Wave-4 curriculum block (mirrors the FIT block's language) --- */
+      #curriculum-block {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #cur-level-line {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 15px;
+        color: var(--xr-white);
+        margin-bottom: 4px;
+      }
+      #cur-record-line,
+      #cur-plan-line {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        color: var(--xr-silver);
+        margin-bottom: 4px;
+      }
+      #curriculum-block .controls-row {
+        margin-top: 8px;
+      }
+      .cur-drill.active {
+        border-color: var(--xr-accent);
+        color: var(--xr-accent-soft);
+        box-shadow: 0 0 14px rgba(75, 156, 211, 0.25);
+      }
+      #cur-drill-note {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        color: var(--xr-accent-soft);
+        margin-top: 6px;
+      }
+      #cur-drill-note[hidden] {
+        display: none !important;
+      }
+      #fit-status-line {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        color: var(--xr-silver);
+        margin: 8px 0 10px;
+        line-height: 1.5;
+      }
+      #fit-guide {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: var(--xr-accent);
+        margin: 0 0 10px;
+        line-height: 1.5;
+      }
+      #fit-block .controls-row {
+        margin-bottom: 4px;
+      }
+      .fit-note {
+        font-size: 10px;
+        color: var(--xr-silver);
+        opacity: 0.55;
+        line-height: 1.5;
+        margin-top: 6px;
+      }
+
+      /* ------------------- RUNWAY editor card (REV3) ------------------- */
+      /* Desktop / emulator path: map the virtual runway with sliders since
+         you can't physically walk in the browser. Bound to runwayLayout. */
+      /* LEFT COLUMN (founder call 2026-07-22): RUNWAY editor stacked over the
+         LESSON card — mirrors #side-col (top-aligned, own scroll, and the
+         standing law: any scrollable region in the overlay carries its own
+         pointer-events:auto). order:-1 keeps it first (left / top on mobile). */
+      #left-col {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(12px, 1.6vh, 20px);
+        width: min(400px, 38vw);
+        flex: none;
+        order: -1;
+        align-self: flex-start;
+        max-height: 100%;
+        overflow-y: auto;
+        pointer-events: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+      }
+      #runway-card {
+        width: 100%;
+        flex: none;
+        border-radius: 22px;
+        padding: 18px 20px;
+      }
+      .rw-summary {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .rw-summary > div:first-child {
+        min-width: 0;
+      }
+      #rw-toggle {
+        flex: none;
+        padding: 8px 16px;
+        font-size: 10px;
+        margin-top: 2px;
+      }
+      #rw-preview {
+        width: 100%;
+        margin-top: 12px;
+        letter-spacing: 0.16em;
+      }
+      /* ---- passthrough backdrop picker ---- */
+      .rw-backdrop {
+        margin-top: 14px;
+      }
+      .rw-backdrop-label {
+        font-size: 8px;
+        color: var(--xr-silver);
+        letter-spacing: 0.24em;
+        margin-bottom: 7px;
+      }
+      .scene-select {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+      }
+      .scene-chip {
+        pointer-events: auto;
+        appearance: none;
+        cursor: pointer;
+        font-family: var(--font-mono, monospace);
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        padding: 7px 2px;
+        border-radius: 8px;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition:
+          color 0.18s ease,
+          border-color 0.18s ease,
+          background 0.18s ease;
+      }
+      .scene-chip:hover {
+        color: var(--xr-white);
+        border-color: var(--xr-accent-soft);
+      }
+      .scene-chip[aria-selected="true"] {
+        color: var(--xr-white);
+        background: color-mix(in srgb, var(--xr-accent) 24%, transparent);
+        border-color: var(--xr-accent);
+        box-shadow: 0 0 0 1px var(--xr-accent) inset;
+      }
+      /* Backdrop fetch in flight (#33): the panoramas are 1.5-8 MB, so the
+         tapped chip breathes Carolina Blue until the file lands (selection
+         only moves on success; failure reverts with a toast). */
+      .scene-chip.loading {
+        color: var(--xr-accent-soft);
+        cursor: progress;
+        animation: scene-loading 1.1s ease-in-out infinite;
+      }
+      @keyframes scene-loading {
+        0%,
+        100% {
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+        50% {
+          border-color: var(--xr-accent);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scene-chip.loading {
+          animation: none;
+          border-color: var(--xr-accent);
+        }
+      }
+      /* Collapsed by default: only the summary + EDIT show (keeps the pitch
+         clean and the side column short). Expanding floats the full editor as
+         its own panel, so every control is visible without scrolling. */
+      #runway-card .rw-controls,
+      #runway-card .rw-actions {
+        display: none;
+      }
+      /* Expanded EDIT state floats as a fixed panel (bottom-right) regardless of
+         where the collapsed card lives. .expanded (id + class) outranks the base
+         #runway-card, so no #side-col scope is needed now that it moved out. */
+      #runway-card.expanded {
+        position: fixed;
+        right: clamp(14px, 2.6vw, 32px);
+        bottom: clamp(14px, 2.6vw, 32px);
+        top: auto;
+        left: auto;
+        width: min(360px, 92vw);
+        max-height: 86vh;
+        overflow-y: auto;
+        z-index: 40;
+        /* box-shadow from the T3 glass tier (see the .glass tier rules). */
+      }
+      #runway-card.expanded .rw-controls {
+        display: grid;
+        margin-top: 14px;
+      }
+      #runway-card.expanded .rw-actions {
+        display: flex;
+      }
+      #runway-card .card-kicker {
+        font-size: 10px;
+        color: var(--xr-silver);
+        letter-spacing: 0.3em;
+      }
+      #runway-card h2 {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 21px;
+        margin: 6px 0 4px;
+        color: var(--xr-white);
+      }
+      #runway-readout {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.08em;
+        color: var(--xr-accent);
+        margin-bottom: 12px;
+      }
+      /* 2-column grid: 5 sliders collapse to 3 rows so the whole card fits. */
+      .rw-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+      }
+      .rw-row {
+        display: grid;
+        gap: 5px;
+        align-content: start;
+      }
+      /* Length spans both columns (the headline dimension). */
+      .rw-row:first-child {
+        grid-column: 1 / -1;
+      }
+      /* Preset/saved picker spans the editor; Length (next row) keeps its span. */
+      .rw-load {
+        grid-column: 1 / -1;
+      }
+      .rw-load + .rw-row {
+        grid-column: 1 / -1;
+      }
+      .rw-select {
+        width: 100%;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 9px;
+        padding: 8px 10px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .rw-select:focus {
+        outline: 1px solid var(--xr-accent);
+      }
+      .rw-select option,
+      .rw-select optgroup {
+        background: #0d1016;
+        color: var(--xr-white);
+      }
+      .rw-save-btn {
+        padding: 4px 10px;
+        font-size: 8.5px;
+      }
+      /* Shape picker (straight / T / X / U) + arm sliders. */
+      .rw-shape {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .rw-shape-chip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 7px 4px;
+        cursor: pointer;
+        transition:
+          color 0.18s ease,
+          background 0.18s ease,
+          border-color 0.18s ease;
+      }
+      .rw-shape-chip:hover {
+        color: var(--xr-white);
+      }
+      .rw-shape-chip.active {
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        border-color: var(--xr-accent);
+      }
+      .rw-shape-ic {
+        width: 22px;
+        height: 13px;
+        fill: currentColor;
+      }
+      /* #landing is pointer-events:none, so interactive editor controls must
+         opt back in (as .scene-chip / .rw-slider already do). Without this the
+         shape chips + preset dropdown + editor buttons are unclickable for a
+         real user — clicks fall through to the 3D canvas. */
+      .rw-shape-chip,
+      .rw-select,
+      .rw-save-btn,
+      #runway-card .btn {
+        pointer-events: auto;
+      }
+      .rw-arm[hidden] {
+        display: none;
+      }
+      .rw-row-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .rw-label {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.18em;
+        color: var(--xr-silver);
+        text-transform: uppercase;
+      }
+      .rw-value {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--xr-white);
+        font-variant-numeric: tabular-nums;
+      }
+      /* Themed range slider — Carolina Blue track + thumb. */
+      .rw-slider {
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.12);
+        outline: none;
+        cursor: pointer;
+      }
+      .rw-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--xr-accent);
+        border: 2px solid var(--xr-bg);
+        box-shadow:
+          inset 0 1px 0 rgba(242, 245, 248, 0.5),
+          0 0 10px rgba(75, 156, 211, 0.6);
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .rw-slider:hover::-webkit-slider-thumb,
+      .rw-slider:active::-webkit-slider-thumb {
+        transform: scale(1.25);
+      }
+      .rw-slider::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--xr-accent);
+        border: 2px solid var(--xr-bg);
+        box-shadow:
+          inset 0 1px 0 rgba(242, 245, 248, 0.5),
+          0 0 10px rgba(75, 156, 211, 0.6);
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .rw-slider:hover::-moz-range-thumb,
+      .rw-slider:active::-moz-range-thumb {
+        transform: scale(1.25);
+      }
+      .rw-slider:focus-visible {
+        box-shadow: 0 0 0 2px rgba(75, 156, 211, 0.4);
+      }
+      .rw-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .rw-actions .btn {
+        flex: 1 1 auto;
+        padding: 11px 14px;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      /* ------------------------- buttons ------------------------- */
+      .btn {
+        pointer-events: auto;
+        cursor: pointer;
+        appearance: none;
+        position: relative;
+        overflow: hidden;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--xr-white);
+        border-radius: 999px;
+        padding: 12px 20px;
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          background 0.18s ease;
+      }
+      .btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+      .btn[disabled] {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+      /* Branded focus ring — keyboard nav had only the UA default before. */
+      .btn:focus-visible,
+      .sp-chip:focus-visible,
+      .mode-chip:focus-visible,
+      .rw-shape-chip:focus-visible,
+      .scene-chip:focus-visible,
+      .sum-close:focus-visible,
+      #data-chip:focus-visible,
+      #camera-chip:focus-visible {
+        outline: 2px solid var(--xr-accent-soft);
+        outline-offset: 2px;
+      }
+      .btn-primary {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: linear-gradient(
+          135deg,
+          var(--xr-accent),
+          var(--xr-accent-deep)
+        );
+        box-shadow:
+          inset 0 1px 0 rgba(242, 245, 248, 0.35),
+          0 0 22px rgba(75, 156, 211, 0.35),
+          0 6px 18px rgba(0, 0, 0, 0.4);
+      }
+      /* Hover light-sweep: transform-only, feedback-driven, never autonomous. */
+      .btn-primary::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background: linear-gradient(
+          115deg,
+          transparent 30%,
+          rgba(242, 245, 248, 0.28) 48%,
+          transparent 62%
+        );
+        transform: translateX(-110%);
+      }
+      /* Transition on the HOVER state only: entering sweeps, leaving snaps
+         home invisibly — a base-state transition replayed the sweep in
+         REVERSE on every pointer-out (review catch 2026-07-10). */
+      .btn-primary:hover::after {
+        transform: translateX(110%);
+        transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          inset 0 1px 0 rgba(242, 245, 248, 0.35),
+          0 0 36px rgba(75, 156, 211, 0.55),
+          0 10px 24px rgba(0, 0, 0, 0.45);
+      }
+      /* No per-button backdrop-filter: ~20 of these sit ON already-blurred
+         glass, so each one re-blurred blurred pixels (a compositing tax over
+         a live WebGL scene). The rim + gradient fill reads as glass instead. */
+      .btn-glass {
+        border: 1px solid var(--glass-border);
+        background: linear-gradient(
+          160deg,
+          rgba(255, 255, 255, 0.09),
+          rgba(255, 255, 255, 0.04)
+        );
+        box-shadow: inset 0 1px 0 rgba(242, 245, 248, 0.12);
+      }
+      .btn-glass:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(
+          160deg,
+          rgba(255, 255, 255, 0.13),
+          rgba(255, 255, 255, 0.07)
+        );
+        border-color: rgba(142, 196, 232, 0.4);
+      }
+
+      /* --------------------- lesson card (left column) --------------------- */
+      #lesson-card {
+        width: 100%;
+        border-radius: 22px;
+        padding: 20px 24px;
+        text-align: center;
+        transition: opacity 0.5s ease;
+      }
+      #lesson-card .lesson-label {
+        font-size: 9.5px;
+        color: var(--xr-accent);
+        letter-spacing: 0.3em;
+      }
+      #lesson-card .greeting {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 27px;
+        margin: 8px 0 4px;
+      }
+      #lesson-card .greeting .name {
+        color: var(--xr-accent);
+      }
+      #lesson-card .meta {
+        font-size: 9.5px;
+        color: var(--xr-silver);
+        letter-spacing: 0.26em;
+        margin-bottom: 8px;
+      }
+      /* ---- mode selector (segmented chips) ---- */
+      #mode-select {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      /* Hidden-until-differentiated: the ID selector above outranks the UA
+         [hidden] default, so force it (same specificity trap as .lm/.sum-row). */
+      #mode-select[hidden] {
+        display: none !important;
+      }
+      .mode-chip {
+        pointer-events: auto;
+        appearance: none;
+        cursor: pointer;
+        font-family: var(--font-mono, monospace);
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        padding: 8px 6px;
+        border-radius: 9px;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition:
+          color 0.18s ease,
+          border-color 0.18s ease,
+          background 0.18s ease;
+      }
+      .mode-chip:hover {
+        color: var(--xr-white);
+        border-color: var(--xr-accent-soft);
+      }
+      .mode-chip[aria-selected="true"] {
+        color: var(--xr-white);
+        background: color-mix(in srgb, var(--xr-accent) 22%, transparent);
+        border-color: var(--xr-accent);
+        box-shadow: 0 0 0 1px var(--xr-accent) inset;
+      }
+      #lesson-card .mode-tagline {
+        font-style: italic;
+        font-size: 11px;
+        line-height: 1.35;
+        color: var(--xr-silver);
+        margin-bottom: 6px;
+        min-height: 2.7em;
+      }
+      /* One-line coach-voice mention (#20/#48): the coach SPEAKS mid-walk. */
+      #lesson-card .mode-coachline {
+        font-size: 10px;
+        line-height: 1.3;
+        color: var(--xr-silver);
+        opacity: 0.75;
+        margin-bottom: 14px;
+      }
+      /* Settings relocated into the lesson card (founder call): the two toggle
+         rows sit between the mode chips and BEGIN WALK, left-aligned like the
+         controls they came from. */
+      #lesson-card .lesson-settings {
+        text-align: left;
+        margin: 4px 0 16px;
+      }
+      #begin-walk {
+        width: 100%;
+        padding: 14px 20px;
+      }
+
+      /* brief inline hint when no XR runtime exists (no demo fallback) */
+      .xr-hint {
+        display: block;
+        margin-top: 10px;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.3em;
+        color: var(--xr-accent-soft);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .xr-hint.show {
+        opacity: 1;
+      }
+
+      /* ------------------- live metrics strip ------------------- */
+      #live-strip {
+        position: fixed;
+        left: 50%;
+        bottom: clamp(16px, 4vh, 36px);
+        transform: translateX(-50%);
+        z-index: 12;
+        display: none;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        max-width: calc(100vw - 28px);
+      }
+      #phase-chip {
+        flex: none;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: #fff;
+        background: linear-gradient(
+          135deg,
+          var(--xr-accent),
+          var(--xr-accent-deep)
+        );
+        border-radius: 999px;
+        padding: 8px 14px;
+        min-width: 64px;
+        text-align: center;
+        box-shadow: 0 0 18px rgba(75, 156, 211, 0.45);
+      }
+      #time-chip {
+        flex: none;
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        color: var(--xr-accent-soft);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        background: rgba(75, 156, 211, 0.08);
+        border-radius: 999px;
+        padding: 8px 14px;
+      }
+      #time-chip[hidden] {
+        display: none;
+      }
+      #time-chip .time-label {
+        font-size: 8px;
+        letter-spacing: 0.26em;
+        color: var(--xr-silver);
+      }
+      #time-val {
+        font-size: 12px;
+        color: var(--xr-white);
+        min-width: 34px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      /* TIME urgency — last ~10s reddens + pulses for tension. */
+      #time-chip.urgent {
+        color: #ffb4bd;
+        border-color: rgba(233, 129, 143, 0.6);
+        background: rgba(233, 129, 143, 0.12);
+        animation: time-pulse 1s ease-in-out infinite;
+      }
+      #time-chip.urgent #time-val {
+        color: #ffd9de;
+      }
+      @keyframes time-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(233, 129, 143, 0);
+        }
+        50% {
+          box-shadow: 0 0 16px 0 rgba(233, 129, 143, 0.45);
+        }
+      }
+
+      /* Big centered 3-2-1 countdown overlay (stage moment before the walk). */
+      #countdown-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+      #countdown-overlay[hidden] {
+        display: none;
+      }
+      #countdown-num {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 700;
+        font-size: clamp(120px, 22vw, 300px);
+        line-height: 1;
+        color: var(--xr-white);
+        text-shadow: 0 0 60px rgba(75, 156, 211, 0.6);
+        animation: count-pop 1s ease-out;
+      }
+      /* --- FIRST-RUN GUIDED ATTENTION (web tour) ---
+         A dim overlay whose spotlight cutout (#tour-spot) casts the dim as
+         its own 200vmax box-shadow — everything outside the cutout falls to
+         near-black, the lit target stays live. Beats/captions come from
+         web-tour-core.ts; web-tour.ts drives geometry. Sits UNDER the
+         onboarding modal (60) — the welcome goes first on a true first run. */
+      #web-tour {
+        position: fixed;
+        inset: 0;
+        z-index: 58;
+        /* The overlay owns the pointer while active: click-anywhere advances
+           (the #landing pointer-events law — nothing inside may be dead). */
+        pointer-events: auto;
+        cursor: pointer;
+        overflow: hidden;
+      }
+      #web-tour[hidden] {
+        display: none !important;
+      }
+      #tour-spot {
+        position: absolute;
+        border-radius: 22px;
+        box-shadow:
+          0 0 0 200vmax rgba(4, 6, 10, 0.78),
+          0 0 0 1px rgba(142, 196, 232, 0.55),
+          0 0 34px rgba(75, 156, 211, 0.35);
+        transition:
+          left 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          top 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          width 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          height 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          border-radius 0.55s ease;
+      }
+      /* The finale: START pulses — the sequence's destination breathes. */
+      #web-tour[data-beat="begin-walk"] #tour-spot {
+        animation: tour-spot-pulse 1.15s ease-in-out infinite;
+      }
+      @keyframes tour-spot-pulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 0 200vmax rgba(4, 6, 10, 0.78),
+            0 0 0 1px rgba(142, 196, 232, 0.55),
+            0 0 30px rgba(75, 156, 211, 0.35);
+        }
+        50% {
+          box-shadow:
+            0 0 0 200vmax rgba(4, 6, 10, 0.78),
+            0 0 0 2px rgba(142, 196, 232, 0.9),
+            0 0 58px rgba(75, 156, 211, 0.65);
+        }
+      }
+      #tour-caption {
+        position: absolute;
+        max-width: min(460px, 84vw);
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: var(--glass3-bg);
+        -webkit-backdrop-filter: blur(var(--glass3-blur)) saturate(1.4);
+        backdrop-filter: blur(var(--glass3-blur)) saturate(1.4);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          inset 0 1px 0 var(--glass-rim),
+          0 18px 40px rgba(0, 0, 0, 0.45);
+        color: var(--xr-white);
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 21px;
+        line-height: 1.3;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          left 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          top 0.55s cubic-bezier(0.22, 0.8, 0.24, 1),
+          opacity 0.26s ease;
+      }
+      #tour-skip {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        pointer-events: auto;
+        cursor: pointer;
+        padding: 9px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass1-bg);
+        -webkit-backdrop-filter: blur(var(--glass1-blur)) saturate(1.4);
+        backdrop-filter: blur(var(--glass1-blur)) saturate(1.4);
+        color: var(--xr-silver);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+      }
+      #tour-skip:hover {
+        color: var(--xr-white);
+        border-color: var(--glass-rim);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #tour-spot,
+        #tour-caption {
+          transition: none;
+        }
+        #web-tour[data-beat="begin-walk"] #tour-spot {
+          animation: none;
+        }
+      }
+      /* --- WS5: first-run onboarding --- */
+      .onb-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(4, 6, 10, 0.72);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+      }
+      .onb-overlay[hidden] {
+        display: none;
+      }
+      .onb-card {
+        width: min(440px, 92vw);
+        border-radius: 22px;
+        padding: 30px 30px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .onb-kicker {
+        font-size: 10px;
+        letter-spacing: 0.32em;
+        color: var(--xr-accent);
+      }
+      .onb-title {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 700;
+        font-size: 27px;
+        line-height: 1.12;
+        margin: 0;
+        color: var(--xr-white);
+      }
+      .onb-body {
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--xr-silver);
+        white-space: pre-line;
+        margin: 0;
+      }
+      .onb-name {
+        width: 100%;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+        padding: 11px 14px;
+        box-sizing: border-box;
+      }
+      .onb-name[hidden] {
+        display: none;
+      }
+      .onb-name:focus {
+        outline: 1px solid var(--xr-accent);
+      }
+      .onb-name::placeholder {
+        color: var(--xr-silver);
+      }
+      .onb-dots {
+        display: flex;
+        gap: 7px;
+        margin-top: 2px;
+      }
+      .onb-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        transition:
+          background 0.2s ease,
+          width 0.2s ease;
+      }
+      .onb-dot.active {
+        width: 20px;
+        border-radius: 4px;
+        background: var(--xr-accent);
+      }
+      .onb-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .onb-actions #onb-skip {
+        flex: 0 0 auto;
+      }
+      .onb-actions #onb-next {
+        flex: 1;
+      }
+      @keyframes count-pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        25% {
+          opacity: 1;
+          transform: scale(1.08);
+        }
+        100% {
+          opacity: 0.25;
+          transform: scale(1);
+        }
+      }
+
+      /* "REAL BODY TRACKING — LIVE" toast when a camera stream connects. */
+      #tracker-toast {
+        position: fixed;
+        top: clamp(64px, 8vh, 88px);
+        left: 50%;
+        transform: translateX(-50%) translateY(-8px);
+        z-index: 50;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        padding: 9px 18px;
+        border-radius: 999px;
+        box-shadow: 0 0 28px rgba(75, 156, 211, 0.7);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+      }
+      #tracker-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      /* Push focus to the floor + metrics during the walk: quiet the ambient. */
+      body.walking .bg-shapes,
+      body.walking #spotlight {
+        opacity: 0.25;
+        transition: opacity 0.6s ease;
+      }
+      .lm {
+        display: grid;
+        gap: 5px;
+        min-width: 58px;
+      }
+      /* Honest-card cut: the [hidden] attribute must beat .lm's own display
+         (a class rule outranks the UA [hidden] default, so POSTURE + the
+         composites were leaking into the live strip). */
+      .lm[hidden] {
+        display: none !important;
+      }
+      .lm-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+      }
+      .lm-label {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: 0.14em;
+        color: var(--xr-silver);
+      }
+      .lm-side {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .lm-val {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--xr-white);
+      }
+      /* checkbox dot — fills Carolina Blue at the active mode's passThreshold */
+      .lm-check {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 2.5px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: transparent;
+        transition:
+          background 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .lm-check.pass {
+        background: var(--xr-accent);
+        border-color: var(--xr-accent);
+        box-shadow: 0 0 8px rgba(75, 156, 211, 0.7);
+        animation: check-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes check-pop {
+        0% {
+          transform: scale(1);
+        }
+        35% {
+          transform: scale(1.65);
+          box-shadow: 0 0 14px rgba(75, 156, 211, 0.95);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .lm-track {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+      .lm-fill {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--xr-accent-deep),
+          var(--xr-accent)
+        );
+        box-shadow: 0 0 8px rgba(75, 156, 211, 0.6);
+        transition: width 0.35s ease;
+      }
+
+      /* --------------------- summary card --------------------- */
+      #summary-card {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 14;
+        display: none;
+        flex-direction: column;
+        gap: 14px;
+        width: min(420px, calc(100vw - 28px));
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        border-radius: 22px;
+        padding: 28px;
+      }
+      #summary-card .card-kicker {
+        font-size: 10px;
+        color: var(--xr-accent);
+        letter-spacing: 0.32em;
+        text-align: center;
+      }
+      .score-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+      }
+      .ring-wrap {
+        position: relative;
+        width: 124px;
+        height: 124px;
+        flex: none;
+      }
+      /* Recessed glass lens behind the number — depth says the score is THE
+         object on this card. Paint-only, no extra DOM. */
+      .ring-wrap::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border-radius: 50%;
+        pointer-events: none;
+        background:
+          radial-gradient(60% 45% at 50% 28%, rgba(242, 245, 248, 0.09), transparent 70%),
+          rgba(10, 12, 16, 0.35);
+        box-shadow: inset 0 1px 0 rgba(242, 245, 248, 0.14);
+      }
+      #score-ring {
+        --score: 0;
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(
+          from -90deg,
+          var(--xr-accent) calc(var(--score) * 1%),
+          rgba(255, 255, 255, 0.08) 0
+        );
+        -webkit-mask: radial-gradient(
+          farthest-side,
+          transparent calc(100% - 11px),
+          #000 calc(100% - 10px)
+        );
+        mask: radial-gradient(
+          farthest-side,
+          transparent calc(100% - 11px),
+          #000 calc(100% - 10px)
+        );
+        filter: drop-shadow(0 0 16px rgba(75, 156, 211, 0.55));
+        transition: --score 1.1s cubic-bezier(0.25, 0.8, 0.3, 1);
+      }
+      .ring-center {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        text-align: center;
+      }
+      #overall-score {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 36px;
+        line-height: 1;
+      }
+      .ring-center .of {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+        margin-top: 4px;
+      }
+      .score-side {
+        display: grid;
+        gap: 8px;
+      }
+      #delta-line {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--xr-accent);
+      }
+      #delta-line.neg {
+        color: var(--xr-silver);
+      }
+      .delta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      /* Personal-best chip beside the delta line (#11); gold when THIS walk
+         set a new record. */
+      .best-chip {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--xr-accent-soft);
+        background: rgba(75, 156, 211, 0.1);
+        border: 1px solid rgba(75, 156, 211, 0.45);
+        border-radius: 5px;
+        padding: 2px 6px;
+      }
+      .best-chip.new {
+        color: var(--xr-gold);
+        background: rgba(217, 183, 138, 0.08);
+        border-color: rgba(217, 183, 138, 0.5);
+      }
+      .best-chip[hidden] {
+        display: none;
+      }
+      /* Mode-mastery moment (#38): shown only on the walk that earns it —
+         the NEW BEST chip's sibling, filled Carolina Blue so the two records
+         never read as the same thing. */
+      .mastery-chip {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--xr-bg);
+        background: var(--xr-accent);
+        border: 1px solid var(--xr-accent);
+        border-radius: 5px;
+        padding: 2px 6px;
+      }
+      .mastery-chip[hidden] {
+        display: none;
+      }
+      /* Ranking-medal caption (F.24): the medal is a personal RANK, the
+         verdict is the absolute bar — so a gold can sit beside NEEDS WORK.
+         Static copy in the markup; landing.ts only toggles [hidden] with the
+         medal (the best-chip pattern). No `display` here so the UA `hidden`
+         rule keeps working. */
+      #medal-note {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        line-height: 1.4;
+        color: var(--xr-muted, #5f6a74);
+      }
+      #sum-duration {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+      }
+      /* M8 head-carriage row (landing.ts fills it; hidden until a walk
+         produced a carriage read). */
+      #sum-carriage {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+        cursor: help;
+      }
+      /* M10 hold row (landing.ts fills it from the director's summary stamp;
+         hidden only when the summary carries no stamp at all). */
+      #sum-hold {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+        cursor: help;
+      }
+      /* M9 beat row (summary row order HOLD -> BEAT, adjudication §G;
+         landing.ts fills it from the director's summary stamp; hidden only
+         when the summary carries no stamp at all). */
+      #sum-beat {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+        cursor: help;
+      }
+      /* M11 turn row (summary row order HOLD -> BEAT -> TURN, adjudication
+         §G; landing.ts fills it from the director's summary stamps; hidden
+         when both stamps are null — no analyzer ran). */
+      #sum-turn {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        color: var(--xr-silver);
+        cursor: help;
+      }
+      /* M12 consistency line (landing.ts fills it from the 3rd matched walk;
+         tooltip carries the repeatability disclosure). Tighter tracking than
+         its siblings — verdict sentences run long. */
+      .repeat-line {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.08em;
+        color: var(--xr-silver);
+        cursor: help;
+      }
+      /* Headset-only honest card (2026-07-05 founder call): the shareable
+         Quest-3 build shows exactly 4 head-measured reads — PACE / LINE /
+         RHYTHM (bars) + CARRIAGE (score-side). The HOLD / BEAT / TURN moment
+         reads and the consistency line are still computed and recorded, but
+         hidden from this minimal card. landing.ts un-hides them at runtime,
+         so display:none forces them out regardless (revert this block to
+         restore the full card). */
+      #sum-hold,
+      #sum-beat,
+      #sum-turn,
+      .repeat-line {
+        display: none !important;
+      }
+      /* F.27 head-motion observation notes (hold dwell + turn smoothness):
+         display-only reads answering "did I hold long enough / was my turn
+         smooth" — NOT scored metrics. Distinct ids from the hidden #sum-hold /
+         #sum-turn moment rows above, so the honest-card display:none block
+         never catches them. A quiet silver read, its own line; landing.ts
+         toggles [hidden] per walk. .good tints a clean read the accent-soft. */
+      .sum-obs {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.18em;
+        line-height: 1.5;
+        color: var(--xr-silver);
+      }
+      .sum-obs.good {
+        color: var(--xr-accent-soft, var(--xr-silver));
+      }
+      .sum-rows {
+        display: grid;
+        gap: 9px;
+        margin-top: 4px;
+      }
+      .sum-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      /* Honest-card cut: same specificity fix as .lm[hidden] — the hidden
+         POSTURE + composite summary rows were still rendering because
+         .sum-row's display outranked the UA [hidden] default. */
+      .sum-row[hidden] {
+        display: none !important;
+      }
+      .sum-label {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        color: var(--xr-silver);
+        width: 96px;
+        flex: none;
+      }
+      /* M5-M7 honesty (#10): composite reads are visibly marked, so the card
+         never presents a derived score as an independently measured one.
+         Same quiet glass-chip language as .sp-summary-only. */
+      .composite-tag {
+        display: inline-block;
+        font-size: 6.5px;
+        letter-spacing: 0.12em;
+        color: var(--xr-silver);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 4px;
+        padding: 1px 4px;
+        margin-top: 2px;
+      }
+      .sum-track {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .sum-fill {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+          90deg,
+          var(--xr-accent-deep),
+          var(--xr-accent)
+        );
+        transition: width 0.7s cubic-bezier(0.25, 0.8, 0.3, 1);
+      }
+      .sum-val {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        font-weight: 600;
+        width: 28px;
+        text-align: right;
+        flex: none;
+        color: var(--xr-white);
+      }
+      /* Instant pass/fail read on the hero summary card. */
+      .sum-val.pass {
+        color: var(--xr-accent-soft);
+      }
+      .sum-val.low {
+        color: #e9818f;
+      }
+      .sum-fill.low {
+        background: linear-gradient(90deg, #8a3a44, #e9818f);
+      }
+      .sum-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .sum-actions .btn {
+        flex: 1;
+      }
+      /* Replay Theater: the flex .btn rule outranks the UA [hidden] default
+         (the honest-card CSS-specificity lesson) — force the unavailable
+         state out. While the ghost plays, the whole landing overlay steps
+         aside (data-replay stamped by landing.ts off globals.replayActive). */
+      #sum-replay[hidden],
+      #sum-share[hidden],
+      #sum-compare[hidden],
+      #replay-legend[hidden] {
+        display: none !important;
+      }
+      .sum-actions + .sum-actions {
+        margin-top: 8px;
+      }
+      #landing[data-replay="1"] {
+        display: none;
+      }
+      /* --- the replay player bar (sibling of #landing; stays up while the
+             landing steps aside for the ghost) --- */
+      #replay-bar[hidden] {
+        display: none !important;
+      }
+      #replay-bar {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        pointer-events: auto;
+      }
+      #replay-bar .rp-kicker {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        color: var(--xr-accent);
+        padding-left: 4px;
+      }
+      #replay-bar .btn {
+        padding: 7px 12px;
+        font-size: 9px;
+      }
+      #rp-track {
+        width: min(300px, 30vw);
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        cursor: pointer;
+        /* wave 2: the moment dots position against the track */
+        position: relative;
+      }
+      /* Moment dots on the seek track (wave 2): the rings' timestamps as a
+         lesson index — click-through, the track underneath owns the seek. */
+      .rp-dot {
+        position: absolute;
+        top: 1px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        transform: translateX(-3px);
+        pointer-events: none;
+      }
+      #rp-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--xr-accent-deep), var(--xr-accent));
+      }
+      #rp-time {
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        color: var(--xr-silver);
+        font-variant-numeric: tabular-nums;
+        min-width: 92px;
+        text-align: center;
+      }
+
+      /* wave 2 (F.39): the next-walk recap on the summary card */
+      #sum-recap[hidden] {
+        display: none !important;
+      }
+      #sum-recap {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #sum-recap-list {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+      #sum-recap-list li {
+        font-size: 12px;
+        color: var(--xr-white);
+        opacity: 0.85;
+        margin-bottom: 3px;
+      }
+      #rc-gap {
+        color: var(--xr-silver);
+      }
+      /* wave 2: the measured value under the cue line (F.39) */
+      #replay-cue-detail {
+        display: block;
+        margin-top: 3px;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        color: var(--xr-silver);
+      }
+      #replay-cue-detail[hidden] {
+        display: none !important;
+      }
+      #replay-cue[hidden] {
+        display: none !important;
+      }
+      #replay-cue {
+        position: fixed;
+        left: 50%;
+        bottom: 84px;
+        transform: translateX(-50%);
+        z-index: 40;
+        padding: 9px 18px;
+        border-radius: 999px;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        color: var(--xr-white);
+        border-left: 2px solid var(--xr-accent);
+        pointer-events: none;
+        max-width: min(560px, 80vw);
+        text-align: center;
+      }
+      #replay-compare-chip[hidden] {
+        display: none !important;
+      }
+      #replay-compare-chip {
+        position: fixed;
+        top: 22px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 40;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        color: var(--xr-silver);
+        pointer-events: none;
+      }
+      #replay-compare-chip .rc-a {
+        color: var(--xr-accent);
+        font-weight: 600;
+      }
+      #replay-compare-chip .rc-b {
+        color: #d8dce2;
+        font-weight: 600;
+      }
+      #replay-compare-chip span {
+        color: var(--xr-white);
+      }
+
+      .replay-legend {
+        margin-top: 8px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .replay-legend b {
+        color: var(--xr-accent);
+        font-weight: 600;
+      }
+      /* --- WS4: verdict badge, coach's notes, dismiss --- */
+      .sum-close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--xr-silver);
+        font-size: 12px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        /* child of #landing (pointer-events:none) and not a .btn — must opt
+           back in or the dismiss X is unclickable on desktop. */
+        pointer-events: auto;
+      }
+      .sum-close:hover {
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .sum-verdict {
+        align-self: flex-start;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        padding: 3px 11px;
+        border-radius: 999px;
+        margin-bottom: 4px;
+      }
+      .sum-verdict.pass {
+        color: var(--xr-bg);
+        background: var(--xr-accent-soft);
+      }
+      .sum-verdict.low {
+        color: #fff;
+        background: #b3525e;
+      }
+      .verdict-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      /* The MEDAL badge — web twin of the in-headset pop (ui/lesson.uikitml
+         .medal + hud.ts's frame-driven reveal). Tier background is set
+         inline by landing.ts (MEDAL_COLOR); the label sits dark on all
+         three metals. The pop mirrors the panel's envelope: delay 0.9s =
+         sfx-timeline REVEAL_DELAY_SEC (the graded sting's reveal anchor),
+         duration 0.45s = hud-copy MEDAL_POP_SEC, 0.6 -> 1.08 overshoot at
+         70% -> settle (medalPopScale). `backwards` keeps it invisible
+         through the delay so the pop is a single moment. */
+      .sum-medal[hidden] {
+        display: none !important;
+      }
+      .sum-medal {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        padding: 3px 11px;
+        border-radius: 999px;
+        color: var(--xr-bg);
+        margin-bottom: 4px;
+      }
+      .sum-medal.pop {
+        animation: medal-pop 0.45s ease-out 0.9s backwards;
+      }
+      @keyframes medal-pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        70% {
+          opacity: 1;
+          transform: scale(1.08);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      #overall-score.pass {
+        color: var(--xr-accent-soft);
+      }
+      #overall-score.low {
+        color: #e9818f;
+      }
+      .sum-coach[hidden] {
+        display: none;
+      }
+      .sum-coach {
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sum-coach-head {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: var(--xr-accent);
+        margin-bottom: 8px;
+      }
+      .sum-coach-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 7px;
+      }
+      .sum-coach-item {
+        display: flex;
+        gap: 8px;
+        font-size: 11.5px;
+        line-height: 1.4;
+        color: rgba(242, 245, 248, 0.86);
+      }
+      .sum-coach-item b {
+        color: var(--xr-white);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .sum-coach-item.good {
+        color: var(--xr-accent-soft);
+      }
+      #summary-card .xr-hint {
+        margin-top: 2px;
+        text-align: center;
+      }
+
+      /* ----------------- phase-driven visibility ----------------- */
+      #landing[data-phase="brief"] #live-strip,
+      #landing[data-phase="countdown"] #live-strip,
+      #landing[data-phase="walk"] #live-strip {
+        display: flex;
+        animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+      }
+      #landing[data-phase="summary"] #summary-card {
+        display: flex;
+        animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+      }
+      #landing[data-phase="brief"] #lesson-card,
+      #landing[data-phase="countdown"] #lesson-card,
+      #landing[data-phase="walk"] #lesson-card,
+      #landing[data-phase="summary"] #lesson-card {
+        opacity: 0;
+        visibility: hidden;
+      }
+      /* clear the sightline to the catwalk during the walk */
+      #landing[data-phase="walk"] #hero,
+      #landing[data-phase="walk"] #flow-steps {
+        opacity: 0.28;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          translate: 0 14px;
+        }
+        to {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
+
+      /* ----------------------- responsive ----------------------- */
+      @media (max-width: 900px) {
+        /* The fixed 3-row grid (auto 1fr auto) forces everything into the
+           viewport height and clips. On small screens let the WHOLE overlay
+           flow to natural height and scroll as one page so nothing is ever cut
+           off. pointer-events:auto is required for the overlay to actually
+           receive scroll (the 3D scene behind it is a decorative backdrop in
+           2D and needs no direct clicks). */
+        #landing {
+          padding: 12px;
+          gap: 10px;
+          /* Flex column (not grid): the fixed-height grid compressed the middle
+             row and let its content spill out and overlap the card below. A flex
+             column with non-shrinking children sizes each section to its content
+             and overflows the viewport cleanly, so the whole overlay scrolls. */
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          pointer-events: auto;
+        }
+        #landing > * {
+          flex: 0 0 auto;
+        }
+        #nav {
+          align-self: center;
+        }
+        #main {
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+          gap: 14px;
+          overflow: visible;
+          min-height: 0;
+        }
+        /* The columns grow to natural height (no internal trap-scroll) so
+           the cards flow into the page scroll. */
+        #side-col,
+        #left-col {
+          width: 100%;
+          max-height: none;
+          overflow: visible;
+        }
+        /* Functional first on small screens: the RUNWAY editor sits above the
+           USER FLOW card. It's now a sibling of #side-col with order:-1 (set in
+           the base rule), so it already stacks first on the column layout. */
+        #hero {
+          max-width: none;
+        }
+        #hero h1 {
+          font-size: clamp(26px, 7.5vw, 36px);
+        }
+        #hero p {
+          font-size: 13px;
+        }
+        #hero ul {
+          gap: 7px;
+        }
+        #flow-card,
+        #runway-card {
+          width: 100%;
+          padding: 18px;
+        }
+        #flow-card h2 {
+          font-size: 18px;
+          margin-bottom: 12px;
+        }
+        .step .txt {
+          font-size: 11.5px;
+        }
+        #nav {
+          width: 100%;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 10px 16px;
+        }
+        #live-strip {
+          flex-wrap: wrap;
+          justify-content: center;
+          row-gap: 10px;
+        }
+        .shape {
+          filter: blur(60px);
+        }
+      }
+      @media (max-width: 900px) and (max-height: 760px) {
+        #hero p,
+        #hero ul {
+          display: none;
+        }
+        #flow-steps {
+          gap: 8px;
+        }
+      }
+
+      /* During an immersive session the 2D page is invisible — stop
+         compositing the huge blurred shapes + sweep (landing.ts toggles this). */
+      body.immersed .bg-shapes,
+      body.immersed #spotlight,
+      body.immersed #countdown-overlay,
+      body.immersed #tracker-toast {
+        display: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .shape,
+        #spotlight {
+          animation: none;
+        }
+        #live-strip,
+        #summary-card {
+          animation: none !important;
+        }
+        /* Audit catch (2026-07-10): these one-shot/looping pops were escaping
+           the reduce gate. The medal/check/count still APPEAR — they just
+           land without motion. */
+        #countdown-num,
+        .sum-medal.pop,
+        .lm-check.pass,
+        #time-chip.urgent {
+          animation: none !important;
+        }
+        #score-ring,
+        .lm-fill,
+        .lm-check,
+        .sum-fill,
+        .btn,
+        .btn-primary::after,
+        .rw-slider::-webkit-slider-thumb,
+        .rw-slider::-moz-range-thumb,
+        #data-chip,
+        #camera-chip,
+        #app-toast,
+        #tracker-toast,
+        .xr-hint,
+        #hero,
+        #flow-steps,
+        #lesson-card {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body style="margin: 0">
+    <div id="scene-container"></div>
+
+    <div class="bg-shapes" aria-hidden="true">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div id="spotlight" aria-hidden="true"></div>
+
+    <!-- big 3-2-1 countdown moment + camera-connect toast (fixed overlays) -->
+    <div id="countdown-overlay" aria-hidden="true" hidden>
+      <span id="countdown-num">3</span>
+    </div>
+
+    <!-- REPLAY PLAYER BAR (founder call 2026-07-23: "a proper replay menu
+         with the ghost"): a SIBLING of #landing - the landing hides during a
+         replay, the player stays. Wired by landing.ts off globals.
+         replayActive + replayControls; browser-only (invisible in XR).
+         Structural transport labels (F.34). Space = play/pause, Esc = exit. -->
+    <div id="replay-bar" class="glass" role="toolbar" aria-label="Replay controls" hidden>
+      <span class="rp-kicker mono">REPLAY</span>
+      <button id="rp-play" class="btn btn-primary" type="button">PAUSE</button>
+      <button id="rp-restart" class="btn btn-glass" type="button">RESTART</button>
+      <button id="rp-speed" class="btn btn-glass" type="button">1X</button>
+      <div id="rp-track" aria-label="Replay timeline">
+        <div id="rp-fill"></div>
+      </div>
+      <span id="rp-time" class="mono">0.0S / 0.0S</span>
+      <button id="rp-exit" class="btn btn-glass" type="button">EXIT</button>
+    </div>
+    <!-- Coached-moment cue (research finding 5): one line of the engine's
+         coach copy while the tape auto-slows into a ring. landing.ts paints
+         from globals.replayCue in the bar poll. -->
+    <div id="replay-cue" class="glass mono" hidden>
+      <span id="replay-cue-line"></span>
+      <span id="replay-cue-detail" hidden></span>
+    </div>
+    <!-- VS BEST legend (shown only during a two-ghost replay; landing.ts
+         fills the overalls from globals.replayCompare). Structural, F.35. -->
+    <div id="replay-compare-chip" class="glass mono" hidden>
+      <b class="rc-a">CAROLINA</b> — THIS WALK <span id="rc-a-score"></span>
+      &nbsp;·&nbsp; <b class="rc-b">SILVER</b> — YOUR BEST
+      <span id="rc-b-score"></span><span id="rc-gap"></span>
+    </div>
+    <div id="tracker-toast" role="status" aria-live="polite">
+      REAL BODY TRACKING — LIVE
+    </div>
+    <div id="app-toast" role="status" aria-live="polite"></div>
+    <!-- FIRST-RUN GUIDED ATTENTION: dim + spotlight sequence for a brand-new
+         visitor (empty history, xrunway.web-tour.v1 unset). Static shell —
+         captions are written by web-tour.ts from web-tour-core.ts (the
+         MAP_PROMPTS pattern), so the markup never changes per beat. -->
+    <div id="web-tour" hidden>
+      <div id="tour-spot"></div>
+      <div id="tour-caption"></div>
+      <button id="tour-skip" class="mono" type="button">SKIP TOUR</button>
+    </div>
+    <div
+      id="onboarding"
+      class="onb-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Welcome to (X)RUNWAY"
+      hidden
+    >
+      <div class="onb-card glass">
+        <div class="onb-kicker mono" id="onb-kicker"></div>
+        <h2 class="onb-title" id="onb-title"></h2>
+        <p class="onb-body" id="onb-body"></p>
+        <input
+          id="onb-name"
+          class="onb-name"
+          type="text"
+          placeholder="Your name (optional)"
+          maxlength="24"
+          autocomplete="off"
+          hidden
+        />
+        <div class="onb-dots" id="onb-dots"></div>
+        <div class="onb-actions">
+          <button id="onb-skip" class="btn btn-glass" type="button">Skip</button>
+          <button id="onb-next" class="btn btn-primary" type="button">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="landing" data-phase="idle">
+      <!-- top nav -->
+      <nav id="nav" class="glass">
+        <span class="wordmark">(X)RUNWAY</span>
+        <span class="tag mono">FIRST-PERSON AR RUNWAY TRAINER</span>
+        <span id="tracker-pill" class="mono" hidden>
+          <span class="tp-dot"></span><span id="tracker-pill-text">CAMERA</span>
+        </span>
+        <button id="data-chip" class="mono" type="button" hidden>
+          <span id="data-chip-text">0 WALKS</span> · EXPORT
+        </button>
+        <button id="camera-chip" class="mono" type="button">+ CAMERA</button>
+        <a id="methodology-link" class="mono" href="/methodology.html">METHODOLOGY</a>
+      </nav>
+
+      <!-- hero + user flow -->
+      <main id="main">
+        <!-- Left column = the RUNWAY editor (moved here to fill the space the
+             hero copy vacated); right column (#side-col) = USER FLOW / CONTROLS /
+             FIT. The editor renders first/left via CSS (#runway-card{order:-1}). -->
+        <div id="side-col">
+          <aside id="flow-card" class="glass">
+            <div class="card-kicker mono">USER FLOW</div>
+            <!-- Founder B5.2-B5.6 (2026-07-09, verbatim; the heading follows
+                 the founder's same-day "next step" tagline correction). The
+                 duration setting step 03 promises SHIPPED same day. -->
+            <h2>Take the next step.</h2>
+            <div id="flow-steps">
+              <div class="step">
+                <span class="num">01</span>
+                <span class="txt">Enter the headset and set your runway</span>
+              </div>
+              <div class="step">
+                <span class="num">02</span>
+                <span class="txt">Set your experience level in the menu</span>
+              </div>
+              <div class="step">
+                <span class="num">03</span>
+                <span class="txt">Set the duration and walk!</span>
+              </div>
+              <div class="step">
+                <span class="num">04</span>
+                <span class="txt">Review your score summary.</span>
+              </div>
+            </div>
+
+            <!-- Educational scoring definitions (founder call). The intro + the
+                 three metric definitions are the founder's own words (no-AI-text
+                 law); the "score =" lines are the ACTUAL scoring formulas from
+                 pose-derive.ts / head-carriage.ts (the transparency requirement),
+                 stated exactly so a trainee can defend every number. -->
+            <!-- F.17 provenance lines (2026-07-09, the founder's complete-it
+                 delegation): each metric carries the VERBATIM industry
+                 instruction it operationalizes - cited coach quotes from
+                 docs/RESEARCH-runway-instruction.md, drift-pinned with the
+                 rest of the block by test/scoring-copy.test.ts. -->
+            <details id="scoring-block" class="edu-fold">
+              <summary class="card-kicker mono">UNDERSTANDING THE SCORE</summary>
+              <p class="scoring-intro">
+                Here are how the 3 main metrics are defined, tracked, and what it
+                means for you. Please note that the data for these metrics is
+                tracked by the headset only.
+              </p>
+              <div class="score-def">
+                <div class="score-name mono">PACE</div>
+                <div class="score-what">head speed vs the target head speed</div>
+                <div class="score-math mono">
+                  score = 100 within &plusmn;0.10 m/s of the target; slower costs 90 per m/s, faster costs 45 (40&ndash;100). In the band = 100.
+                </div>
+                <div class="score-src">In the industry's words: "take long strides, and control your pace" &mdash; Naomi Campbell</div>
+              </div>
+              <div class="score-def">
+                <div class="score-name mono">CARRIAGE</div>
+                <div class="score-what">
+                  % of time the head stays level (downward glances negatively
+                  affect this score)
+                </div>
+                <div class="score-math mono">
+                  score = 40 + 60 &times; the share of the walk your head stayed
+                  level (chin within 7&deg; of neutral) &amp; facing down the
+                  line. A head-drop (&gt;15&deg; down) counts against it.
+                </div>
+                <div class="score-src">In the industry's words: "keep your head straight and steady" &mdash; CM Models</div>
+              </div>
+              <div class="score-def">
+                <div class="score-name mono">LINE</div>
+                <div class="score-what">head alignment with the center line</div>
+                <div class="score-math mono">
+                  score = 100 &minus; (your average distance off the centerline, in
+                  meters) &times; 240 &nbsp;(40&ndash;100). Dead on the line = 100.
+                </div>
+                <div class="score-src">In the industry's words: "walking along a thin, invisible line" &mdash; Backstage</div>
+              </div>
+              <div class="scoring-sensor mono">
+                Computed on-device from Meta Quest 3 head tracking only &mdash; no
+                camera, no body scan; nothing is scored that the headset did not
+                measure.
+              </div>
+            </details>
+
+            <!-- DETAILS (founder call 2026-07-08): the reference block for the
+                 mode differences + the music tempo options — mirrored by the
+                 in-headset Details subsection. Structural labels + the modes'
+                 own shipped chip facts (coach.ts targetPaceLabel/passBarLabel
+                 + the default tempo) + the founder's VERBATIM notes (the
+                 no-AI-text law); drift-pinned against the live constants by
+                 test/details-copy.test.ts. Only the two founder-named modes
+                 are listed (commercial/challenge defaults are provisional). -->
+            <details id="details-block" class="edu-fold">
+              <summary class="card-kicker mono">DETAILS</summary>
+              <div class="score-def">
+                <div class="score-name mono">BEGINNER WALK</div>
+                <div class="score-what">everyday walking speed or leisure</div>
+                <div class="score-math mono">
+                  TARGET 0.85 M/S &middot; PASS AT 78 &middot; MUSIC 100 BPM
+                </div>
+              </div>
+              <div class="score-def">
+                <div class="score-name mono">EMERGING RUNWAY</div>
+                <div class="score-what">
+                  emerging level walking speed (industry standard)
+                </div>
+                <div class="score-math mono">
+                  TARGET 0.72 M/S &middot; PASS AT 80 &middot; MUSIC 125 BPM
+                </div>
+              </div>
+              <div class="score-def">
+                <div class="score-name mono">MUSIC BPM</div>
+                <!-- .score-what, not .score-math: the mono class uppercases,
+                     and the founder's notes are integrated VERBATIM - casing
+                     included (the no-AI-text law). -->
+                <div class="score-what">62 &middot; half time of the emerging level speed</div>
+                <div class="score-what">100 &middot; everyday walking speed or leisure</div>
+                <div class="score-what">125 &middot; emerging level walking speed (industry standard)</div>
+              </div>
+            </details>
+
+            <div class="controls-label mono">CONTROLS</div>
+            <div class="controls-row">
+              <button id="reset-btn" class="btn btn-glass" type="button" disabled>
+                RESET
+              </button>
+              <button id="enter-xr" class="btn btn-glass" type="button">
+                ENTER HEADSET
+              </button>
+            </div>
+            <div class="controls-keys" aria-label="Desktop walk controls">
+              <span class="kcap">W</span>
+              <span class="kcap">A</span>
+              <span class="kcap">S</span>
+              <span class="kcap">D</span>
+              <span class="kcap-label">WALK</span>
+              <span class="kcap">DRAG</span>
+              <span class="kcap-label">LOOK</span>
+            </div>
+            <!-- Coach voice REMOVED entirely (founder ruling 2026-07-16:
+                 text-only coach; no control anywhere). -->
+            <!-- MUSIC + BEAT PULSE toggles moved into the bottom lesson card
+                 (founder call): the quick settings now sit beside BEGIN WALK. -->
+            <!-- Wave 1 FIT: per-body baseline status + guided-flow controls.
+                 The flow itself runs in the headset (FitSessionSystem); this
+                 card is the status + discoverability surface. -->
+            <div id="fit-block">
+              <div class="controls-label mono">FIT</div>
+              <div id="fit-status-line" role="status" aria-live="polite">
+                FIT: NOT SET - scores use the standard body baseline.
+              </div>
+              <div id="fit-guide" hidden></div>
+              <div class="controls-row">
+                <button id="fit-run" class="btn btn-glass" type="button">
+                  RUN FIT
+                </button>
+                <button id="fit-cancel" class="btn btn-glass" type="button" hidden>
+                  CANCEL FIT
+                </button>
+              </div>
+              <div class="fit-note">
+                Re-run FIT when you change footwear - heels change your height
+                and stride.
+              </div>
+              <div class="fit-note">
+                FIT measures your HEAD: standing head height, head bob, pace and
+                cadence from headset tracking. It is not a posture or body scan.
+              </div>
+            </div>
+            <!-- WAVE-4 CURRICULUM (docs/CURRICULUM-DESIGN.md): level status,
+                 today's plan, and the drill focus chips. Static shell — all
+                 dynamic strings come from curriculum-core.ts (F.40 drafts).
+                 Gates are SOFT recommendations; the Mastery Record line reads
+                 from cold blocks only. -->
+            <div id="curriculum-block">
+              <div class="controls-label mono">CURRICULUM</div>
+              <div id="cur-level-line"></div>
+              <div id="cur-record-line" role="status"></div>
+              <div id="cur-plan-line"></div>
+              <div class="controls-row" id="cur-drill-row">
+                <button id="drill-D1" class="btn btn-glass cur-drill" type="button">
+                  TAPE LINE
+                </button>
+                <button id="drill-D2" class="btn btn-glass cur-drill" type="button">
+                  FOCAL POINT
+                </button>
+                <button id="drill-D3" class="btn btn-glass cur-drill" type="button">
+                  OWN TEMPO
+                </button>
+              </div>
+              <div id="cur-drill-note" hidden></div>
+              <div class="fit-note">
+                Drills focus one measured channel for short reps - the next
+                START runs as a rep. Tap again to walk plain.
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- LEFT COLUMN (founder call 2026-07-22): the RUNWAY editor card
+             stacked over the LESSON card (moved up from the old #bottom
+             footer) — clears the center sightline to the runway. -->
+        <div id="left-col">
+        <aside id="runway-card" class="glass">
+            <div class="rw-summary">
+              <div>
+                <div class="card-kicker mono">YOUR RUNWAY</div>
+                <h2>Map your floor.</h2>
+                <div id="runway-readout" role="status" aria-live="polite">
+                  7.0 m × 1.4 m · 0°
+                </div>
+              </div>
+              <button id="rw-toggle" class="btn btn-glass" type="button">
+                EDIT
+              </button>
+            </div>
+            <!-- Backdrop picker removed (founder call): the scene stays on the
+                 default (AR). landing.ts reads the chips via querySelectorAll,
+                 so the empty result is a safe no-op. -->
+            <button id="rw-preview" class="btn btn-primary" type="button">
+              ▶ PREVIEW WALK
+            </button>
+            <div class="rw-controls">
+              <div class="rw-row rw-load">
+                <div class="rw-row-head">
+                  <span class="rw-label">Load a runway</span>
+                  <button id="rw-save" class="btn btn-glass rw-save-btn" type="button">
+                    SAVE AS…
+                  </button>
+                </div>
+                <select
+                  id="rw-preset"
+                  class="rw-select"
+                  aria-label="Load a preset or saved runway"
+                ></select>
+                <div
+                  class="rw-shape"
+                  id="rw-shape"
+                  role="tablist"
+                  aria-label="Runway shape"
+                >
+                  <button class="rw-shape-chip active" type="button" data-shape="straight">
+                    <svg class="rw-shape-ic" viewBox="0 0 24 14" aria-hidden="true">
+                      <rect x="11" y="1" width="2" height="12" rx="1" />
+                    </svg>
+                    STRAIGHT
+                  </button>
+                  <button class="rw-shape-chip" type="button" data-shape="T">
+                    <svg class="rw-shape-ic" viewBox="0 0 24 14" aria-hidden="true">
+                      <rect x="11" y="3" width="2" height="10" rx="1" />
+                      <rect x="5" y="1" width="14" height="2" rx="1" />
+                    </svg>
+                    T
+                  </button>
+                  <button class="rw-shape-chip" type="button" data-shape="X">
+                    <svg class="rw-shape-ic" viewBox="0 0 24 14" aria-hidden="true">
+                      <rect x="11" y="1" width="2" height="12" rx="1" />
+                      <rect x="5" y="6" width="14" height="2" rx="1" />
+                    </svg>
+                    X
+                  </button>
+                  <button class="rw-shape-chip" type="button" data-shape="U">
+                    <svg class="rw-shape-ic" viewBox="0 0 24 14" aria-hidden="true">
+                      <rect x="5" y="1" width="2" height="10" rx="1" />
+                      <rect x="17" y="1" width="2" height="10" rx="1" />
+                      <rect x="5" y="11" width="14" height="2" rx="1" />
+                    </svg>
+                    U
+                  </button>
+                </div>
+              </div>
+              <div class="rw-row">
+                <div class="rw-row-head">
+                  <span class="rw-label">Length</span>
+                  <span class="rw-value" id="rw-length-val">7.0 m</span>
+                </div>
+                <input
+                  id="rw-length"
+                  class="rw-slider"
+                  type="range"
+                  min="3"
+                  max="80"
+                  step="0.1"
+                  value="7"
+                  aria-label="Runway length in meters"
+                />
+              </div>
+              <div class="rw-row">
+                <div class="rw-row-head">
+                  <span class="rw-label">Width</span>
+                  <span class="rw-value" id="rw-width-val">1.4 m</span>
+                </div>
+                <input
+                  id="rw-width"
+                  class="rw-slider"
+                  type="range"
+                  min="0.8"
+                  max="3"
+                  step="0.05"
+                  value="1.4"
+                  aria-label="Runway width in meters"
+                />
+              </div>
+              <div class="rw-row">
+                <div class="rw-row-head">
+                  <span class="rw-label">Rotation</span>
+                  <span class="rw-value" id="rw-rotation-val">0°</span>
+                </div>
+                <input
+                  id="rw-rotation"
+                  class="rw-slider"
+                  type="range"
+                  min="-180"
+                  max="180"
+                  step="1"
+                  value="0"
+                  aria-label="Runway rotation in degrees"
+                />
+              </div>
+              <div class="rw-row">
+                <div class="rw-row-head">
+                  <span class="rw-label">Position X</span>
+                  <span class="rw-value" id="rw-posx-val">0.0 m</span>
+                </div>
+                <input
+                  id="rw-posx"
+                  class="rw-slider"
+                  type="range"
+                  min="-45"
+                  max="45"
+                  step="0.05"
+                  value="0"
+                  aria-label="Runway position X in meters"
+                />
+              </div>
+              <div class="rw-row">
+                <div class="rw-row-head">
+                  <span class="rw-label">Position Z</span>
+                  <span class="rw-value" id="rw-posz-val">0.0 m</span>
+                </div>
+                <input
+                  id="rw-posz"
+                  class="rw-slider"
+                  type="range"
+                  min="-45"
+                  max="45"
+                  step="0.05"
+                  value="0"
+                  aria-label="Runway position Z in meters"
+                />
+              </div>
+              <div class="rw-row rw-arm" id="rw-armspan-row" hidden>
+                <div class="rw-row-head">
+                  <span class="rw-label">Arm span</span>
+                  <span class="rw-value" id="rw-armspan-val">3.0 m</span>
+                </div>
+                <input
+                  id="rw-armspan"
+                  class="rw-slider"
+                  type="range"
+                  min="0.8"
+                  max="24"
+                  step="0.1"
+                  value="3"
+                  aria-label="Arm span in meters"
+                />
+              </div>
+              <div class="rw-row rw-arm" id="rw-crossat-row" hidden>
+                <div class="rw-row-head">
+                  <span class="rw-label">Cross position</span>
+                  <span class="rw-value" id="rw-crossat-val">50%</span>
+                </div>
+                <input
+                  id="rw-crossat"
+                  class="rw-slider"
+                  type="range"
+                  min="15"
+                  max="90"
+                  step="1"
+                  value="50"
+                  aria-label="Crossbar position percent"
+                />
+              </div>
+            </div>
+            <div class="rw-actions">
+              <button id="rw-map" class="btn btn-primary" type="button">
+                MAP IN HEADSET
+              </button>
+              <button id="rw-autofit" class="btn btn-glass" type="button">
+                AUTO-FIT TO FLOOR
+              </button>
+              <button id="rw-reset" class="btn btn-glass" type="button">
+                RESET RUNWAY
+              </button>
+            </div>
+        </aside>
+        <div id="lesson-card" class="glass">
+          <!-- Mode selector hidden (founder call): the modes aren't visibly
+               differentiated in the demo yet, so the walk stays on the default
+               (Beginner). The chips + landing.ts wiring remain in the DOM so
+               restoring is just removing `hidden`. -->
+          <!-- LEVEL selector (founder ruling 2026-07-15): unhidden so the USER
+               FLOW's "Set your experience level in the menu" is finally true on
+               desktop too - but only the two founder-named tiers show; the
+               legacy commercial/challenge chips stay hidden (not visibly
+               differentiated yet - the original founder call stands). -->
+          <div
+            id="mode-select"
+            class="mode-select"
+            role="tablist"
+            aria-label="Training level"
+          >
+            <button
+              class="mode-chip"
+              data-mode="beginner"
+              type="button"
+              role="tab"
+            >
+              BEGINNER
+            </button>
+            <button
+              class="mode-chip"
+              data-mode="highfashion"
+              type="button"
+              role="tab"
+            >
+              EMERGING
+            </button>
+            <button
+              class="mode-chip"
+              data-mode="commercial"
+              type="button"
+              role="tab"
+              hidden
+            >
+              COMMERCIAL
+            </button>
+            <button
+              class="mode-chip"
+              data-mode="challenge"
+              type="button"
+              role="tab"
+              hidden
+            >
+              CHALLENGE
+            </button>
+          </div>
+          <!-- Lesson copy cut (founder call): the mode chips carry the mode,
+               and the quick settings moved down from the right-hand card fill
+               the freed space above BEGIN WALK. -->
+          <div class="lesson-settings">
+            <div class="music-row">
+              <button
+                id="music-btn"
+                class="btn btn-glass"
+                type="button"
+                aria-pressed="true"
+              >
+                MUSIC: ON
+              </button>
+              <input
+                id="music-vol"
+                class="rw-slider"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="70"
+                aria-label="Music volume"
+              />
+            </div>
+            <!-- M9 beat pulse: cycles OFF / COUNTDOWN / WALK + COUNTDOWN
+                 (landing.ts renders the state + the delivery-disclosure
+                 tooltip from beat-stats.ts). -->
+            <div class="music-row">
+              <button
+                id="beat-btn"
+                class="btn btn-glass"
+                type="button"
+                aria-pressed="true"
+              >
+                BEAT PULSE: COUNTDOWN
+              </button>
+            </div>
+            <!-- Music tempo picker: cycles 62 / 100 / 125 BPM (landing.ts
+                 renders the resolved state; the caption below is the
+                 founder's own note per option — verbatim, the no-AI-text
+                 law). Initial markup = the beginner default (100). -->
+            <div class="music-row">
+              <button id="bpm-btn" class="btn btn-glass" type="button">
+                MUSIC BPM: 100
+              </button>
+            </div>
+            <div id="bpm-note" class="bpm-note">
+              everyday walking speed or leisure
+            </div>
+            <!-- Walk duration picker (founder ruling: 10-60 s, default 20):
+                 cycles 10/15/20/30/45/60 on globals.walkPrefs
+                 (cycleWalkSeconds - shared with the XR Duration pill).
+                 Applied ONCE per run at the director's mode lock, never
+                 under a scored walk. Structural label (no-AI-text exempt);
+                 initial markup = the shipped mode default (20). -->
+            <div class="music-row">
+              <button id="duration-btn" class="btn btn-glass" type="button">
+                DURATION: 20S
+              </button>
+            </div>
+            <!-- Pace style (founder ask 2026-07-18): which side of the target
+                 speed the scoring forgives. Structural label. -->
+            <div class="music-row">
+              <button id="pace-style-btn" class="btn btn-glass" type="button">
+                PACE STYLE: CONFIDENT STRIDE
+              </button>
+            </div>
+            <!-- ADVANCED (deliberately the quietest control here - founder
+                 call: hardest to find by design): a bare disclosure, dim
+                 text, no glass chrome. Cycles the pace band half-width. -->
+            <details class="adv-fold">
+              <summary class="adv-label">Advanced</summary>
+              <button id="pace-band-btn" class="adv-btn" type="button">
+                PACE BAND: 0.10 M/S
+              </button>
+            </details>
+          </div>
+          <!-- Founder B8.4 (2026-07-09): "Start" - .btn's text-transform
+               renders it START; the source keeps the founder's bytes. -->
+          <button id="begin-walk" class="btn btn-primary" type="button">
+            Start
+          </button>
+        </div>
+      
+        </div>
+      </main>
+
+
+
+      <!-- live metrics strip (shown during brief / countdown / walk) -->
+      <div id="live-strip" class="glass" role="status">
+        <span id="phase-chip">IDLE</span>
+        <span id="time-chip" hidden
+          ><span class="time-label">TIME</span
+          ><span id="time-val">60S</span></span
+        >
+        <!-- Headset-only honest card (2026-07-05): a Quest 3 in the browser
+             sees only the head, so we show the 4 head-measured reads (PACE,
+             LINE, RHYTHM, CARRIAGE) and hide POSTURE + the composite reads.
+             The scoring engine still computes all seven; these rows are just
+             not displayed. -->
+        <div class="lm" hidden>
+          <div class="lm-head">
+            <span class="lm-label">POSTURE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm1-val">—</span
+              ><span class="lm-check" id="lm1-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm1-fill"></span></span>
+        </div>
+        <div class="lm">
+          <div class="lm-head">
+            <span class="lm-label">PACE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm2-val">—</span
+              ><span class="lm-check" id="lm2-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm2-fill"></span></span>
+        </div>
+        <div class="lm">
+          <div class="lm-head">
+            <span class="lm-label">CARRIAGE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm3-val">—</span
+              ><span class="lm-check" id="lm3-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm3-fill"></span></span>
+        </div>
+        <div class="lm">
+          <div class="lm-head">
+            <span class="lm-label">LINE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm4-val">—</span
+              ><span class="lm-check" id="lm4-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm4-fill"></span></span>
+        </div>
+        <div class="lm" hidden>
+          <div class="lm-head">
+            <span class="lm-label">PRESENCE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm5-val">—</span
+              ><span class="lm-check" id="lm5-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm5-fill"></span></span>
+        </div>
+        <div class="lm" hidden>
+          <div class="lm-head">
+            <span class="lm-label">CONFIDENCE</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm6-val">—</span
+              ><span class="lm-check" id="lm6-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm6-fill"></span></span>
+        </div>
+        <div class="lm" hidden>
+          <div class="lm-head">
+            <span class="lm-label">PRESENTATION</span>
+            <span class="lm-side"
+              ><span class="lm-val" id="lm7-val">—</span
+              ><span class="lm-check" id="lm7-check"></span
+            ></span>
+          </div>
+          <span class="lm-track"><span class="lm-fill" id="lm7-fill"></span></span>
+        </div>
+      </div>
+
+      <!-- scored summary card -->
+      <div id="summary-card" class="glass" role="dialog" aria-label="Scored summary">
+        <button
+          id="summary-close"
+          class="sum-close"
+          type="button"
+          aria-label="Dismiss summary"
+        >
+          ✕
+        </button>
+        <div class="card-kicker mono">SCORED SUMMARY</div>
+        <div class="score-row">
+          <div class="ring-wrap">
+            <div id="score-ring"></div>
+            <div class="ring-center">
+              <span id="overall-score">0</span>
+              <span class="of">OVERALL / 100</span>
+            </div>
+          </div>
+          <div class="score-side">
+            <span class="verdict-row">
+              <span id="sum-verdict" class="sum-verdict"></span>
+              <!-- The MEDAL moment's web twin (hud.ts medal-badge): filled +
+                   tier-colored by landing.ts from the same scoreMedal read. -->
+              <span id="sum-medal" class="sum-medal" hidden></span>
+            </span>
+            <!-- Ranking-medal caption (F.24): the medal above is a RANK among
+                 this trainee's own walks (best = gold), NOT the pass bar — so a
+                 gold can sit beside a NEEDS WORK verdict. Static copy; landing.ts
+                 toggles [hidden] with the medal. Kept identical to the XR
+                 panel's MEDAL_RANK_NOTE so both surfaces teach the same line. -->
+            <span id="medal-note" hidden>The medal ranks your own walks - your best walk is gold, not a pass mark.</span>
+            <span class="delta-row">
+              <span id="delta-line">—</span>
+              <span id="best-chip" class="best-chip" hidden></span>
+              <span id="mastery-chip" class="mastery-chip" hidden></span>
+            </span>
+            <span id="sum-duration"></span>
+            <span id="sum-carriage" hidden></span>
+            <span id="sum-hold" hidden></span>
+            <!-- M9 beat row: filled by landing.ts (summary order HOLD -> BEAT) -->
+            <span id="sum-beat" hidden></span>
+            <!-- M11 turn row: filled by landing.ts (summary order HOLD -> BEAT -> TURN) -->
+            <span id="sum-turn" hidden></span>
+            <!-- M12 consistency verdict: filled by landing.ts from the 3rd matched walk -->
+            <span id="repeat-line" class="repeat-line" hidden></span>
+            <!-- F.27 head-motion observation notes (hold DWELL + turn
+                 SMOOTHNESS): display-only reads answering "did I hold long
+                 enough / was my turn smooth", NOT scored metrics. Distinct ids
+                 so the honest-card #sum-hold/#sum-turn display:none block never
+                 hides them; landing.ts (hold-turn-notes.ts) fills + toggles. -->
+            <span id="sum-hold-note" class="sum-obs" hidden></span>
+            <span id="sum-turn-note" class="sum-obs" hidden></span>
+          </div>
+        </div>
+        <!-- Headset-only honest card: the head-measured metrics only. PACE /
+             RHYTHM / LINE as bars here; CARRIAGE rides the score-side rows
+             above. POSTURE + the composite reads (presence/confidence/
+             presentation) are hidden — a Quest 3 in the browser measures only
+             the head, and composites are re-weightings, not sensors. -->
+        <div class="sum-rows">
+          <div class="sum-row" hidden>
+            <span class="sum-label">POSTURE</span>
+            <span class="sum-track"><span class="sum-fill" id="sm1-fill"></span></span>
+            <span class="sum-val" id="sm1-val">—</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label">PACE</span>
+            <span class="sum-track"><span class="sum-fill" id="sm2-fill"></span></span>
+            <span class="sum-val" id="sm2-val">—</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label">CARRIAGE</span>
+            <span class="sum-track"><span class="sum-fill" id="sm3-fill"></span></span>
+            <span class="sum-val" id="sm3-val">—</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label">LINE</span>
+            <span class="sum-track"><span class="sum-fill" id="sm4-fill"></span></span>
+            <span class="sum-val" id="sm4-val">—</span>
+          </div>
+          <div class="sum-row" hidden>
+            <span class="sum-label">PRESENCE <span class="composite-tag">COMPOSITE</span></span>
+            <span class="sum-track"><span class="sum-fill" id="sm5-fill"></span></span>
+            <span class="sum-val" id="sm5-val">—</span>
+          </div>
+          <div class="sum-row" hidden>
+            <span class="sum-label">CONFIDENCE <span class="composite-tag">COMPOSITE</span></span>
+            <span class="sum-track"><span class="sum-fill" id="sm6-fill"></span></span>
+            <span class="sum-val" id="sm6-val">—</span>
+          </div>
+          <div class="sum-row" hidden>
+            <span class="sum-label">PRESENTATION <span class="composite-tag">COMPOSITE</span></span>
+            <span class="sum-track"><span class="sum-fill" id="sm7-fill"></span></span>
+            <span class="sum-val" id="sm7-val">—</span>
+          </div>
+        </div>
+        <div class="sum-coach" id="sum-coach" hidden>
+          <div class="sum-coach-head mono">COACH'S NOTES</div>
+          <ul class="sum-coach-list" id="sum-coach-list"></ul>
+        </div>
+        <div class="sum-actions">
+          <button id="again-btn" class="btn btn-primary" type="button">
+            WALK AGAIN
+          </button>
+          <button id="export-btn" class="btn btn-glass" type="button">
+            EXPORT CSV + JSON
+          </button>
+          <button id="done-btn" class="btn btn-glass" type="button">DONE</button>
+        </div>
+        <div class="sum-actions">
+          <!-- Replay Theater: watch a ghost of this walk from the front row.
+               Hidden unless the latest record is replayable (landing.ts gates
+               on replayControls.available()); display-only, never scored. -->
+          <button id="sum-replay" class="btn btn-glass" type="button" hidden>
+            REPLAY
+          </button>
+          <!-- THE WALK CARD: a 1200x630 score-card PNG composed in-browser
+               (walk-card.ts) — share where the platform can, else download.
+               Hidden until a summary lands (zero walks = absent). -->
+          <button id="sum-share" class="btn btn-glass" type="button" hidden>
+            SHARE CARD
+          </button>
+          <!-- GHOST vs GHOST (the SimulCam pattern, F.35): this walk in
+               Carolina against your best walk in silver, start-synchronized
+               on one runway. Hidden unless a second replayable walk is in
+               memory (landing.ts gates on compareAvailableFor). -->
+          <button id="sum-compare" class="btn btn-glass" type="button" hidden>
+            VS BEST
+          </button>
+        </div>
+        <!-- Replay ring legend (DRAFTED-BY-CLAUDE, F.32 — worksheet):
+             structural key for the three marker colors; shown with REPLAY. -->
+        <div id="replay-legend" class="replay-legend" hidden>
+          REPLAY RINGS — <b>BLUE</b> LINE DRIFT · <b>WHITE</b> PACE OFF ·
+          <b>AMBER</b> HEAD DROP
+        </div>
+        <!-- THE NEXT-WALK RECAP (wave 2, F.39): after a replay ends, its
+             coached moments become an action list — replay only teaches when
+             it ends in what to practice (research finding 5). Painted by
+             landing.ts from globals.replayRecap; hidden when a replay had no
+             moments (a clean walk earns a clean card). -->
+        <div id="sum-recap" hidden>
+          <div class="card-kicker mono">PRACTICE NEXT</div>
+          <ul id="sum-recap-list"></ul>
+        </div>
+      </div>
+
+      <!-- session data view (toggled by the nav data chip) -->
+      <aside id="sessions-panel" class="glass" role="dialog" aria-label="Run history" hidden>
+        <div class="sp-head">
+          <span class="mono">RUN HISTORY — <span id="sp-count">0</span></span>
+          <button id="sessions-close" class="btn btn-glass" type="button">CLOSE</button>
+        </div>
+        <!-- trends strip (#11): filled by landing.ts from the persisted history -->
+        <div id="sp-trends" class="sp-trends" hidden>
+          <div class="sp-trends-head">
+            <span id="sp-trends-title">TRENDS</span>
+            <span class="sp-trends-side">
+              <span id="sp-trends-avg" class="sp-trends-avg"></span>
+              <span id="sp-trends-best" class="sp-trends-best"></span>
+            </span>
+          </div>
+          <div
+            id="sp-spark"
+            class="sp-spark"
+            role="img"
+            aria-label="Overall score per walk, oldest to newest"
+          ></div>
+          <div id="sp-trend-line" class="sp-trend-line"></div>
+        </div>
+        <!-- M12 benchmark headline: the only series captioned as improvement.
+             Its OWN sibling strip (not a #sp-trends child): the benchmark's
+             visibility must not inherit the trend strip's active-stamp
+             prefilter — after a re-FIT the scoped trend hides while the
+             old-stamp benchmark series is still valid (landing.ts). -->
+        <div id="sp-benchmark" class="sp-benchmark" hidden></div>
+        <!-- per-mode records (#38): one chip per trained mode, filled by landing.ts -->
+        <div id="sp-modes" class="sp-modes" hidden></div>
+        <!-- M12 consistency strip: spread across matched walks, filled by landing.ts -->
+        <div id="sp-repeat" class="sp-repeat" hidden></div>
+        <div class="sp-filters" id="sp-filters">
+          <button class="sp-chip active" type="button" data-filter="all">ALL</button>
+          <button class="sp-chip" type="button" data-filter="pass">PASSED</button>
+          <button class="sp-chip" type="button" data-filter="low">NEEDS WORK</button>
+        </div>
+        <div id="sessions-list" class="sp-list"></div>
+        <div id="sessions-empty" class="sp-empty">
+          No walks recorded yet. Complete a walk to capture data.
+        </div>
+        <div class="sp-actions">
+          <!-- The charted Excel sheet (founder call 2026-07-08); the id keeps
+               its historical name — landing.ts wires the xlsx export with a
+               CSV fallback onto it. -->
+          <button id="export-all-csv" class="btn btn-primary" type="button">
+            EXPORT EXCEL SHEET
+          </button>
+          <button id="export-all-json" class="btn btn-glass" type="button">
+            EXPORT FULL JSON
+          </button>
+          <button id="clear-history" class="btn btn-glass" type="button">
+            CLEAR HISTORY
+          </button>
+        </div>
+      </aside>
+
+      <!-- connect a phone camera (optional · sharper scoring) -->
+      <aside id="camera-panel" class="glass" role="dialog" aria-label="Connect a camera" hidden>
+        <div class="sp-head">
+          <span class="mono">CONNECT A CAMERA</span>
+          <button id="camera-close" class="btn btn-glass" type="button">CLOSE</button>
+        </div>
+        <!-- B12.3 honesty fix (2026-07-09, under the founder's complete-it
+             delegation): the old pitch promised posture &amp; footwork SCORING -
+             the honest card shows head metrics only. The camera grounds the
+             engine in the whole body; it adds no displayed metric today. -->
+        <p class="cam-body">
+          Stream your full-body pose from a phone so the engine sees your
+          whole body, not just your head. Head tracking works fine without it
+          — this is an optional upgrade.
+        </p>
+        <div class="cam-step mono">ON YOUR PHONE (SAME WI-FI), OPEN:</div>
+        <code class="cam-url" id="camera-url">…/companion/</code>
+        <div class="sp-actions">
+          <button id="camera-copy" class="btn btn-primary" type="button">
+            COPY LINK
+          </button>
+          <button id="camera-open" class="btn btn-glass" type="button">
+            OPEN HERE
+          </button>
+        </div>
+        <p class="cam-note mono">
+          Local dev: use your computer's LAN address (printed in the terminal) +
+          /companion/. The pill up top lights up when it connects.
+        </p>
+      </aside>
+    </div>
+
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+audience-0..3.glb - seated spectator models for the (X)RUNWAY crowd.
+
+Source: "Background Posed Humans" pack by Quaternius
+        https://quaternius.com/packs/backgroundposedhumans.html
+License: CC0 1.0 Universal (Public Domain Dedication)
+         https://creativecommons.org/publicdomain/zero/1.0/
+         Free for commercial use, no attribution required.
+Credit (voluntary, per the author's request): Background characters by Quaternius
+        https://www.patreon.com/quaternius
+
+Composition (2026-07-15): Female_Sitting / Male_Sitting poses + Hairstyle
+variants, converted FBX -> GLB via the project's three.js (FBXLoader ->
+GLTFExporter), split into role-named sub-meshes (part_skin / part_hair /
+part_top / part_bottom / part_shoes) with WHITE materials - per-seat colour
+comes from the app's instanceColor palettes (src/stage.ts OUTFITS /
+SKIN_TONES / HAIR_TONES), hair composited onto the bald pack heads at the
+skin-bucket crown. Regen recipe: docs/CROWD-OPTIONS.md + the tmp-convert
+converter page pattern (see the 2026-07-15 session).

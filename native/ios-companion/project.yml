@@ -1,0 +1,162 @@
+# XcodeGen spec for the (X)RUNWAY iOS companion.
+#
+#   brew install xcodegen   # if you don't have it
+#   cd native/ios-companion
+#   xcodegen generate        # produces XRunwayCompanion.xcodeproj
+#   open XRunwayCompanion.xcodeproj
+#
+# Then set your Team in Signing & Capabilities and run on a real A12+ device.
+
+name: XRunwayCompanion
+options:
+  bundleIdPrefix: com.xrunway
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Set your own team ID here, or pick it in Xcode's Signing & Capabilities.
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  # ---------------------------------------------------------------------------
+  # XRunwayCore — the pure-Foundation Solo scoring/coach core (the A2 web
+  # port, golden-vector locked). A framework target (A3) so the app and the
+  # test bundle consume ONE module: compiling it inline into the app would
+  # redeclare PoseFrame/PoseKeypoint (the app owns its own transport-layer
+  # versions in Sources/PoseFrame.swift); as a module, app code qualifies
+  # the Core types as XRunwayCore.PoseFrame where both are in scope.
+  # ---------------------------------------------------------------------------
+  XRunwayCore:
+    type: framework
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Sources/XRunwayCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mjzun.xrunway.core
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+
+  XRunwayCompanion:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Sources
+        # XRunwayCore compiles ONLY in its framework target (above) — inline
+        # compilation would both duplicate the module and redeclare
+        # PoseFrame/PoseKeypoint against the app's transport-layer versions.
+        excludes:
+          - "XRunwayCore/**"
+      # App icon (AppIcon, single 1024 — regenerate with
+      # `swift scripts/generate-app-icon.swift`) + the LaunchBackground color.
+      - path: Resources/Assets.xcassets
+    # Declare the Info.plist here so XcodeGen GENERATES it reproducibly on every
+    # `xcodegen generate` (it owns Resources/Info.plist as a build artifact — do
+    # not hand-edit that file, edit these properties instead).
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleDisplayName: "(X)RUNWAY Cam"
+        LSRequiresIPhoneOS: true
+        # Near-black launch state (Brand.bg) instead of a white system flash —
+        # UIColorName resolves against the asset catalog's LaunchBackground.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        # Let SwiftUI drive the status-bar style per screen via
+        # .preferredColorScheme (dark content on the light Enter page, light
+        # content on the dark camera UI).
+        UIViewControllerBasedStatusBarAppearance: true
+        # Camera is required for ARKit body tracking / Vision capture.
+        NSCameraUsageDescription: "(X)RUNWAY uses the camera to track a walker's body — to score and coach your walk on this phone in Solo mode, and to stream a pose skeleton to the headset app over your local network in Stream mode."
+        # Local network access prompt for reaching the LAN pose relay.
+        NSLocalNetworkUsageDescription: "(X)RUNWAY streams pose data to the (X)RUNWAY headset app on your local network."
+        # Allow plain ws:// to the LAN relay (native apps aren't browser-sandboxed).
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+          NSAllowsLocalNetworking: true
+        UIRequiredDeviceCapabilities:
+          - arm64
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mjzun.xrunway.companion
+        PRODUCT_NAME: XRunwayCompanion
+        INFOPLIST_FILE: Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
+        ENABLE_PREVIEWS: YES
+    # ARKit / RealityKit / Vision / SwiftUI ship with the SDK; XRunwayCore is
+    # the in-repo scoring framework (embedded + signed with the app).
+    dependencies:
+      - target: XRunwayCore
+        embed: true
+
+  # ---------------------------------------------------------------------------
+  # Golden-vector test target (SOLO-MODE §6.7 — the drift lock's Swift half).
+  #
+  # Consumes the XRunwayCore FRAMEWORK (the same module the app ships — the
+  # A2 direct-compile harness retired with the A3 promotion) via public API,
+  # no @testable, no host app. Solo/Core (the pure engine layer: SoloWalkCore,
+  # the turn detector, line measure) direct-compiles into the bundle so its
+  # internals stay testable. The golden JSONs are mirrored into
+  # Tests/XRunwayCoreTests/golden/ by scripts/sync-golden.sh and shipped as
+  # bundle resources; the tests load them via Bundle(for:).url(...).
+  # ---------------------------------------------------------------------------
+  XRunwayCoreTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    # Golden-mirror freshness gate (SOLO-MODE §6): before the test bundle
+    # compiles, assert the committed mirror (Tests/XRunwayCoreTests/golden/)
+    # is byte-identical to the repo-root source of truth (test/golden/). If a
+    # dev regenerated the vectors but forgot to re-run sync-golden.sh, this
+    # phase fails the Swift test BUILD so the port can never be silently
+    # validated against a stale mirror. basedOnDependencyAnalysis:false forces
+    # it to run every build (it has no declared inputs/outputs).
+    preBuildScripts:
+      - name: "Golden mirror freshness (SRC == mirror)"
+        basedOnDependencyAnalysis: false
+        script: '"$SRCROOT/scripts/sync-golden.sh" --check'
+    sources:
+      - path: Tests/XRunwayCoreTests
+      # The pure Solo engine layer (SoloWalkCore, the turn detector, line
+      # measure) direct-compiles into the bundle: it is app-module code with
+      # internal visibility, and its only dependencies are Foundation +
+      # XRunwayCore — the same rule that keeps it out of the UI files.
+      - path: Sources/Solo/Core
+      # Golden vectors as bundle resources (synced from repo-root test/golden/).
+      - path: Tests/XRunwayCoreTests/golden
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mjzun.xrunway.companion.tests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: XRunwayCore
+        embed: true
+
+# One scheme per target so `-scheme XRunwayCoreTests` runs the vectors and
+# `-scheme XRunwayCompanion` still builds the app.
+schemes:
+  XRunwayCoreTests:
+    build:
+      targets:
+        XRunwayCoreTests: [test]
+    test:
+      targets:
+        - XRunwayCoreTests
+  XRunwayCompanion:
+    build:
+      targets:
+        XRunwayCompanion: all

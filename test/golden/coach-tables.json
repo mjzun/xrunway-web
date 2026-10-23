@@ -1,0 +1,17 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "coach-tables",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "copy-and-earcon-tables",
+   "input": {},
+   "expect": {"METRIC_EXPLAIN":{"posture":"How square and lifted your frame stays through the walk.","pace":"How close your speed is to this mode's ideal catwalk tempo.","rhythm":"How even and consistent your step timing is.","footPlacement":"How closely your head holds the runway centerline (a headset reads your head, not your feet).","presence":"Composite read: your posture, rhythm and pace weighted together, posture counting most. It is not separately measured - eyeline is not tracked.","confidence":"Composite read: pace, posture and rhythm weighted evenly with a lighter footwork share, plus a small settle-in credit that grows over the walk. It is not separately measured.","presentation":"Composite read: all four measured channels blended, posture and rhythm weighted heaviest. It is not separately measured - the turn is not analyzed."},"METRIC_COACH":{"posture":"Lift through the crown - shoulders back, chin level, ribs over hips.","pace":"Settle into one tempo - don't rush the start or drift at the mark.","rhythm":"Lock a steady cadence - equal time on each step, like a metronome.","footPlacement":"Hold your line - keep your head centered over the runway.","presence":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","confidence":"Confidence is scored from your measured channels - even out pace, posture and rhythm and this read climbs with them.","presentation":"Presentation rolls up all four measured channels - posture and rhythm move it most, so start there."},"CLEAN_WALK_CUE":"Clean walk - every metric cleared the line. Step up a mode.","LIVE_CUE_TEXT":{"pace-fast":"Slow it down - long, even strides.","pace-slow":"Pick up the pace - stretch every stride.","center-up":"Find the centerline.","posture-drop":"Settle your height - smooth, no bounce.","posture-lift":"Lift through the crown - chin level."},"COACH_EARCONS":{"pace-fast":{"notes":[1318.51,987.77],"span":0.11,"decay":0.09,"glide":false},"pace-slow":{"notes":[987.77,1318.51],"span":0.11,"decay":0.09,"glide":false},"center-up":{"notes":[1174.66,1174.66],"span":0.09,"decay":0.07,"glide":false},"posture-drop":{"notes":[1046.5,783.99],"span":0.18,"decay":0.3,"glide":true},"posture-lift":{"notes":[783.99,1046.5],"span":0.18,"decay":0.3,"glide":true}},"COACH_EARCON_LEVEL":0.16}
+  },
+  {
+   "name": "solo-cue-thresholds",
+   "input": {},
+   "expect": {"PACE_DELTA_CUE_MPS":0.25,"SOLO_LATERAL_CUE_M":0.15,"SOLO_POSTURE_CUE_M":0.075,"SOLO_POSTURE_SLOPE":280,"SOLO_HEADING_STABLE_MIN":0.9,"SOLO_LATERAL_BASELINE_SEC":1,"SOLO_GAP_SEC":0.6,"SOLO_TURN_EXCLUDE_SEC":1.5,"SOLO_LATERAL_CUE_SMOOTH_RATE":0.5}
+  }
+ ]
+}

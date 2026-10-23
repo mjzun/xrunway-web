@@ -1,0 +1,27 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "modes",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "mode-beginner",
+   "input": {"id":"beginner"},
+   "expect": {"id":"beginner","idealPace":0.85,"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1},"walkSeconds":20}
+  },
+  {
+   "name": "mode-highfashion",
+   "input": {"id":"highfashion"},
+   "expect": {"id":"highfashion","idealPace":0.72,"passThreshold":80,"weights":{"posture":0.2,"presence":0.2,"presentation":0.2,"rhythm":0.15,"pace":0.1,"footPlacement":0.1,"confidence":0.05},"walkSeconds":20}
+  },
+  {
+   "name": "mode-commercial",
+   "input": {"id":"commercial"},
+   "expect": {"id":"commercial","idealPace":0.95,"passThreshold":75,"weights":{"confidence":0.2,"presentation":0.2,"pace":0.15,"posture":0.15,"presence":0.1,"footPlacement":0.1,"rhythm":0.1},"walkSeconds":20}
+  },
+  {
+   "name": "mode-challenge",
+   "input": {"id":"challenge"},
+   "expect": {"id":"challenge","idealPace":1.05,"passThreshold":82,"weights":{"pace":0.2,"rhythm":0.2,"footPlacement":0.2,"posture":0.15,"presentation":0.1,"confidence":0.1,"presence":0.05},"walkSeconds":20}
+  }
+ ]
+}

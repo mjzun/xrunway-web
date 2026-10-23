@@ -1,0 +1,212 @@
+{
+ "schema": "xrunway-golden/1",
+ "module": "coach",
+ "generatedBy": {"script":"scripts/gen-golden-vectors.mjs","gitSha":"4e5fcbca4ac7ae4a39bc2e599f892393e9e0aacc","date":"2026-07-18T20:10:53-04:00"},
+ "cases": [
+  {
+   "name": "verdict-overall-78",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":78,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":78,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "verdict-overall-77.5",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":77.5,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":78,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "verdict-overall-77.49",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":77.49,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":77,"passThreshold":78,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "verdict-overall-77",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":77,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":77,"passThreshold":78,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "verdict-overall-83.6",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":83.6,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":84,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "bar-beginner-at",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":78,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":78,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "bar-beginner-under",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":77,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":77,"passThreshold":78,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "bar-highfashion-at",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":80,"mode":{"passThreshold":80,"weights":{"posture":0.2,"presence":0.2,"presentation":0.2,"rhythm":0.15,"pace":0.1,"footPlacement":0.1,"confidence":0.05}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":80,"passThreshold":80,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "bar-highfashion-under",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":79,"mode":{"passThreshold":80,"weights":{"posture":0.2,"presence":0.2,"presentation":0.2,"rhythm":0.15,"pace":0.1,"footPlacement":0.1,"confidence":0.05}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":79,"passThreshold":80,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "bar-commercial-at",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":75,"mode":{"passThreshold":75,"weights":{"confidence":0.2,"presentation":0.2,"pace":0.15,"posture":0.15,"presence":0.1,"footPlacement":0.1,"rhythm":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":75,"passThreshold":75,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "bar-commercial-under",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":74,"mode":{"passThreshold":75,"weights":{"confidence":0.2,"presentation":0.2,"pace":0.15,"posture":0.15,"presence":0.1,"footPlacement":0.1,"rhythm":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":74,"passThreshold":75,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "bar-challenge-at",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":82,"mode":{"passThreshold":82,"weights":{"pace":0.2,"rhythm":0.2,"footPlacement":0.2,"posture":0.15,"presentation":0.1,"confidence":0.1,"presence":0.05}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":82,"passThreshold":82,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "bar-challenge-under",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":81,"mode":{"passThreshold":82,"weights":{"pace":0.2,"rhythm":0.2,"footPlacement":0.2,"posture":0.15,"presentation":0.1,"confidence":0.1,"presence":0.05}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":81,"passThreshold":82,"passed":false,"verdict":"NEEDS WORK","notes":[]}}
+  },
+  {
+   "name": "notes-empty-all-clear",
+   "input": {"scores":{"posture":90,"pace":90,"rhythm":90,"footPlacement":90,"presence":90,"confidence":90,"presentation":90},"overall":90,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":90,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "notes-empty-exactly-at-bar",
+   "input": {"scores":{"posture":78,"pace":78,"rhythm":78,"footPlacement":78,"presence":78,"confidence":78,"presentation":78},"overall":90,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":90,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "notes-empty-rounds-up-to-bar",
+   "input": {"scores":{"posture":77.6,"pace":77.6,"rhythm":77.6,"footPlacement":77.6,"presence":77.6,"confidence":77.6,"presentation":77.6},"overall":90,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":90,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[]}}
+  },
+  {
+   "name": "notes-ranked-weight-x-shortfall",
+   "input": {"scores":{"posture":70,"pace":60,"rhythm":95,"footPlacement":95,"presence":77,"confidence":95,"presentation":95},"overall":70,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":70,"passThreshold":78,"passed":false,"verdict":"NEEDS WORK","notes":[{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false},{"key":"posture","cue":"Lift through the crown - shoulders back, chin level, ribs over hips.","directional":false},{"key":"presence","cue":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","directional":false}]}}
+  },
+  {
+   "name": "notes-capped-at-three",
+   "input": {"scores":{"posture":50,"pace":50,"rhythm":50,"footPlacement":50,"presence":50,"confidence":50,"presentation":50},"overall":50,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":50,"passThreshold":78,"passed":false,"verdict":"NEEDS WORK","notes":[{"key":"posture","cue":"Lift through the crown - shoulders back, chin level, ribs over hips.","directional":false},{"key":"footPlacement","cue":"Hold your line - keep your head centered over the runway.","directional":false},{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false}]}}
+  },
+  {
+   "name": "notes-tie-break-m1-m7-order",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":70,"confidence":70,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presence","cue":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","directional":false},{"key":"confidence","cue":"Confidence is scored from your measured channels - even out pace, posture and rhythm and this read climbs with them.","directional":false}]}}
+  },
+  {
+   "name": "pace-directional-fast",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":1.1,"idealPaceMps":0.72,"paceDeltaMps":0.38,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"You averaged 1.10 m/s against a 0.72 m/s target - slow every stride down.","directional":true}]}}
+  },
+  {
+   "name": "pace-directional-slow",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":0.55,"idealPaceMps":0.85,"paceDeltaMps":-0.3,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"You averaged 0.55 m/s against a 0.85 m/s target - pick every stride up.","directional":true}]}}
+  },
+  {
+   "name": "pace-null-channel-generic",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false}]}}
+  },
+  {
+   "name": "pace-dead-on-generic",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":0.85,"idealPaceMps":0.85,"paceDeltaMps":0,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false}]}}
+  },
+  {
+   "name": "pace-sub-display-resolution-generic",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":0.853,"idealPaceMps":0.85,"paceDeltaMps":0.003,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false}]}}
+  },
+  {
+   "name": "pace-just-past-display-resolution",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":0.86,"idealPaceMps":0.85,"paceDeltaMps":0.01,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"You averaged 0.86 m/s against a 0.85 m/s target - slow every stride down.","directional":true}]}}
+  },
+  {
+   "name": "posture-rode-above-cm",
+   "input": {"scores":{"posture":50,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":0.035,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"posture","cue":"You rode 4 cm above your start height - settle down, no bounce.","directional":true}]}}
+  },
+  {
+   "name": "posture-sank-below-cm",
+   "input": {"scores":{"posture":50,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":-0.02,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"posture","cue":"You sank 2 cm below your start height - lift through the crown.","directional":true}]}}
+  },
+  {
+   "name": "posture-sub-cm-generic",
+   "input": {"scores":{"posture":50,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":0.004,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"posture","cue":"Lift through the crown - shoulders back, chin level, ribs over hips.","directional":false}]}}
+  },
+  {
+   "name": "posture-null-generic",
+   "input": {"scores":{"posture":50,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"posture","cue":"Lift through the crown - shoulders back, chin level, ribs over hips.","directional":false}]}}
+  },
+  {
+   "name": "foot-oneway-consistent-right",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0.08,"meanAbsLateralM":0.09,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":true},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"You drifted 9 cm right of the centerline - pull it back to center.","directional":true}]}}
+  },
+  {
+   "name": "foot-oneway-consistent-left",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":-0.08,"meanAbsLateralM":0.09,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":true},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"You drifted 9 cm left of the centerline - pull it back to center.","directional":true}]}}
+  },
+  {
+   "name": "foot-out-and-back-never-names-side",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0.08,"meanAbsLateralM":0.09,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"You averaged 9 cm off the centerline - tighten your line.","directional":true}]}}
+  },
+  {
+   "name": "foot-inconsistent-magnitude-only",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0.02,"meanAbsLateralM":0.09,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":true},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"You averaged 9 cm off the centerline - tighten your line.","directional":true}]}}
+  },
+  {
+   "name": "foot-exactly-at-consistency-bound",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0.06,"meanAbsLateralM":0.1,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":true},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"You drifted 10 cm right of the centerline - pull it back to center.","directional":true}]}}
+  },
+  {
+   "name": "foot-sub-cm-generic",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":50,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":0.002,"meanAbsLateralM":0.004,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":true},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"footPlacement","cue":"Hold your line - keep your head centered over the runway.","directional":false}]}}
+  },
+  {
+   "name": "rhythm-cites-steps-and-cadence",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":50,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":58,"cadenceSpm":96.2,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"rhythm","cue":"58 steps at 96 per minute - keep the interval even.","directional":true}]}}
+  },
+  {
+   "name": "rhythm-no-steps-generic",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":50,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":null,"idealPaceMps":0.85,"paceDeltaMps":null,"meanLateralM":null,"meanAbsLateralM":null,"postureDriftM":null,"steps":0,"cadenceSpm":null,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"rhythm","cue":"Lock a steady cadence - equal time on each step, like a metronome.","directional":false}]}}
+  },
+  {
+   "name": "presence-composite-stays-generic",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":50,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":1.2,"idealPaceMps":0.85,"paceDeltaMps":0.35,"meanLateralM":0.1,"meanAbsLateralM":0.12,"postureDriftM":-0.05,"steps":60,"cadenceSpm":100,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presence","cue":"Presence is scored from your posture, rhythm and pace - lift the frame and steady the tempo and it follows.","directional":false}]}}
+  },
+  {
+   "name": "confidence-composite-stays-generic",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":50,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":1.2,"idealPaceMps":0.85,"paceDeltaMps":0.35,"meanLateralM":0.1,"meanAbsLateralM":0.12,"postureDriftM":-0.05,"steps":60,"cadenceSpm":100,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"confidence","cue":"Confidence is scored from your measured channels - even out pace, posture and rhythm and this read climbs with them.","directional":false}]}}
+  },
+  {
+   "name": "presentation-composite-stays-generic",
+   "input": {"scores":{"posture":95,"pace":95,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":50},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":{"meanPaceMps":1.2,"idealPaceMps":0.85,"paceDeltaMps":0.35,"meanLateralM":0.1,"meanAbsLateralM":0.12,"postureDriftM":-0.05,"steps":60,"cadenceSpm":100,"source":"head"},"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"presentation","cue":"Presentation rolls up all four measured channels - posture and rhythm move it most, so start there.","directional":false}]}}
+  },
+  {
+   "name": "stats-null-generic",
+   "input": {"scores":{"posture":95,"pace":50,"rhythm":95,"footPlacement":95,"presence":95,"confidence":95,"presentation":95},"overall":85,"mode":{"passThreshold":78,"weights":{"posture":0.2,"pace":0.15,"rhythm":0.15,"footPlacement":0.2,"presence":0.1,"confidence":0.1,"presentation":0.1}},"stats":null,"oneWayRoute":false},
+   "expect": {"report":{"overall":85,"passThreshold":78,"passed":true,"verdict":"PASS","notes":[{"key":"pace","cue":"Settle into one tempo - don't rush the start or drift at the mark.","directional":false}]}}
+  }
+ ]
+}

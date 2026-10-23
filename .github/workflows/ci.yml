@@ -1,0 +1,40 @@
+name: CI
+
+# Runs the full verification gate on every push + PR to main, so a red or
+# golden-drifted commit can't land silently. Mirrors the local pre-commit
+# checks: types, the 1600+ vitest suite, the golden-vector drift lock (via the
+# `test` script), and a production build.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# One in-flight run per branch; a newer push cancels the older run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install (clean, from the lockfile)
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test + golden drift lock
+        run: npm test # vitest run && gen-golden-vectors.mjs --check
+
+      - name: Production build
+        run: npx vite build

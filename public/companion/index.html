@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#0a0c10" />
+    <title>(X)RUNWAY — Camera</title>
+    <meta
+      name="description"
+      content="The (X)RUNWAY companion camera — point a phone at the runway and stream full-body pose data into the trainer for sharper scoring."
+    />
+    <link rel="icon" type="image/png" href="/brand-icon-512.png" />
+    <link rel="apple-touch-icon" href="/brand-icon-512.png" />
+
+    <!-- Typefaces are self-hosted (same-origin /fonts/ slices, OFL notices in
+         /fonts/OFL-LICENSES.txt) — the phone page keeps its typography even on
+         isolated networks where Google Fonts is unreachable. crossorigin is
+         mandatory on font preloads even same-origin. -->
+    <link rel="preload" href="/fonts/inter-v20-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/space-grotesk-v22-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+
+    <style>
+      /* ============================================================
+         (X)RUNWAY — Companion capture page (Phase 2).
+         Mobile-first. Runs MediaPipe PoseLandmarker on the phone
+         camera and streams PoseFrames to the headset over WebSocket.
+         Brand: Carolina Blue accent over a near-black stage.
+         (Mirrors the brand vars in index.html's <style>.)
+         ============================================================ */
+
+      /* Self-hosted variable-font slices — twins of index.html's blocks. */
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/fonts/inter-v20-latin-wght.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Space Grotesk";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/fonts/space-grotesk-v22-latin-wght.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      :root {
+        --xr-bg: #0a0c10;
+        --xr-bg-deep: #05070a;
+        --xr-accent: #4b9cd3;
+        --xr-accent-soft: #8ec4e8;
+        --xr-accent-deep: #2f7cb3;
+        --xr-white: #f2f5f8;
+        --xr-silver: #8a8f96;
+        --ok: #5fcf80;
+        --warn: #e7b85c;
+        --bad: #e06d6d;
+
+        --glass-bg: rgba(10, 12, 16, 0.62);
+        --glass-border: rgba(255, 255, 255, 0.14);
+
+        --font-body: "Inter", system-ui, sans-serif;
+        --font-mono: "Space Grotesk", ui-monospace, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--xr-bg);
+        color: var(--xr-white);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #app {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 10px;
+        padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px
+          calc(env(safe-area-inset-bottom, 0px) + 12px);
+      }
+
+      .mono {
+        font-family: var(--font-mono);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      /* ---------------------------- header ---------------------------- */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 14px;
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: blur(12px) saturate(1.15);
+        backdrop-filter: blur(12px) saturate(1.15);
+        border: 1px solid var(--glass-border);
+      }
+      /* (X)RUNWAY wordmark - one word, the icon's green, italicised Impact
+         (founder call 2026-07-13). See index.html for the rationale. */
+      .wordmark {
+        font-family: Impact, "Haettenschweiler", "Franklin Gothic Bold",
+          "Arial Narrow", sans-serif;
+        font-weight: 400;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        display: inline-block;
+        transform: skewX(-10deg);
+        background: linear-gradient(178deg, #a8dca8 0%, #6dbe71 48%, #3f8f4c 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: #6dbe71;
+      }
+      .wordmark .sub {
+        color: var(--xr-silver);
+        -webkit-text-fill-color: var(--xr-silver);
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        transform: skewX(10deg);
+        display: inline-block;
+      }
+      /* connection pill */
+      #conn-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        padding: 6px 11px;
+        white-space: nowrap;
+      }
+      #conn-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--xr-silver);
+        box-shadow: 0 0 8px rgba(138, 143, 150, 0.6);
+        flex: none;
+        transition:
+          background 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      #conn-pill.connected {
+        color: var(--ok);
+        border-color: rgba(95, 207, 128, 0.4);
+        background: rgba(95, 207, 128, 0.08);
+      }
+      #conn-pill.connected #conn-dot {
+        background: var(--ok);
+        box-shadow: 0 0 8px rgba(95, 207, 128, 0.8);
+      }
+      #conn-pill.connecting {
+        color: var(--warn);
+        border-color: rgba(231, 184, 92, 0.4);
+        background: rgba(231, 184, 92, 0.08);
+      }
+      #conn-pill.connecting #conn-dot {
+        background: var(--warn);
+        box-shadow: 0 0 8px rgba(231, 184, 92, 0.8);
+        animation: pulse 1.1s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      /* ---------------------------- stage ----------------------------- */
+      #stage {
+        position: relative;
+        min-height: 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--xr-bg-deep);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          inset 0 0 60px rgba(0, 0, 0, 0.5),
+          0 12px 40px rgba(0, 0, 0, 0.4);
+      }
+      /* video + overlay are mirrored for "selfie" feel; toggle removes mirror
+         on the back camera. They fill the stage with object-fit: cover. */
+      #video,
+      #overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #video {
+        object-fit: cover;
+        background: var(--xr-bg-deep);
+      }
+      #overlay {
+        pointer-events: none;
+      }
+      #stage.mirror #video,
+      #stage.mirror #overlay {
+        transform: scaleX(-1);
+      }
+
+      /* FPS / source badge over the video */
+      #stage-hud {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        pointer-events: none;
+        z-index: 3;
+      }
+      .badge {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: var(--xr-white);
+        background: rgba(5, 7, 10, 0.62);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 5px 9px;
+        white-space: nowrap;
+      }
+      .badge .n {
+        color: var(--xr-accent-soft);
+      }
+
+      /* overlay message (loading model / errors / idle) */
+      #stage-msg {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 12px;
+        padding: 26px;
+        background: rgba(5, 7, 10, 0.72);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+      }
+      #stage-msg.show {
+        display: flex;
+      }
+      #stage-msg .icon {
+        font-size: 30px;
+        line-height: 1;
+      }
+      #stage-msg .title {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--xr-white);
+      }
+      #stage-msg .body {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: rgba(242, 245, 248, 0.78);
+        max-width: 32ch;
+      }
+      #stage-msg .body code {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--xr-accent-soft);
+        background: rgba(75, 156, 211, 0.1);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      #stage-msg.error .title {
+        color: var(--bad);
+      }
+      .spinner {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 3px solid rgba(75, 156, 211, 0.22);
+        border-top-color: var(--xr-accent);
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ---------------------------- panel ----------------------------- */
+      #panel {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+        border-radius: 16px;
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: blur(12px) saturate(1.15);
+        backdrop-filter: blur(12px) saturate(1.15);
+        border: 1px solid var(--glass-border);
+      }
+
+      /* status line: connection state + detected FPS */
+      #status-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+      }
+      #status-line .s-state {
+        color: var(--xr-silver);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #status-line .s-fps {
+        flex: none;
+        color: var(--xr-accent-soft);
+        font-weight: 600;
+      }
+      #status-line .s-fps b {
+        color: var(--xr-white);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .field-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .field {
+        flex: 1;
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+      }
+      .field label {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      .field input[type="text"] {
+        width: 100%;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        color: var(--xr-white);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        transition:
+          border-color 0.18s ease,
+          background 0.18s ease;
+      }
+      .field input[type="text"]:focus {
+        border-color: rgba(75, 156, 211, 0.6);
+        background: rgba(75, 156, 211, 0.06);
+      }
+
+      /* camera-facing toggle */
+      #facing-toggle {
+        flex: none;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      #facing-toggle .lbl {
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--xr-silver);
+      }
+      #facing-btn {
+        flex: 1;
+        cursor: pointer;
+        appearance: none;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--xr-white);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 0 14px;
+        min-width: 96px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+      }
+      #facing-btn:active {
+        transform: scale(0.98);
+      }
+
+      /* buttons */
+      .btn {
+        cursor: pointer;
+        appearance: none;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--xr-white);
+        border-radius: 12px;
+        padding: 15px 20px;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transition:
+          transform 0.16s ease,
+          box-shadow 0.16s ease,
+          background 0.16s ease,
+          opacity 0.16s ease;
+      }
+      .btn:active {
+        transform: scale(0.985);
+      }
+      .btn[disabled] {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--xr-accent),
+          var(--xr-accent-deep)
+        );
+        box-shadow:
+          0 0 22px rgba(75, 156, 211, 0.35),
+          0 6px 18px rgba(0, 0, 0, 0.4);
+      }
+      .btn-stop {
+        background: rgba(224, 109, 109, 0.16);
+        border-color: rgba(224, 109, 109, 0.5);
+        color: #f4c3c3;
+        box-shadow: none;
+      }
+
+      .hint {
+        font-size: 10.5px;
+        line-height: 1.5;
+        color: var(--xr-silver);
+        text-align: center;
+      }
+      .hint code {
+        font-family: var(--font-mono);
+        color: var(--xr-accent-soft);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .spinner,
+        #conn-pill.connecting #conn-dot {
+          animation: none;
+        }
+        .btn {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <span class="wordmark">
+          (X)RUNWAY
+          <span class="sub">— Camera</span>
+        </span>
+        <span id="conn-pill" class="mono" role="status" aria-live="polite">
+          <span id="conn-dot"></span>
+          <span id="conn-label">Offline</span>
+        </span>
+      </header>
+
+      <div id="stage">
+        <!-- muted + playsinline are required for iOS autoplay of the stream -->
+        <video id="video" playsinline autoplay muted></video>
+        <canvas id="overlay"></canvas>
+
+        <div id="stage-hud">
+          <span class="badge">FPS <span class="n" id="hud-fps">—</span></span>
+          <span class="badge" id="hud-source">iphone-tripod</span>
+        </div>
+
+        <div id="stage-msg" class="show">
+          <div class="icon" id="msg-icon">●</div>
+          <div class="title" id="msg-title">Camera idle</div>
+          <div class="body" id="msg-body">
+            Press START CAMERA below to begin streaming pose.
+          </div>
+        </div>
+      </div>
+
+      <div id="panel">
+        <div id="status-line">
+          <span class="s-state" id="status-text">Model not loaded yet…</span>
+          <span class="s-fps">FPS <b id="fps-num">0</b></span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="source-input">Source label</label>
+            <input
+              id="source-input"
+              type="text"
+              value="iphone-tripod"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              inputmode="text"
+              aria-label="Source label sent with each pose frame"
+            />
+          </div>
+          <div id="facing-toggle">
+            <span class="lbl">Camera</span>
+            <button id="facing-btn" type="button" aria-label="Toggle front/back camera">
+              <span id="facing-label">FRONT</span>
+            </button>
+          </div>
+        </div>
+
+        <button id="start-btn" class="btn btn-primary" type="button">
+          Start Camera
+        </button>
+
+        <p class="hint" id="relay-hint">
+          Streaming to relay on port <code>8082</code>.
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      /* ============================================================
+         (X)RUNWAY companion — all logic inline, vanilla ESM, no build.
+         Pipeline:  getUserMedia -> <video>
+                    -> MediaPipe PoseLandmarker.detectForVideo (per rAF)
+                    -> map result to a PoseFrame (src/external-tracker.ts)
+                    -> WebSocket {type:"pose", frame} to the relay (:8082)
+         Defensive throughout: nothing here may throw to the top level.
+         ============================================================ */
+
+      // ----- CDN URLs (pinned) -------------------------------------------
+      // MediaPipe Tasks Vision (ESM) + its wasm fileset, from jsDelivr.
+      const MP_VERSION = "0.10.35";
+      const MP_MODULE_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}/vision_bundle.mjs`;
+      const MP_WASM_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}/wasm`;
+      // pose_landmarker_lite (.task) from Google's mediapipe-models storage.
+      const POSE_MODEL_URL =
+        "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+
+      // ----- Relay transport ---------------------------------------------
+      const RELAY_PORT = 8082;
+      function relayUrl() {
+        const proto = location.protocol === "https:" ? "wss" : "ws";
+        // hostname (no port) so it works on localhost and over LAN by IP.
+        return `${proto}://${location.hostname}:${RELAY_PORT}`;
+      }
+
+      // Throttle pose sends to <= ~30/s regardless of detector FPS.
+      const SEND_INTERVAL_MS = 1000 / 30;
+
+      // BlazePose landmark indices -> the named keypoints the app consumes.
+      // (matches the contract in src/external-tracker.ts; names are
+      //  BlazePose/COCO.)
+      const KEYPOINTS = {
+        nose: 0,
+        leftShoulder: 11,
+        rightShoulder: 12,
+        leftHip: 23,
+        rightHip: 24,
+        leftKnee: 25,
+        rightKnee: 26,
+        leftAnkle: 27,
+        rightAnkle: 28,
+      };
+
+      // Bone pairs (by BlazePose index) for the skeleton overlay.
+      const SKELETON_BONES = [
+        [11, 12], // shoulders
+        [11, 23], // left torso
+        [12, 24], // right torso
+        [23, 24], // hips
+        [11, 13], // left upper arm
+        [13, 15], // left forearm
+        [12, 14], // right upper arm
+        [14, 16], // right forearm
+        [23, 25], // left thigh
+        [25, 27], // left shin
+        [24, 26], // right thigh
+        [26, 28], // right shin
+        [27, 31], // left foot
+        [28, 32], // right foot
+      ];
+
+      // ----- DOM ----------------------------------------------------------
+      const $ = (id) => document.getElementById(id);
+      const video = $("video");
+      const overlay = $("overlay");
+      const stage = $("stage");
+      const startBtn = $("start-btn");
+      const facingBtn = $("facing-btn");
+      const facingLabel = $("facing-label");
+      const sourceInput = $("source-input");
+      const statusText = $("status-text");
+      const fpsNum = $("fps-num");
+      const hudFps = $("hud-fps");
+      const hudSource = $("hud-source");
+      const connPill = $("conn-pill");
+      const connLabel = $("conn-label");
+      const stageMsg = $("stage-msg");
+      const msgIcon = $("msg-icon");
+      const msgTitle = $("msg-title");
+      const msgBody = $("msg-body");
+      const ctx = overlay.getContext("2d");
+
+      // ----- State --------------------------------------------------------
+      const state = {
+        facing: "user", // "user" (front) | "environment" (back)
+        running: false, // camera + detect loop active
+        stream: null,
+        landmarker: null, // MediaPipe PoseLandmarker
+        modelLoading: false,
+        modelReady: false,
+        ws: null,
+        wsConnected: false,
+        wsBackoff: 1000,
+        wsReconnectTimer: null,
+        wsClosedByUs: false,
+        rafId: null,
+        lastSendT: 0,
+        lastVideoT: -1, // dedupe detectForVideo by media time
+        // fps measurement
+        fps: 0,
+        frameTimes: [],
+      };
+
+      // ----- Small UI helpers --------------------------------------------
+      function setMessage(kind, title, bodyHtml) {
+        // kind: "hidden" | "loading" | "info" | "error"
+        if (kind === "hidden") {
+          stageMsg.classList.remove("show", "error");
+          return;
+        }
+        stageMsg.classList.add("show");
+        stageMsg.classList.toggle("error", kind === "error");
+        if (kind === "loading") {
+          msgIcon.outerHTML = '<div class="spinner" id="msg-icon"></div>';
+        } else {
+          const icon = kind === "error" ? "⚠" : "●";
+          // re-create as a plain element if it was swapped to a spinner
+          const cur = $("msg-icon");
+          if (cur) {
+            const repl = document.createElement("div");
+            repl.className = "icon";
+            repl.id = "msg-icon";
+            repl.textContent = icon;
+            cur.replaceWith(repl);
+          }
+        }
+        msgTitle.textContent = title;
+        msgBody.innerHTML = bodyHtml;
+      }
+
+      function setStatus(text) {
+        statusText.textContent = text;
+      }
+
+      function setConn(kind) {
+        // kind: "offline" | "connecting" | "connected"
+        connPill.classList.remove("connected", "connecting");
+        if (kind === "connected") {
+          connPill.classList.add("connected");
+          connLabel.textContent = "Connected";
+        } else if (kind === "connecting") {
+          connPill.classList.add("connecting");
+          connLabel.textContent = "Connecting…";
+        } else {
+          connLabel.textContent = "Offline";
+        }
+      }
+
+      function currentSource() {
+        const v = (sourceInput.value || "").trim();
+        return v || "iphone-tripod";
+      }
+
+      // ----- Secure-context guard ----------------------------------------
+      // getUserMedia requires a secure context (https) EXCEPT on localhost.
+      function isSecureCameraContext() {
+        if (window.isSecureContext) return true;
+        const h = location.hostname;
+        return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
+      }
+
+      function hasGetUserMedia() {
+        return !!(
+          navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+        );
+      }
+
+      // ====================================================================
+      //  WebSocket relay (connect lazily on first START; reconnect w/ backoff)
+      // ====================================================================
+      function connectWS() {
+        if (
+          state.ws &&
+          (state.ws.readyState === WebSocket.OPEN ||
+            state.ws.readyState === WebSocket.CONNECTING)
+        ) {
+          return;
+        }
+        state.wsClosedByUs = false;
+        let ws;
+        const url = relayUrl();
+        try {
+          ws = new WebSocket(url);
+        } catch (err) {
+          // Bad URL / blocked — schedule a retry rather than throwing.
+          scheduleReconnect();
+          return;
+        }
+        state.ws = ws;
+        setConn("connecting");
+
+        ws.addEventListener("open", () => {
+          state.wsConnected = true;
+          state.wsBackoff = 1000; // reset backoff on success
+          setConn("connected");
+          // Announce ourselves as a sender so the relay can route frames.
+          safeSend({
+            type: "hello",
+            role: "sender",
+            source: currentSource(),
+          });
+        });
+
+        ws.addEventListener("close", () => {
+          state.wsConnected = false;
+          setConn("offline");
+          if (!state.wsClosedByUs) scheduleReconnect();
+        });
+
+        ws.addEventListener("error", () => {
+          // 'error' is always followed by 'close'; let close handle retry.
+          // Swallow to avoid console-spam loops.
+        });
+      }
+
+      function scheduleReconnect() {
+        if (state.wsReconnectTimer || state.wsClosedByUs) return;
+        setConn("offline");
+        const delay = state.wsBackoff;
+        state.wsBackoff = Math.min(state.wsBackoff * 2, 15000); // cap 15s
+        state.wsReconnectTimer = setTimeout(() => {
+          state.wsReconnectTimer = null;
+          // Only reconnect while we're actively capturing.
+          if (state.running) connectWS();
+        }, delay);
+      }
+
+      function disconnectWS() {
+        state.wsClosedByUs = true;
+        if (state.wsReconnectTimer) {
+          clearTimeout(state.wsReconnectTimer);
+          state.wsReconnectTimer = null;
+        }
+        if (state.ws) {
+          try {
+            state.ws.close();
+          } catch (_) {
+            /* ignore */
+          }
+          state.ws = null;
+        }
+        state.wsConnected = false;
+        setConn("offline");
+      }
+
+      function safeSend(obj) {
+        const ws = state.ws;
+        if (!ws || ws.readyState !== WebSocket.OPEN) return false;
+        try {
+          ws.send(JSON.stringify(obj));
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      // ====================================================================
+      //  Model load (MediaPipe). Lazy: starts on first START CAMERA.
+      // ====================================================================
+      let visionModule = null;
+
+      async function ensureModel() {
+        if (state.modelReady) return true;
+        if (state.modelLoading) return false; // already in flight
+        state.modelLoading = true;
+        setStatus("Loading pose model…");
+        try {
+          if (!visionModule) {
+            visionModule = await import(/* @vite-ignore */ MP_MODULE_URL);
+          }
+          const { FilesetResolver, PoseLandmarker } = visionModule;
+          const fileset =
+            await FilesetResolver.forVisionTasks(MP_WASM_URL);
+
+          // Try GPU first, fall back to CPU if GPU init fails.
+          let landmarker = null;
+          const baseOptions = {
+            baseOptions: { modelAssetPath: POSE_MODEL_URL },
+            runningMode: "VIDEO",
+            numPoses: 1,
+          };
+          try {
+            landmarker = await PoseLandmarker.createFromOptions(fileset, {
+              ...baseOptions,
+              baseOptions: { ...baseOptions.baseOptions, delegate: "GPU" },
+            });
+          } catch (gpuErr) {
+            landmarker = await PoseLandmarker.createFromOptions(fileset, {
+              ...baseOptions,
+              baseOptions: { ...baseOptions.baseOptions, delegate: "CPU" },
+            });
+          }
+
+          state.landmarker = landmarker;
+          state.modelReady = true;
+          state.modelLoading = false;
+          setStatus(
+            state.running ? "Tracking…" : "Model ready — camera idle.",
+          );
+          return true;
+        } catch (err) {
+          state.modelLoading = false;
+          state.modelReady = false;
+          setStatus("Pose model failed to load.");
+          setMessage(
+            "error",
+            "Model load failed",
+            "Couldn't download the pose model from the CDN. Check the phone's internet connection, then press START CAMERA again.",
+          );
+          return false;
+        }
+      }
+
+      // ====================================================================
+      //  Camera
+      // ====================================================================
+      async function startCamera() {
+        // Guard: secure context + API availability.
+        if (!hasGetUserMedia() || !isSecureCameraContext()) {
+          setMessage(
+            "error",
+            "Camera needs HTTPS",
+            "The camera only works in a <b>secure context</b>. On a phone over your LAN, open this page over <b>HTTPS</b> " +
+              "(use the project's mkcert option) or via a tunnel. " +
+              "Plain <code>http://&lt;ip&gt;:8081</code> is blocked; <code>localhost</code> is exempt.",
+          );
+          setStatus("Insecure context — camera blocked.");
+          return;
+        }
+
+        setMessage("loading", "Starting camera…", "Allow camera access when prompted.");
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: state.facing,
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          });
+        } catch (err) {
+          // Map common getUserMedia errors to a clear message.
+          const name = err && err.name ? err.name : "Error";
+          let body;
+          if (name === "NotAllowedError" || name === "SecurityError") {
+            body =
+              "Camera permission was denied. Enable it for this site in your browser settings, then press START CAMERA again.";
+          } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+            body =
+              "No camera matched the requested facing mode. Try the FRONT/BACK toggle, then START CAMERA again.";
+          } else if (name === "NotReadableError") {
+            body =
+              "The camera is in use by another app. Close it and press START CAMERA again.";
+          } else {
+            body =
+              "Couldn't start the camera (" +
+              name +
+              "). On a phone, make sure the page is served over HTTPS.";
+          }
+          setMessage("error", "Camera unavailable", body);
+          setStatus("Camera failed: " + name);
+          return;
+        }
+
+        state.stream = stream;
+        video.srcObject = stream;
+        // mirror only the front camera (selfie feel); back camera is true.
+        stage.classList.toggle("mirror", state.facing === "user");
+
+        try {
+          await video.play();
+        } catch (_) {
+          /* autoplay may resolve late; rAF loop tolerates not-ready video */
+        }
+
+        // Wait for dimensions so the overlay canvas matches.
+        await waitForVideoReady();
+        sizeOverlay();
+
+        state.running = true;
+        startBtn.textContent = "Stop Camera";
+        startBtn.classList.remove("btn-primary");
+        startBtn.classList.add("btn-stop");
+        facingBtn.disabled = false;
+
+        // Open the relay and (lazily) the model. Loop starts now and simply
+        // skips detection until the model is ready ("loading model…").
+        connectWS();
+        ensureModel();
+
+        setMessage("hidden");
+        if (!state.modelReady) {
+          setMessage(
+            "info",
+            "Loading model…",
+            "Camera is live. Loading the pose model…",
+          );
+          setStatus("Loading pose model…");
+        }
+        startLoop();
+      }
+
+      function waitForVideoReady() {
+        return new Promise((resolve) => {
+          if (video.readyState >= 2 && video.videoWidth > 0) return resolve();
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            video.removeEventListener("loadeddata", finish);
+            resolve();
+          };
+          video.addEventListener("loadeddata", finish);
+          // Safety timeout so we never hang.
+          setTimeout(finish, 4000);
+        });
+      }
+
+      function sizeOverlay() {
+        const w = video.videoWidth || stage.clientWidth;
+        const h = video.videoHeight || stage.clientHeight;
+        if (w && h) {
+          overlay.width = w;
+          overlay.height = h;
+        }
+      }
+
+      function stopCamera() {
+        state.running = false;
+        if (state.rafId != null) {
+          cancelAnimationFrame(state.rafId);
+          state.rafId = null;
+        }
+        if (state.stream) {
+          for (const track of state.stream.getTracks()) {
+            try {
+              track.stop();
+            } catch (_) {
+              /* ignore */
+            }
+          }
+          state.stream = null;
+        }
+        video.srcObject = null;
+        disconnectWS();
+        if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+        state.fps = 0;
+        state.frameTimes.length = 0;
+        fpsNum.textContent = "0";
+        hudFps.textContent = "—";
+
+        startBtn.textContent = "Start Camera";
+        startBtn.classList.add("btn-primary");
+        startBtn.classList.remove("btn-stop");
+
+        setMessage(
+          "info",
+          "Camera stopped",
+          "Press START CAMERA to resume streaming pose.",
+        );
+        setStatus(
+          state.modelReady ? "Model ready — camera idle." : "Camera idle.",
+        );
+      }
+
+      // ====================================================================
+      //  Detect + draw + send loop
+      // ====================================================================
+      function startLoop() {
+        if (state.rafId != null) return;
+        const loop = () => {
+          state.rafId = requestAnimationFrame(loop);
+          tick();
+        };
+        state.rafId = requestAnimationFrame(loop);
+      }
+
+      function tick() {
+        if (!state.running) return;
+        // Need a frame with real dimensions.
+        if (!video.videoWidth || video.readyState < 2) return;
+        if (overlay.width !== video.videoWidth) sizeOverlay();
+
+        // If the model isn't ready yet, keep the loop alive (clear canvas).
+        if (!state.modelReady || !state.landmarker) {
+          if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
+          return;
+        }
+
+        const nowMs = performance.now();
+
+        // Avoid re-detecting the same media frame (dedupe by currentTime).
+        const mediaT = video.currentTime;
+        let result = null;
+        if (mediaT !== state.lastVideoT) {
+          state.lastVideoT = mediaT;
+          try {
+            result = state.landmarker.detectForVideo(video, nowMs);
+          } catch (_) {
+            // Transient detect failure; skip this frame quietly.
+            result = null;
+          }
+          measureFps(nowMs);
+        }
+
+        if (result) {
+          drawSkeleton(result);
+          maybeSendFrame(result, nowMs);
+          if (state.running && state.modelReady) {
+            // model became ready while a "loading" message was up
+            if (stageMsg.classList.contains("show")) setMessage("hidden");
+            if (statusText.textContent.startsWith("Loading"))
+              setStatus(state.wsConnected ? "Tracking → relay." : "Tracking (relay offline)…");
+          }
+        }
+      }
+
+      function measureFps(nowMs) {
+        const times = state.frameTimes;
+        times.push(nowMs);
+        // keep a ~1s window
+        const cutoff = nowMs - 1000;
+        while (times.length && times[0] < cutoff) times.shift();
+        state.fps = times.length; // frames in the last second
+        const shown = String(state.fps);
+        fpsNum.textContent = shown;
+        hudFps.textContent = shown;
+      }
+
+      // ----- Skeleton overlay --------------------------------------------
+      // Draw with the NORMALIZED landmarks (result.landmarks[0], 0..1 in image
+      // space) so it lines up with the video. worldLandmarks are metric and
+      // centered on the hips — wrong space for screen drawing. We send world
+      // coords in the PoseFrame (below) but draw with image coords here.
+      function drawSkeleton(result) {
+        if (!ctx) return;
+        const W = overlay.width;
+        const H = overlay.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const lm =
+          result.landmarks && result.landmarks.length
+            ? result.landmarks[0]
+            : null;
+        if (!lm) return;
+
+        const px = (i) => ({ x: lm[i].x * W, y: lm[i].y * H, v: lm[i].visibility });
+
+        // bones
+        ctx.lineWidth = Math.max(2, W * 0.006);
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "rgba(75, 156, 211, 0.9)";
+        ctx.shadowColor = "rgba(75, 156, 211, 0.8)";
+        ctx.shadowBlur = Math.max(4, W * 0.01);
+        ctx.beginPath();
+        for (const [a, b] of SKELETON_BONES) {
+          if (a >= lm.length || b >= lm.length) continue;
+          const pa = px(a);
+          const pb = px(b);
+          // skip very low-confidence endpoints to avoid garbage lines
+          if ((pa.v != null && pa.v < 0.3) || (pb.v != null && pb.v < 0.3))
+            continue;
+          ctx.moveTo(pa.x, pa.y);
+          ctx.lineTo(pb.x, pb.y);
+        }
+        ctx.stroke();
+
+        // joints (just the named keypoints we emit)
+        ctx.shadowBlur = 0;
+        const r = Math.max(3, W * 0.008);
+        for (const name in KEYPOINTS) {
+          const i = KEYPOINTS[name];
+          if (i >= lm.length) continue;
+          const p = px(i);
+          if (p.v != null && p.v < 0.3) continue;
+          ctx.beginPath();
+          ctx.fillStyle = "#f2f5f8";
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(75, 156, 211, 0.95)";
+          ctx.arc(p.x, p.y, r * 0.55, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // ----- PoseFrame mapping + send ------------------------------------
+      // Build a PoseFrame matching src/external-tracker.ts:
+      //   { t, source, keypoints: Record<name, {x,y,z,score}> }
+      // x/y are NORMALIZED IMAGE coords (result.landmarks[0], 0..1, y down) so
+      // the body's translation across the frame is preserved — the app derives
+      // pace/footwork from that (side-camera setup). z = landmark relative depth.
+      // score = visibility. (World/metric coords await native ARKit; see
+      // docs/SENSORS.md.)
+      function buildPoseFrame(result, nowMs, source) {
+        const norm =
+          result.landmarks && result.landmarks.length
+            ? result.landmarks[0]
+            : null;
+        const keypoints = {};
+        if (norm) {
+          for (const name in KEYPOINTS) {
+            const i = KEYPOINTS[name];
+            const p = norm[i];
+            if (!p) continue;
+            keypoints[name] = {
+              x: p.x,
+              y: p.y,
+              z: typeof p.z === "number" ? p.z : 0,
+              score: typeof p.visibility === "number" ? p.visibility : 0,
+            };
+          }
+        }
+        return { t: nowMs, source, space: "image", keypoints };
+      }
+
+      function maybeSendFrame(result, nowMs) {
+        // Throttle to <= ~30/s.
+        if (nowMs - state.lastSendT < SEND_INTERVAL_MS) return;
+        // Need a detected pose to send anything useful.
+        if (!result.landmarks || !result.landmarks.length) return;
+        if (!state.wsConnected) return;
+        state.lastSendT = nowMs;
+        const frame = buildPoseFrame(result, nowMs, currentSource());
+        if (Object.keys(frame.keypoints).length === 0) return;
+        safeSend({ type: "pose", frame });
+      }
+
+      // ====================================================================
+      //  Controls
+      // ====================================================================
+      startBtn.addEventListener("click", () => {
+        if (state.running) {
+          stopCamera();
+        } else {
+          // user gesture — safe to start camera + audio-less media
+          startCamera().catch(() => {
+            setMessage(
+              "error",
+              "Unexpected error",
+              "Something went wrong starting the camera. Reload the page and try again.",
+            );
+          });
+        }
+      });
+
+      facingBtn.addEventListener("click", async () => {
+        state.facing = state.facing === "user" ? "environment" : "user";
+        facingLabel.textContent = state.facing === "user" ? "FRONT" : "BACK";
+        // If we're live, restart the stream on the new camera.
+        if (state.running) {
+          // tear down just the media (keep ws + model), then re-acquire.
+          if (state.rafId != null) {
+            cancelAnimationFrame(state.rafId);
+            state.rafId = null;
+          }
+          if (state.stream) {
+            for (const t of state.stream.getTracks()) {
+              try {
+                t.stop();
+              } catch (_) {
+                /* ignore */
+              }
+            }
+            state.stream = null;
+          }
+          state.running = false;
+          await startCamera().catch(() => {});
+        }
+      });
+
+      sourceInput.addEventListener("input", () => {
+        hudSource.textContent = currentSource();
+      });
+      sourceInput.addEventListener("change", () => {
+        // re-announce role with the new source label if connected
+        if (state.wsConnected) {
+          safeSend({ type: "hello", role: "sender", source: currentSource() });
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (state.running) sizeOverlay();
+      });
+
+      // Pause cleanly if the tab is hidden for a long time? We keep streaming
+      // (the headset may still want data); browsers throttle rAF in background
+      // anyway. No action needed — just guard the loop with running flag.
+
+      // ====================================================================
+      //  Boot
+      // ====================================================================
+      (function init() {
+        hudSource.textContent = currentSource();
+        facingLabel.textContent = "FRONT";
+        $("relay-hint").innerHTML =
+          'Streaming to relay <code>' + relayUrl() + "</code>.";
+
+        if (!hasGetUserMedia() || !isSecureCameraContext()) {
+          setMessage(
+            "error",
+            "Camera needs HTTPS",
+            "This page needs a <b>secure context</b>. On a phone over your LAN, " +
+              "open it over <b>HTTPS</b> (the project's mkcert option) or a tunnel. " +
+              "<code>localhost</code> is exempt; plain <code>http://&lt;ip&gt;</code> is not.",
+          );
+          setStatus("Insecure context — camera unavailable.");
+          // Leave START enabled so the user still gets the explicit message
+          // on tap (and so a later HTTPS reload just works).
+        } else {
+          setMessage(
+            "info",
+            "Camera idle",
+            "Press START CAMERA below to begin streaming pose.",
+          );
+          setStatus("Ready — press START CAMERA.");
+        }
+        setConn("offline");
+      })();
+    </script>
+  </body>
+</html>
